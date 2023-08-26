@@ -10,7 +10,7 @@ class Display:
 
         # Round the score to an integer
         score_surface = font.render(f"Score: {int(score)}", True, (0, 0, 0))
-        speed_surface = font.render(f"Speed: {speed}", True, (0, 0, 0))
+        speed_surface = font.render(f"Your speed: {speed}", True, (0, 0, 0))
 
         screen.blit(score_surface, (10, 10))
 

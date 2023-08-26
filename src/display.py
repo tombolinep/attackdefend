@@ -50,3 +50,9 @@ class Display:
                         return False
                 elif event.type == QUIT:
                     return False
+
+    @staticmethod
+    def create_text(text, size, color):
+        font = pygame.font.Font(None, size)
+        text_surface = font.render(text, True, color)
+        return text_surface

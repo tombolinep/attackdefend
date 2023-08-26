@@ -38,6 +38,11 @@ class Game:
         mixer.init()
         self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
 
+        self.powerup_nice_font = pygame.font.Font(None, 36)
+        self.powerup_nice_text = self.powerup_nice_font.render("Nice!", True, (255, 255, 255))
+        self.display_nice_text = False
+        self.nice_text_timer = 0
+
     def run(self):
         self.next_powerup_time = pygame.time.get_ticks() + self.POWERUP_INTERVAL
         self.bg_music.play(-1)
@@ -85,6 +90,12 @@ class Game:
 
         self.update_sprites()
 
+        for powerup in self.powerups:
+            if powerup.nice_text:
+                text_surface = Display.create_text(powerup.nice_text, 24, (255, 255, 255))
+                text_rect = text_surface.get_rect(center=(powerup.rect.centerx, powerup.rect.centery - powerup.height))
+                self.screen.blit(text_surface, text_rect)
+
         if len(self.enemies) > 0:
             total_enemy_speed = sum(enemy.speed for enemy in self.enemies)
             average_enemy_speed = total_enemy_speed / len(self.enemies)
@@ -93,6 +104,21 @@ class Game:
 
         Display.display_stats(self.screen, int(self.score), self.player.speed, average_enemy_speed,
                               self.next_powerup_time)  # Pass the next_powerup_time
+
+        self.check_collisions()
+
+        pressed_keys = pygame.key.get_pressed()
+        self.player.update(pressed_keys)
+
+        if self.display_nice_text:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.nice_text_timer < 2000:
+                text_surface = self.powerup_nice_text
+                text_rect = text_surface.get_rect(center=(powerup.rect.centerx, powerup.rect.centery - powerup.height))
+                text_rect.y -= text_surface.get_height()  # Move the text above the power-up
+                self.screen.blit(text_surface, text_rect)
+            else:
+                self.display_nice_text = False
 
         self.check_collisions()
 
@@ -131,8 +157,11 @@ class Game:
                 self.running = False
 
     def handle_powerup_collision(self, powerup):
-        powerup.apply_powerup(self.enemies)  # Apply power-up effect
-        powerup.kill()  # Remove the power-up
+        powerup.apply_powerup(self.enemies)
+        powerup.kill()
+        self.display_nice_text = True
+        self.nice_text_timer = pygame.time.get_ticks()
+        powerup.nice_text = None
 
     def collision_circle_rectangle(self, circle_sprite, rectangle_sprite):
         dx = circle_sprite.rect.centerx - rectangle_sprite.rect.centerx

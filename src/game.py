@@ -6,6 +6,7 @@ from pygame import mixer
 
 from player import Player
 from enemy import Enemy
+from powerup import PowerUp
 from display import Display
 from utils import resource_path
 
@@ -20,6 +21,7 @@ class Game:
 
         self.player = Player()
         self.enemies = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()  # Create a group for power-ups
         self.all_sprites = pygame.sprite.Group()
         self.all_sprites.add(self.player)
 
@@ -29,10 +31,17 @@ class Game:
         self.ADDENEMY = pygame.USEREVENT + 1
         pygame.time.set_timer(self.ADDENEMY, 250)
 
+        self.ADDPOWERUP = pygame.USEREVENT + 2  # Add a new user event for power-ups
+        pygame.time.set_timer(self.ADDPOWERUP, 15000)  # Set the timer for adding power-ups (15 seconds)
+
+        self.next_powerup_time = 0  # Initialize the time for the next power-up
+        self.POWERUP_INTERVAL = 15000  # Interval for power-up in milliseconds (15 seconds)
+
         mixer.init()
         self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
 
     def run(self):
+        self.next_powerup_time = pygame.time.get_ticks() + self.POWERUP_INTERVAL
         self.bg_music.play(-1)
         while self.running:
             for event in pygame.event.get():
@@ -55,6 +64,12 @@ class Game:
                     self.enemies.add(new_enemy)
                     self.all_sprites.add(new_enemy)
 
+                elif event.type == self.ADDPOWERUP:  # Handle power-up addition event
+                    new_powerup = PowerUp()
+                    self.powerups.add(new_powerup)
+                    self.all_sprites.add(new_powerup)
+                    self.next_powerup_time = pygame.time.get_ticks() + self.POWERUP_INTERVAL  # Set the next power-up time
+
             self.score += random.uniform(1, 1.8)
             self.screen.fill((0, 0, 0))
 
@@ -69,7 +84,8 @@ class Game:
             else:
                 average_enemy_speed = 0
 
-            Display.display_stats(self.screen, int(self.score), self.player.speed, average_enemy_speed)
+            Display.display_stats(self.screen, int(self.score), self.player.speed, average_enemy_speed,
+                                  self.next_powerup_time)  # Pass the next_powerup_time
 
             colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies,
                                                              collided=self.collision_circle_rectangle)
@@ -82,16 +98,21 @@ class Game:
                         enemy.speed_up_temporarily()
                     colliding_enemy.kill()
                 else:
-                    self.player.kill()
                     should_restart = Display.display_game_over(self.screen)
                     if should_restart:
                         self.reset_game()
                     else:
                         self.running = False
 
+            colliding_powerup = pygame.sprite.spritecollideany(self.player, self.powerups)  # Check power-up collision
+            if colliding_powerup:
+                colliding_powerup.apply_powerup(self.enemies)  # Apply power-up effect
+                colliding_powerup.kill()  # Remove the power-up
+
             pressed_keys = pygame.key.get_pressed()
             self.player.update(pressed_keys)
             self.enemies.update()
+            self.powerups.update()  # Update power-ups
             pygame.display.flip()
             self.clock.tick(30)
 
@@ -110,6 +131,7 @@ class Game:
         self.player = Player()
         self.all_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()  # Reset power-ups group
         self.all_sprites.add(self.player)
         self.score = 0
 

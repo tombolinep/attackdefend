@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
 
         # Define the circle's diameter and color
-        self.diameter = 75
+        self.diameter = 50
         self.color = (0, 0, 255)  # Blue
 
         # Create a surface with the size of the circle's diameter
@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=(STATS_WIDTH + MAIN_GAME_WIDTH // 2, SCREEN_HEIGHT // 2))
 
         # Initialize speed attribute
-        self.speed = 5
+        self.speed = 7
 
     def update(self, pressed_keys):
         if pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]:
@@ -31,6 +31,12 @@ class Player(pygame.sprite.Sprite):
             self.move_left()
         if pressed_keys[pygame.K_RIGHT] or pressed_keys[pygame.K_d]:
             self.move_right()
+
+        # Keep player on the screen
+        self.rect.left = max(self.rect.left, STATS_WIDTH)  # Prevent moving left of the stats screen
+        self.rect.right = min(self.rect.right, SCREEN_WIDTH)  # Prevent moving right of the screen
+        self.rect.top = max(self.rect.top, 0)  # Prevent moving above the screen top
+        self.rect.bottom = min(self.rect.bottom, SCREEN_HEIGHT)  # Prevent moving below the screen bottom
 
     def move_up(self):
         self.rect.move_ip(0, -self.speed)
@@ -44,15 +50,8 @@ class Player(pygame.sprite.Sprite):
     def move_right(self):
         self.rect.move_ip(self.speed, 0)
 
-        # Keep player on the screen
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
-        if self.rect.top <= 0:
-            self.rect.top = 0
-        if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
-
     def speed_up(self):
         self.speed += 1  # Increase player speed by 1
+
+    def activate_powerup(self, powerup):
+        powerup.apply_powerup(self.enemies)

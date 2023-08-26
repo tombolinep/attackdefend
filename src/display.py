@@ -5,16 +5,23 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 class Display:
     @staticmethod
-    def display_stats(screen, score, player_speed, average_enemy_speed):
+    def display_stats(screen, score, player_speed, average_enemy_speed, next_powerup_time):
         font = pygame.font.SysFont(None, 36)
 
         score_surface = font.render(f"Score: {int(score)}", True, (0, 0, 0))
         player_speed_surface = font.render(f"Your speed: {player_speed}", True, (0, 0, 0))
-        average_enemy_speed_surface = font.render(f"Avg speed: {average_enemy_speed:.2f}", True, (0, 0, 0))
+        average_enemy_speed_surface = font.render(f"Average enemy speed: {average_enemy_speed:.2f}", True, (0, 0, 0))
+
+        # Calculate the time remaining until the next power-up
+        current_time = pygame.time.get_ticks()
+        time_until_powerup = max(0, (next_powerup_time - current_time) // 1000)  # Convert to seconds
+
+        powerup_timer_surface = font.render(f"Power-Up Timer: {time_until_powerup}s", True, (0, 0, 0))
 
         screen.blit(score_surface, (10, 10))
         screen.blit(player_speed_surface, (10, 40))
         screen.blit(average_enemy_speed_surface, (10, 70))
+        screen.blit(powerup_timer_surface, (10, 100))  # Display the power-up timer
 
     @staticmethod
     def display_game_over(screen):

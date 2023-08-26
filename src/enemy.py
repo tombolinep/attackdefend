@@ -53,7 +53,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.speed = self.initial_speed
         self.rect.move_ip(self.dx, self.dy)
 
-        # Kill the sprite if it's out of the screen to avoid unnecessary processing
-        if (self.rect.right < STATS_WIDTH or self.rect.left > SCREEN_WIDTH or
+        # Kill the sprite if it's out of the main game screen area to avoid unnecessary processing
+        if (self.rect.right < STATS_WIDTH or self.rect.left > STATS_WIDTH + MAIN_GAME_WIDTH or
                 self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT):
             self.kill()

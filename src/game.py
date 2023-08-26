@@ -1,11 +1,13 @@
 import pygame
 import random
+import math
 
 from pygame import mixer
 
 from player import Player
 from enemy import Enemy
 from display import Display
+from utils import resource_path
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
@@ -28,7 +30,7 @@ class Game:
         pygame.time.set_timer(self.ADDENEMY, 250)
 
         mixer.init()
-        self.bg_music = mixer.Sound('assets/tweakin.mp3')
+        self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
 
     def run(self):
         self.bg_music.play(-1)
@@ -59,7 +61,8 @@ class Game:
             for entity in self.all_sprites:
                 self.screen.blit(entity.surf, entity.rect)
 
-            colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies)
+            colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies,
+                                                             collided=self.collision_circle_rectangle)
             if colliding_enemy:
                 if colliding_enemy.type == "yellow":
                     self.player.speed_up()
@@ -78,6 +81,20 @@ class Game:
             self.enemies.update()
             pygame.display.flip()
             self.clock.tick(30)
+
+    def collision_circle_rectangle(self, circle_sprite, rectangle_sprite):
+        # Calculate the distance between the centers of the circle and rectangle
+        dx = circle_sprite.rect.centerx - rectangle_sprite.rect.centerx
+        dy = circle_sprite.rect.centery - rectangle_sprite.rect.centery
+
+        # Calculate the distance from the circle's center to the closest point on the rectangle
+        closest_x = max(rectangle_sprite.rect.left, min(circle_sprite.rect.centerx, rectangle_sprite.rect.right))
+        closest_y = max(rectangle_sprite.rect.top, min(circle_sprite.rect.centery, rectangle_sprite.rect.bottom))
+        dist_x = circle_sprite.rect.centerx - closest_x
+        dist_y = circle_sprite.rect.centery - closest_y
+
+        # If the distance is less than the circle's radius, a collision occurs
+        return math.sqrt(dist_x ** 2 + dist_y ** 2) < circle_sprite.diameter / 2
 
     def reset_game(self):
         self.player = Player()

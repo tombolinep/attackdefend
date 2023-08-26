@@ -114,8 +114,7 @@ class Game:
             current_time = pygame.time.get_ticks()
             if current_time - self.nice_text_timer < 2000:
                 text_surface = self.powerup_nice_text
-                text_rect = text_surface.get_rect(center=(powerup.rect.centerx, powerup.rect.centery - powerup.height))
-                text_rect.y -= text_surface.get_height()  # Move the text above the power-up
+                text_rect = text_surface.get_rect(center=self.nice_text_position)
                 self.screen.blit(text_surface, text_rect)
             else:
                 self.display_nice_text = False
@@ -161,7 +160,7 @@ class Game:
         powerup.kill()
         self.display_nice_text = True
         self.nice_text_timer = pygame.time.get_ticks()
-        powerup.nice_text = None
+        self.nice_text_position = powerup.rect.center
 
     def collision_circle_rectangle(self, circle_sprite, rectangle_sprite):
         dx = circle_sprite.rect.centerx - rectangle_sprite.rect.centerx

@@ -4,7 +4,6 @@ from game import Game
 
 def main():
     try:
-        # Your main code here
         pygame.init()
         game_instance = Game()
         game_instance.run()

@@ -1,4 +1,5 @@
 # attackdefend
 
 cd C:\Users\peter\IdealProjects\attackdefend\src
-pyinstaller --onefile --add-data "assets;assets" main.py
+
+pyinstaller --name dobnob --add-data "assets;assets" main.py

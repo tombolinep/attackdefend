@@ -44,22 +44,32 @@ class Game:
                     self.running = False
 
                 elif event.type == self.ADDENEMY:
-                    enemy_type = "yellow" if random.random() < 0.1 else "white"  # 10% chance for yellow
-                    new_enemy = Enemy(self.score, enemy_type)  # passing enemy_type as second argument to Enemy
+                    if random.random() < 0.1:
+                        enemy_type = "yellow"
+                    elif random.random() < 0.03:
+                        enemy_type = "red"
+                    else:
+                        enemy_type = "white"
+
+                    new_enemy = Enemy(self.score, enemy_type)
                     self.enemies.add(new_enemy)
                     self.all_sprites.add(new_enemy)
 
             self.score += random.uniform(1, 1.8)
             self.screen.fill((0, 0, 0))
 
-            # Fill stats area with a different background
             pygame.draw.rect(self.screen, (200, 200, 200), (0, 0, STATS_WIDTH, SCREEN_HEIGHT))
-
-            # Render stats in the stats area
-            Display.display_stats(self.screen, self.score, self.player.speed)
 
             for entity in self.all_sprites:
                 self.screen.blit(entity.surf, entity.rect)
+
+            if len(self.enemies) > 0:
+                total_enemy_speed = sum(enemy.speed for enemy in self.enemies)
+                average_enemy_speed = total_enemy_speed / len(self.enemies)
+            else:
+                average_enemy_speed = 0
+
+            Display.display_stats(self.screen, int(self.score), self.player.speed, average_enemy_speed)
 
             colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies,
                                                              collided=self.collision_circle_rectangle)
@@ -67,9 +77,12 @@ class Game:
                 if colliding_enemy.type == "yellow":
                     self.player.speed_up()
                     colliding_enemy.kill()
+                elif colliding_enemy.type == "red":
+                    for enemy in self.enemies:
+                        enemy.speed_up_temporarily()
+                    colliding_enemy.kill()
                 else:
                     self.player.kill()
-                    # Display game over screen
                     should_restart = Display.display_game_over(self.screen)
                     if should_restart:
                         self.reset_game()
@@ -83,17 +96,14 @@ class Game:
             self.clock.tick(30)
 
     def collision_circle_rectangle(self, circle_sprite, rectangle_sprite):
-        # Calculate the distance between the centers of the circle and rectangle
         dx = circle_sprite.rect.centerx - rectangle_sprite.rect.centerx
         dy = circle_sprite.rect.centery - rectangle_sprite.rect.centery
 
-        # Calculate the distance from the circle's center to the closest point on the rectangle
         closest_x = max(rectangle_sprite.rect.left, min(circle_sprite.rect.centerx, rectangle_sprite.rect.right))
         closest_y = max(rectangle_sprite.rect.top, min(circle_sprite.rect.centery, rectangle_sprite.rect.bottom))
         dist_x = circle_sprite.rect.centerx - closest_x
         dist_y = circle_sprite.rect.centery - closest_y
 
-        # If the distance is less than the circle's radius, a collision occurs
         return math.sqrt(dist_x ** 2 + dist_y ** 2) < circle_sprite.diameter / 2
 
     def reset_game(self):

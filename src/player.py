@@ -23,14 +23,26 @@ class Player(pygame.sprite.Sprite):
         self.speed = 5
 
     def update(self, pressed_keys):
-        if pressed_keys[pygame.K_UP]:
-            self.rect.move_ip(0, -self.speed)
-        if pressed_keys[pygame.K_DOWN]:
-            self.rect.move_ip(0, self.speed)
-        if pressed_keys[pygame.K_LEFT]:
-            self.rect.move_ip(-self.speed, 0)
-        if pressed_keys[pygame.K_RIGHT]:
-            self.rect.move_ip(self.speed, 0)
+        if pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]:
+            self.move_up()
+        if pressed_keys[pygame.K_DOWN] or pressed_keys[pygame.K_s]:
+            self.move_down()
+        if pressed_keys[pygame.K_LEFT] or pressed_keys[pygame.K_a]:
+            self.move_left()
+        if pressed_keys[pygame.K_RIGHT] or pressed_keys[pygame.K_d]:
+            self.move_right()
+
+    def move_up(self):
+        self.rect.move_ip(0, -self.speed)
+
+    def move_down(self):
+        self.rect.move_ip(0, self.speed)
+
+    def move_left(self):
+        self.rect.move_ip(-self.speed, 0)
+
+    def move_right(self):
+        self.rect.move_ip(self.speed, 0)
 
         # Keep player on the screen
         if self.rect.left < 0:

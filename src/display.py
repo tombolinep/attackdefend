@@ -5,17 +5,16 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 class Display:
     @staticmethod
-    def display_stats(screen, score, speed):
+    def display_stats(screen, score, player_speed, average_enemy_speed):
         font = pygame.font.SysFont(None, 36)
 
-        # Round the score to an integer
         score_surface = font.render(f"Score: {int(score)}", True, (0, 0, 0))
-        speed_surface = font.render(f"Your speed: {speed}", True, (0, 0, 0))
+        player_speed_surface = font.render(f"Your speed: {player_speed}", True, (0, 0, 0))
+        average_enemy_speed_surface = font.render(f"Avg speed: {average_enemy_speed:.2f}", True, (0, 0, 0))
 
         screen.blit(score_surface, (10, 10))
-
-        # Adjust the y-coordinate to create more spacing between score and speed
-        screen.blit(speed_surface, (10, 40))
+        screen.blit(player_speed_surface, (10, 40))
+        screen.blit(average_enemy_speed_surface, (10, 70))
 
     @staticmethod
     def display_game_over(screen):

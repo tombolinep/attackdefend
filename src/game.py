@@ -10,7 +10,7 @@ from enemy import Enemy
 from powerup import PowerUp
 from display import Display
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, POWERUP_INTERVAL
-from shop import Shop, ShopTile
+from shop.shop import Shop
 
 
 class Game:
@@ -56,7 +56,21 @@ class Game:
         border_height = (SCREEN_HEIGHT - shop_window_height) / 2  # Calculate the vertical border height
         shop_window_x = STATS_WIDTH + border_width  # Start after the stats screen and add the border
         shop_window_y = border_height
-        self.shop = Shop(shop_window_x, shop_window_y, shop_window_width, shop_window_height)
+
+        shop_items = [
+            {"title": "Speed Boost", "description": "Increases player speed", "price": 100},
+            {"title": "Shield", "description": "Protects from one enemy", "price": 200},
+            {"title": "tbd", "description": "something", "price": 25555},
+            {"title": "tbd", "description": "something", "price": 25555},
+            {"title": "tbd", "description": "something", "price": 25555},
+            {"title": "tbd", "description": "something", "price": 25555},
+            {"title": "tbd", "description": "something", "price": 25555},
+            {"title": "tbd", "description": "something", "price": 25555},
+            {"title": "tbd", "description": "something", "price": 25555},
+
+        ]
+
+        self.shop = Shop(shop_window_x, shop_window_y, shop_window_width, shop_window_height, shop_items)
 
     def run(self):
         self.next_powerup_time = pygame.time.get_ticks() + self.POWERUP_INTERVAL
@@ -72,24 +86,21 @@ class Game:
 
     def handle_events(self):
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
-            elif event.type == pygame.QUIT:
-                self.running = False
             elif event.type == self.ADDENEMY:
                 self.add_enemy()
             elif event.type == self.ADDPOWERUP:
                 self.add_powerup()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.pause_button.is_hovered(pygame.mouse.get_pos()):
-                    self.paused = not self.paused  # Toggle the paused state
-                    if self.paused:
-                        self.pause_button.text = "Resume"
-                    else:
-                        self.pause_button.text = "Pause"
+                    self.paused = not self.paused
+                    self.pause_button.text = "Resume" if self.paused else "Pause"
                 elif self.shop_button.is_hovered(pygame.mouse.get_pos()):
-                    self.paused = True  # Pause the game when the shop is opened.
+                    self.paused = True
                     self.open_shop()
 
     def add_enemy(self):
@@ -217,8 +228,6 @@ class Game:
 
     def open_shop(self):
         shop_running = True
-
-        # Close button for the shop window
         close_button_x = self.shop.rect.right - 90
         close_button_y = self.shop.rect.top + 10
         close_button = Button(close_button_x, close_button_y, 80, 40, "Close", (150, 150, 150), (200, 200, 200))
@@ -234,20 +243,15 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if close_button.is_hovered(pygame.mouse.get_pos()):
                         shop_running = False
-                        self.paused = False  # Unpause the game
+                        self.paused = False
                     else:
-                        # If a shop item is clicked, this will purchase and apply the power-up effect
                         powerup_type = self.shop.handle_click(pygame.mouse.get_pos(), self.score)
                         if powerup_type:
-                            # Handle purchasing logic and updating player stats/score here.
-                            # For now, let's just print the type of power-up purchased.
                             print(f"Purchased {powerup_type}!")
-                            # Deduct the price of the powerup from the score
-                            # Example: self.score -= powerup_price
+                            # TODO: Handle purchasing logic and update player stats/score
 
             self.shop.draw(self.screen)
             close_button.draw(self.screen)
-
             pygame.display.flip()
             self.clock.tick(30)
 

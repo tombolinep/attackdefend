@@ -43,10 +43,6 @@ class Shop:
         coin_text = coin_font.render(f"Balance: {player.coins}", True, TITLE_COLOR)
         screen.blit(coin_text, (title_x - 400, title_y))
 
-        message_font = pygame.font.Font(None, 28)
-        message_surface = message_font.render(self.last_message, True, TITLE_COLOR)
-        screen.blit(message_surface, (self.rect.centerx - message_surface.get_width() // 2, title_y + 40))
-
     def draw(self, screen, player):
         pygame.draw.rect(screen, BACKGROUND_COLOR, self.rect)
         self._draw_text(screen, player)
@@ -69,14 +65,16 @@ class Shop:
                 buy_box_rect = tile.get_buy_box_rect()
                 self.buy_message_position = (buy_box_rect.centerx, buy_box_rect.y - 30)
                 self.buy_message_end_time = time.time() + BOUGHT_MESSAGE_DURATION
+
                 if self.can_buy_item(tile.title, player):
                     self.buy_item(tile.title, player)
                     self.purchase_successful = True
-                    self.selected_tile_index = self.tiles.index(tile)
                 else:
                     self.purchase_successful = False
-                return tile.title
-        return None
+
+                self.selected_tile_index = self.tiles.index(tile)
+                return tile.title, self.purchase_successful  # Return if the purchase was successful and the title of the item
+        return None, False
 
     def can_buy_item(self, item_title, player):
         item = self.get_item(item_title)
@@ -84,16 +82,12 @@ class Shop:
 
     def buy_item(self, item_title, player):
         item = self.get_item(item_title)
-        if item:
-            if self.can_buy_item(item_title, player):
-                if item["title"] == "Speed Boost":
-                    player.increase_speed()
-                elif item["title"] == "Coin Bonus":
-                    player.coins += 50
-                player.coins -= item["price"]
-                self.last_message = "Bought!"
-            else:
-                self.last_message = INSUFFICIENT_FUNDS_MESSAGE
+        if item and item["price"] <= player.coins:  # Check if the player has enough coins
+            if item["title"] == "Speed Boost":
+                player.increase_speed()
+            elif item["title"] == "Coin Bonus":
+                player.coins += 50
+            player.coins -= item["price"]
 
     def get_item(self, item_title):
         for item in self.shop_items:

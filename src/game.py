@@ -313,8 +313,9 @@ class Game:
                         else:
                             self.resume_timers()
                     else:
-                        powerup_type = self.shop.handle_click(pygame.mouse.get_pos(), self.player)
-                        if powerup_type:
+                        powerup_type, purchase_successful = self.shop.handle_click(pygame.mouse.get_pos(),
+                                                                                   self.player)  # Unpack the returned values
+                        if powerup_type and purchase_successful:  # Check if the purchase was successful
                             self.purchase_item(powerup_type)
 
             # Draw shop and other elements

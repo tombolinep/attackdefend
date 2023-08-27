@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
 
         # Initialize speed attribute
         self.speed = 7
+        self.coins = 0
 
     def update(self, pressed_keys):
         if pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]:
@@ -55,3 +56,6 @@ class Player(pygame.sprite.Sprite):
 
     def activate_powerup(self, powerup):
         powerup.apply_powerup(self.enemies)
+
+    def collect_coin(self):
+        self.coins += 1

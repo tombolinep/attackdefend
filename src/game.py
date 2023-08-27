@@ -2,15 +2,16 @@ import pygame
 import random
 import math
 
-from src.Button import Button
+from src.button import Button
 from utils import resource_path
 from pygame import mixer
 from player import Player
 from enemy import Enemy
 from powerup import PowerUp
 from display import Display
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, POWERUP_INTERVAL
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, POWERUP_INTERVAL, COIN_INTERVAL
 from shop.shop import Shop
+from coin import Coin
 
 
 class Game:
@@ -22,7 +23,8 @@ class Game:
 
         self.player = Player()
         self.enemies = pygame.sprite.Group()
-        self.powerups = pygame.sprite.Group()  # Create a group for power-ups
+        self.powerups = pygame.sprite.Group()
+        self.coins = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.all_sprites.add(self.player)
 
@@ -37,6 +39,9 @@ class Game:
 
         self.next_powerup_time = 0  # Initialize the time for the next power-up
         self.POWERUP_INTERVAL = POWERUP_INTERVAL  # Interval for power-up in milliseconds (15 seconds)
+
+        self.ADDCOIN = pygame.USEREVENT + 3
+        pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)  # Set the timer for adding power-ups (15 seconds)
 
         mixer.init()
         self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
@@ -60,13 +65,13 @@ class Game:
         shop_items = [
             {"title": "Speed Boost", "description": "Increases player speed", "price": 100},
             {"title": "Shield", "description": "Protects from one enemy", "price": 200},
-            {"title": "tbd", "description": "something", "price": 25555},
-            {"title": "tbd", "description": "something", "price": 25555},
-            {"title": "tbd", "description": "something", "price": 25555},
-            {"title": "tbd", "description": "something", "price": 25555},
-            {"title": "tbd", "description": "something", "price": 25555},
-            {"title": "tbd", "description": "something", "price": 25555},
-            {"title": "tbd", "description": "something", "price": 25555},
+            {"title": "tbd", "description": "coming soon", "price": -1},
+            {"title": "tbd", "description": "coming soon", "price": -1},
+            {"title": "tbd", "description": "coming soon", "price": -1},
+            {"title": "tbd", "description": "coming soon", "price": -1},
+            {"title": "tbd", "description": "coming soon", "price": -1},
+            {"title": "tbd", "description": "coming soon", "price": -1},
+            {"title": "tbd", "description": "coming soon", "price": -1},
 
         ]
 
@@ -79,7 +84,7 @@ class Game:
             self.handle_events()
             if not self.paused:
                 self.update_game()
-            self.pause_button.draw(self.screen)  # This ensures that the button is drawn with updated text.
+            self.pause_button.draw(self.screen)
             self.shop_button.draw(self.screen)
             pygame.display.flip()
             self.clock.tick(30)
@@ -92,9 +97,11 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
             elif event.type == self.ADDENEMY:
-                self.add_enemy()
+                self.add_entity()
             elif event.type == self.ADDPOWERUP:
                 self.add_powerup()
+            elif event.type == self.ADDCOIN:
+                self.add_coin()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.pause_button.is_hovered(pygame.mouse.get_pos()):
                     self.paused = not self.paused
@@ -103,10 +110,8 @@ class Game:
                     self.paused = True
                     self.open_shop()
 
-    def add_enemy(self):
+    def add_entity(self):
         if random.random() < 0.1:
-            enemy_type = "yellow"
-        elif random.random() < 0.03:
             enemy_type = "red"
         else:
             enemy_type = "white"
@@ -114,6 +119,13 @@ class Game:
         new_enemy = Enemy(self.score, enemy_type)
         self.enemies.add(new_enemy)
         self.all_sprites.add(new_enemy)
+
+    def add_coin(self):
+        coin_x = random.randint(STATS_WIDTH, SCREEN_WIDTH - 20)
+        coin_y = random.randint(0, SCREEN_HEIGHT - 20)
+        new_coin = Coin(coin_x, coin_y)
+        self.coins.add(new_coin)
+        self.all_sprites.add(new_coin)
 
     def add_powerup(self):
         new_powerup = PowerUp()
@@ -143,9 +155,7 @@ class Game:
             average_enemy_speed = 0
 
         Display.display_stats(self.screen, int(self.score), self.player.speed, average_enemy_speed,
-                              self.next_powerup_time)  # Pass the next_powerup_time
-
-        self.check_collisions()
+                              self.next_powerup_time, self.player.coins)
 
         pressed_keys = pygame.key.get_pressed()
         self.player.update(pressed_keys)
@@ -176,18 +186,19 @@ class Game:
         if colliding_enemy:
             self.handle_enemy_collision(colliding_enemy)
 
-        colliding_powerup = pygame.sprite.spritecollideany(self.player, self.powerups)  # Check power-up collision
+        colliding_powerup = pygame.sprite.spritecollideany(self.player, self.powerups)
         if colliding_powerup:
             self.handle_powerup_collision(colliding_powerup)
 
+        colliding_coin = pygame.sprite.spritecollideany(self.player, self.coins)
+        if colliding_coin:
+            self.handle_coin_collision(colliding_coin)
+
     def handle_enemy_collision(self, enemy):
-        if enemy.type == "yellow":
-            self.player.speed_up()
+        if enemy.type == "red":
             enemy.kill()
-        elif enemy.type == "red":
             for enemy in self.enemies:
                 enemy.speed_up_temporarily()
-            enemy.kill()
         else:
             should_restart = Display.display_game_over(self.screen)
             if should_restart:
@@ -201,6 +212,10 @@ class Game:
         self.display_nice_text = True
         self.nice_text_timer = pygame.time.get_ticks()
         self.nice_text_position = powerup.rect.center
+
+    def handle_coin_collision(self, coin):
+        self.player.collect_coin()
+        coin.kill()
 
     def collision_circle_rectangle(self, circle_sprite, rectangle_sprite):
         dx = circle_sprite.rect.centerx - rectangle_sprite.rect.centerx

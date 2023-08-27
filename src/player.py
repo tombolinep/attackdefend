@@ -5,39 +5,32 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
+        self._initialize_graphics()
+        self.speed = 7
+        self.coins = 100
 
-        # Define the circle's diameter and color
+    def _initialize_graphics(self):
         self.diameter = 50
         self.color = (0, 0, 255)  # Blue
-
-        # Create a surface with the size of the circle's diameter
-        self.surf = pygame.Surface((self.diameter, self.diameter), pygame.SRCALPHA)  # SRCALPHA for transparency
-
-        # Draw a blue circle on the surface
+        self.surf = pygame.Surface((self.diameter, self.diameter), pygame.SRCALPHA)
         pygame.draw.circle(self.surf, self.color, (self.diameter // 2, self.diameter // 2), self.diameter // 2)
-
-        # Get the rectangle of the surface for positioning and set its center to the screen's midpoint
         self.rect = self.surf.get_rect(center=(STATS_WIDTH + MAIN_GAME_WIDTH // 2, SCREEN_HEIGHT // 2))
 
-        # Initialize speed attribute
-        self.speed = 7
-        self.coins = 0
-
     def update(self, pressed_keys):
-        if pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]:
-            self.move_up()
-        if pressed_keys[pygame.K_DOWN] or pressed_keys[pygame.K_s]:
-            self.move_down()
-        if pressed_keys[pygame.K_LEFT] or pressed_keys[pygame.K_a]:
-            self.move_left()
-        if pressed_keys[pygame.K_RIGHT] or pressed_keys[pygame.K_d]:
-            self.move_right()
+        self._handle_movement(pressed_keys)
+        self._keep_within_boundaries()
 
-        # Keep player on the screen
-        self.rect.left = max(self.rect.left, STATS_WIDTH)  # Prevent moving left of the stats screen
-        self.rect.right = min(self.rect.right, SCREEN_WIDTH)  # Prevent moving right of the screen
-        self.rect.top = max(self.rect.top, 0)  # Prevent moving above the screen top
-        self.rect.bottom = min(self.rect.bottom, SCREEN_HEIGHT)  # Prevent moving below the screen bottom
+    def _handle_movement(self, pressed_keys):
+        if pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]: self.move_up()
+        if pressed_keys[pygame.K_DOWN] or pressed_keys[pygame.K_s]: self.move_down()
+        if pressed_keys[pygame.K_LEFT] or pressed_keys[pygame.K_a]: self.move_left()
+        if pressed_keys[pygame.K_RIGHT] or pressed_keys[pygame.K_d]: self.move_right()
+
+    def _keep_within_boundaries(self):
+        self.rect.left = max(self.rect.left, STATS_WIDTH)
+        self.rect.right = min(self.rect.right, SCREEN_WIDTH)
+        self.rect.top = max(self.rect.top, 0)
+        self.rect.bottom = min(self.rect.bottom, SCREEN_HEIGHT)
 
     def move_up(self):
         self.rect.move_ip(0, -self.speed)
@@ -51,11 +44,29 @@ class Player(pygame.sprite.Sprite):
     def move_right(self):
         self.rect.move_ip(self.speed, 0)
 
-    def speed_up(self):
-        self.speed += 1  # Increase player speed by 1
-
-    def activate_powerup(self, powerup):
-        powerup.apply_powerup(self.enemies)
-
-    def collect_coin(self):
+    def add_coin(self):
         self.coins += 1
+
+    def deduct_coin(self, amount):
+        if self.coins >= amount:
+            self.coins -= amount
+            return True
+        return False
+
+    def increase_speed(self, increment=2):  # Increment can be adjusted based on your game's needs
+        self.speed += increment
+
+    def add_shield(self):
+        self.shield_active = True
+
+    def remove_shield(self):
+        self.shield_active = False
+
+    def has_shield(self):
+        return self.shield_active
+
+    def purchase_item(self, price):
+        if self.coins >= price:
+            self.coins -= price
+            return True
+        return False

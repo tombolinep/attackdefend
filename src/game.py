@@ -9,62 +9,70 @@ from player import Player
 from enemy import Enemy
 from powerup import PowerUp
 from display import Display
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, POWERUP_INTERVAL, COIN_INTERVAL
-from shop.shop import Shop
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, \
+    MAIN_GAME_WIDTH, POWERUP_INTERVAL, COIN_INTERVAL
+from src.shop import Shop
 from coin import Coin
 
 
 class Game:
     def __init__(self):
+        self.initialize_pygame()
+        self.initialize_events()  # Move this line up
+        self.initialize_game_attributes()  # Initialize events first, then game attributes
+        self.initialize_music()
+        self.initialize_ui_elements()
+
+    def initialize_pygame(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
-        self.paused = False
 
+    def initialize_game_attributes(self):
+        self.paused = False
         self.player = Player()
         self.enemies = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
-        self.all_sprites = pygame.sprite.Group()
-        self.all_sprites.add(self.player)
-
+        self.all_sprites = pygame.sprite.Group(self.player)
         self.running = True
         self.score = 0
-
-        self.ADDENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADDENEMY, 250)
-
-        self.ADDPOWERUP = pygame.USEREVENT + 2  # Add a new user event for power-ups
-        pygame.time.set_timer(self.ADDPOWERUP, POWERUP_INTERVAL)  # Set the timer for adding power-ups (15 seconds)
-
-        self.next_powerup_time = 0  # Initialize the time for the next power-up
-        self.POWERUP_INTERVAL = POWERUP_INTERVAL  # Interval for power-up in milliseconds (15 seconds)
-
-        self.ADDCOIN = pygame.USEREVENT + 3
-        pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)  # Set the timer for adding power-ups (15 seconds)
-
-        mixer.init()
-        self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
-
-        self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", (150, 150, 150), (200, 200, 200))
-        self.shop_button = Button(SCREEN_WIDTH - 150, 60, 130, 40, "Shop", (150, 150, 150), (200, 200, 200))
-
         self.powerup_nice_font = pygame.font.Font(None, 36)
         self.powerup_nice_text = self.powerup_nice_font.render("Nice!", True, (255, 255, 255))
         self.display_nice_text = False
-        self.nice_text_timer = 0
+        self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
+        self.bought_timer = 0
+        self.bought_message_position = (0, 0)
 
-        # Initialize the shop right after the other buttons
-        shop_window_width = MAIN_GAME_WIDTH * 0.75  # 75% of the main game screen width
-        shop_window_height = SCREEN_HEIGHT * 0.75  # 75% of the total screen height
-        border_width = (MAIN_GAME_WIDTH - shop_window_width) / 2  # Calculate the horizontal border width
-        border_height = (SCREEN_HEIGHT - shop_window_height) / 2  # Calculate the vertical border height
-        shop_window_x = STATS_WIDTH + border_width  # Start after the stats screen and add the border
+    def initialize_events(self):
+        self.ADDENEMY = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.ADDENEMY, 250)
+
+        self.ADDPOWERUP = pygame.USEREVENT + 2
+        pygame.time.set_timer(self.ADDPOWERUP, POWERUP_INTERVAL)
+
+        self.ADDCOIN = pygame.USEREVENT + 3
+        pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
+
+    def initialize_music(self):
+        mixer.init()
+        self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
+
+    def initialize_ui_elements(self):
+        self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", (150, 150, 150), (200, 200, 200))
+        self.shop_button = Button(SCREEN_WIDTH - 150, 60, 130, 40, "Shop", (150, 150, 150), (200, 200, 200))
+        self.shop = self.create_shop_window()
+
+    def create_shop_window(self):
+        shop_window_width = MAIN_GAME_WIDTH * 0.75
+        shop_window_height = SCREEN_HEIGHT * 0.75
+        border_width = (MAIN_GAME_WIDTH - shop_window_width) / 2
+        border_height = (SCREEN_HEIGHT - shop_window_height) / 2
+        shop_window_x = STATS_WIDTH + border_width
         shop_window_y = border_height
-
         shop_items = [
-            {"title": "Speed Boost", "description": "Increases player speed", "price": 100},
-            {"title": "Shield", "description": "Protects from one enemy", "price": 200},
+            {"title": "Speed Boost", "description": "Increases player speed", "price": 5},
+            {"title": "Shield", "description": "Protects from one enemy", "price": 5},
             {"title": "tbd", "description": "coming soon", "price": -1},
             {"title": "tbd", "description": "coming soon", "price": -1},
             {"title": "tbd", "description": "coming soon", "price": -1},
@@ -72,22 +80,22 @@ class Game:
             {"title": "tbd", "description": "coming soon", "price": -1},
             {"title": "tbd", "description": "coming soon", "price": -1},
             {"title": "tbd", "description": "coming soon", "price": -1},
-
         ]
-
-        self.shop = Shop(shop_window_x, shop_window_y, shop_window_width, shop_window_height, shop_items)
+        return Shop(shop_window_x, shop_window_y, shop_window_width, shop_window_height, shop_items)
 
     def run(self):
-        self.next_powerup_time = pygame.time.get_ticks() + self.POWERUP_INTERVAL
         self.bg_music.play(-1)
         while self.running:
             self.handle_events()
             if not self.paused:
                 self.update_game()
-            self.pause_button.draw(self.screen)
-            self.shop_button.draw(self.screen)
+            self.draw_ui()
             pygame.display.flip()
             self.clock.tick(30)
+
+    def draw_ui(self):
+        self.pause_button.draw(self.screen)
+        self.shop_button.draw(self.screen)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -98,10 +106,12 @@ class Game:
                     self.running = False
             elif event.type == self.ADDENEMY:
                 self.add_entity()
-            elif event.type == self.ADDPOWERUP:
-                self.add_powerup()
             elif event.type == self.ADDCOIN:
                 self.add_coin()
+            elif event.type == self.ADDPOWERUP:
+                self.powerups.add(PowerUp())
+                self.all_sprites.add(self.powerups)
+                self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.pause_button.is_hovered(pygame.mouse.get_pos()):
                     self.paused = not self.paused
@@ -131,7 +141,7 @@ class Game:
         new_powerup = PowerUp()
         self.powerups.add(new_powerup)
         self.all_sprites.add(new_powerup)
-        self.next_powerup_time = pygame.time.get_ticks() + self.POWERUP_INTERVAL
+        self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
 
     def update_game(self):
         self.score += random.uniform(1, 1.8)
@@ -156,9 +166,6 @@ class Game:
 
         Display.display_stats(self.screen, int(self.score), self.player.speed, average_enemy_speed,
                               self.next_powerup_time, self.player.coins)
-
-        pressed_keys = pygame.key.get_pressed()
-        self.player.update(pressed_keys)
 
         if self.display_nice_text:
             current_time = pygame.time.get_ticks()
@@ -214,7 +221,7 @@ class Game:
         self.nice_text_position = powerup.rect.center
 
     def handle_coin_collision(self, coin):
-        self.player.collect_coin()
+        self.player.add_coin()
         coin.kill()
 
     def collision_circle_rectangle(self, circle_sprite, rectangle_sprite):
@@ -229,17 +236,53 @@ class Game:
         return math.sqrt(dist_x ** 2 + dist_y ** 2) < circle_sprite.diameter / 2
 
     def reset_game(self):
-        self.player = Player()
-        self.all_sprites = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group()
-        self.powerups = pygame.sprite.Group()  # Reset power-ups group
-        self.all_sprites.add(self.player)
-        self.score = 0
-        self.next_powerup_time = pygame.time.get_ticks() + self.POWERUP_INTERVAL  # Reset power-up timer
+        self.player.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50)  # Reset player position
+        self.enemies.empty()  # Clear enemies
+        self.powerups.empty()  # Clear power-ups
+        self.all_sprites.empty()  # Clear all sprites
+        self.all_sprites.add(self.player)  # Add the player back to the sprites group
+        self.score = 0  # Reset score
+        self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL  # Reset power-up timer
 
     def quit_game(self):
         self.bg_music.stop()
         pygame.quit()
+
+    def pause_timers(self):
+        pygame.time.set_timer(self.ADDENEMY, 0)
+        pygame.time.set_timer(self.ADDPOWERUP, 0)
+        pygame.time.set_timer(self.ADDCOIN, 0)
+
+    def resume_timers(self):
+        pygame.time.set_timer(self.ADDENEMY, 250)
+        pygame.time.set_timer(self.ADDPOWERUP, POWERUP_INTERVAL)
+        pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
+
+    def purchase_item(self, powerup_type):
+        if powerup_type == "Speed Boost":
+            self.player.increase_speed()
+        elif powerup_type == "Shield":
+            self.player.add_shield()
+        print(f"Purchased {powerup_type}!")
+        self.update_stats()
+        self.bought_timer = 2 * 30  # Assuming 30 FPS, this would be 2 seconds
+        buy_box = self.shop.get_buy_box(powerup_type)  # You might need to implement the get_buy_box method
+        self.bought_message_position = (buy_box.rect.left, buy_box.rect.top - 30)  # 30 pixels above the box
+
+    def update_stats(self):
+        # Clear the portion of the screen where the stats are displayed
+        pygame.draw.rect(self.screen, (200, 200, 200), (0, 0, STATS_WIDTH, SCREEN_HEIGHT))
+
+        if len(self.enemies) > 0:
+            total_enemy_speed = sum(enemy.speed for enemy in self.enemies)
+            average_enemy_speed = total_enemy_speed / len(self.enemies)
+        else:
+            average_enemy_speed = 0
+        Display.display_stats(self.screen, int(self.score), self.player.speed, average_enemy_speed,
+                              self.next_powerup_time, self.player.coins)
+
+        # Optional: You might also want to refresh the display here
+        pygame.display.flip()
 
     def open_shop(self):
         shop_running = True
@@ -256,17 +299,26 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         shop_running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # Check for close button click
                     if close_button.is_hovered(pygame.mouse.get_pos()):
                         shop_running = False
                         self.paused = False
+                    elif self.pause_button.is_hovered(pygame.mouse.get_pos()):
+                        self.paused = not self.paused
+                        self.pause_button.text = "Resume" if self.paused else "Pause"
+                        if self.paused:
+                            self.pause_timers()
+                        else:
+                            self.resume_timers()
                     else:
-                        powerup_type = self.shop.handle_click(pygame.mouse.get_pos(), self.score)
+                        powerup_type = self.shop.handle_click(pygame.mouse.get_pos(), self.player)
                         if powerup_type:
-                            print(f"Purchased {powerup_type}!")
-                            # TODO: Handle purchasing logic and update player stats/score
+                            self.purchase_item(powerup_type)
 
-            self.shop.draw(self.screen)
+            # Draw shop and other elements
+            self.shop.draw(self.screen, self.player)
             close_button.draw(self.screen)
+
             pygame.display.flip()
             self.clock.tick(30)
 

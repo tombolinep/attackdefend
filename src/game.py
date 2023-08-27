@@ -57,6 +57,9 @@ class Game:
     def initialize_music(self):
         mixer.init()
         self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
+        self.death_sound = pygame.mixer.Sound('assets/dead.mp3')
+        self.powerup_sound = pygame.mixer.Sound('assets/powerup.mp3')
+        self.coin_sound = pygame.mixer.Sound('assets/coin.mp3')
         self.bg_music.set_volume(0.1)
 
     def initialize_ui_elements(self):
@@ -209,6 +212,7 @@ class Game:
             for enemy in self.enemies:
                 enemy.speed_up_temporarily()
         else:
+            self.death_sound.play()
             should_restart = Display.display_game_over(self.screen)
             if should_restart:
                 self.reset_game()
@@ -216,6 +220,7 @@ class Game:
                 self.running = False
 
     def handle_powerup_collision(self, powerup):
+        self.powerup_sound.play()
         powerup.apply_powerup(self.enemies)
         powerup.kill()
         self.display_nice_text = True
@@ -223,6 +228,7 @@ class Game:
         self.nice_text_position = powerup.rect.center
 
     def handle_coin_collision(self, coin):
+        self.coin_sound.play()
         self.player.add_coin()
         coin.kill()
 

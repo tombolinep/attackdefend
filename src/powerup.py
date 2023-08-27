@@ -1,6 +1,6 @@
 import pygame
 import random
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 
 class PowerUp(pygame.sprite.Sprite):

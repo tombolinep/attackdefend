@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -14,9 +14,10 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.surf.fill((255, 255, 255))  # Default to white color
 
-        base_speed = random.randint(1, 5)
-        adjusted_speed = base_speed + 0.01 * score
-        self.speed = min(adjusted_speed, 10)
+        base_speed = random.randint(1, 2)
+        increment = score // 440  # Increase speed for every 100 points in the score
+        adjusted_speed = base_speed + increment
+        self.speed = min(adjusted_speed, 12)  # Adjust the maximum speed here
 
         # Choose a side from which the enemy should spawn: 0 = top, 1 = right, 2 = bottom, 3 = left
         side = random.randint(0, 3)

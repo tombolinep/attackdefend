@@ -3,16 +3,16 @@ import random
 import math
 
 from src.button import Button
-from utils import resource_path
+from src.utils import resource_path
 from pygame import mixer
-from player import Player
-from enemy import Enemy
-from powerup import PowerUp
-from display import Display
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, \
+from src.player import Player
+from src.enemy import Enemy
+from src.powerup import PowerUp
+from src.display import Display
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, \
     MAIN_GAME_WIDTH, POWERUP_INTERVAL, COIN_INTERVAL
 from src.shop import Shop
-from coin import Coin
+from src.coin import Coin
 
 
 class Game:
@@ -57,6 +57,7 @@ class Game:
     def initialize_music(self):
         mixer.init()
         self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
+        self.bg_music.set_volume(0.1)
 
     def initialize_ui_elements(self):
         self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", (150, 150, 150), (200, 200, 200))
@@ -185,7 +186,8 @@ class Game:
         for entity in self.all_sprites:
             self.screen.blit(entity.surf, entity.rect)
         self.enemies.update()
-        self.powerups.update()  # Update power-ups
+        self.powerups.update()
+        self.coins.update()
 
     def check_collisions(self):
         colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies,
@@ -236,7 +238,7 @@ class Game:
         return math.sqrt(dist_x ** 2 + dist_y ** 2) < circle_sprite.diameter / 2
 
     def reset_game(self):
-        self.player.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50)  # Reset player position
+        # self.player.rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT )  # Reset player position
         self.enemies.empty()  # Clear enemies
         self.powerups.empty()  # Clear power-ups
         self.all_sprites.empty()  # Clear all sprites

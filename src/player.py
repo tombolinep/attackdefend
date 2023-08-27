@@ -1,5 +1,5 @@
 import pygame
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 
 class Player(pygame.sprite.Sprite):
@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self._initialize_graphics()
         self.speed = 7
-        self.coins = 100
+        self.coins = 0
 
     def _initialize_graphics(self):
         self.diameter = 50

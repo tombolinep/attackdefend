@@ -4,8 +4,6 @@ import math
 
 from src.audio import Audio
 from src.button import Button
-from src.utils import resource_path
-from pygame import mixer
 from src.player import Player
 from src.enemy import Enemy
 from src.powerup import PowerUp
@@ -57,7 +55,6 @@ class Game:
 
     def initialize_music(self):
         self.audio_manager = Audio()
-        self.audio_manager.bg_music.set_volume(0.1)
 
     def initialize_ui_elements(self):
         self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", (150, 150, 150), (200, 200, 200))
@@ -85,7 +82,7 @@ class Game:
         return Shop(shop_window_x, shop_window_y, shop_window_width, shop_window_height, shop_items)
 
     def run(self):
-        self.audio_manager.bg_music.play(-1)
+        self.audio_manager.play_bg_music()
         while self.running:
             self.handle_events()
             if not self.paused:
@@ -188,6 +185,7 @@ class Game:
         self.enemies.update()
         self.powerups.update()
         self.coins.update()
+        self.player.draw(self.screen)
 
     def check_collisions(self):
         colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies,
@@ -204,12 +202,12 @@ class Game:
             self.handle_coin_collision(colliding_coin)
 
     def handle_enemy_collision(self, enemy):
-        if enemy.type == "red":
+        if self.player.get_shield() > 0:
+            self.audio_manager.play_shield_hit_sound()
+            self.player.remove_shield()
             enemy.kill()
-            for enemy in self.enemies:
-                enemy.speed_up_temporarily()
         else:
-            self.audio_manager.death_sound.play()
+            self.audio_manager.play_death_sound()
             should_restart = Display.display_game_over(self.screen)
             if should_restart:
                 self.reset_game()
@@ -217,7 +215,7 @@ class Game:
                 self.running = False
 
     def handle_powerup_collision(self, powerup):
-        self.audio_manager.powerup_sound.play()
+        self.audio_manager.play_powerup_sound()
         powerup.apply_powerup(self.enemies)
         powerup.kill()
         self.display_nice_text = True
@@ -225,7 +223,7 @@ class Game:
         self.nice_text_position = powerup.rect.center
 
     def handle_coin_collision(self, coin):
-        self.audio_manager.coin_sound.play()
+        self.audio_manager.play_coin_sound()
         self.player.add_coin()
         coin.kill()
 
@@ -250,7 +248,7 @@ class Game:
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL  # Reset power-up timer
 
     def quit_game(self):
-        self.audio_manager.bg_music.stop()
+        self.audio_manager.stop_bg_music()
         pygame.quit()
 
     def pause_timers(self):
@@ -263,11 +261,7 @@ class Game:
         pygame.time.set_timer(self.ADDPOWERUP, POWERUP_INTERVAL)
         pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
 
-    def purchase_item(self, powerup_type):
-        if powerup_type == "Speed Boost":
-            self.player.increase_speed()
-        elif powerup_type == "Shield":
-            self.player.add_shield()
+    def handle_purchase(self, powerup_type):
         print(f"Purchased {powerup_type}!")
         self.update_stats()
         self.bought_timer = 2 * 30  # Assuming 30 FPS, this would be 2 seconds
@@ -304,7 +298,6 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         shop_running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    # Check for close button click
                     if close_button.is_hovered(pygame.mouse.get_pos()):
                         shop_running = False
                         self.paused = False
@@ -317,14 +310,11 @@ class Game:
                             self.resume_timers()
                     else:
                         powerup_type, purchase_successful = self.shop.handle_click(pygame.mouse.get_pos(),
-                                                                                   self.player)  # Unpack the returned values
-                        if powerup_type and purchase_successful:  # Check if the purchase was successful
-                            self.purchase_item(powerup_type)
-
-            # Draw shop and other elements
+                                                                                   self.player)
+                        if powerup_type and purchase_successful:
+                            self.handle_purchase(powerup_type)
             self.shop.draw(self.screen, self.player)
             close_button.draw(self.screen)
-
             pygame.display.flip()
             self.clock.tick(30)
 

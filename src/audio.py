@@ -5,12 +5,20 @@ from src.utils import resource_path
 class Audio:
     def __init__(self):
         mixer.init()
+
+        # Loading all the sound effects
         self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
         self.death_sound = mixer.Sound(resource_path('assets/dead.mp3'))
         self.powerup_sound = mixer.Sound(resource_path('assets/powerup.mp3'))
         self.coin_sound = mixer.Sound(resource_path('assets/coin.mp3'))
-        self.bg_music.set_volume(0.1)
+        self.shield_hit_sound = mixer.Sound(resource_path('assets/shield_hit.mp3'))  # Adding shield hit sound
 
+        # Setting the volume for all the sound effects
+        sound_effects = [self.bg_music, self.death_sound, self.powerup_sound, self.coin_sound, self.shield_hit_sound]
+        for sound in sound_effects:
+            sound.set_volume(0.2)  # Setting the volume to 0.2 for all sound files
+
+    # The existing methods to play the respective sounds
     def play_bg_music(self):
         self.bg_music.play(-1)
 
@@ -25,3 +33,7 @@ class Audio:
 
     def play_coin_sound(self):
         self.coin_sound.play()
+
+    # New method to play the shield hit sound
+    def play_shield_hit_sound(self):
+        self.shield_hit_sound.play()

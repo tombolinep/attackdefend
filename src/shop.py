@@ -5,7 +5,6 @@ import time
 BACKGROUND_COLOR = (50, 50, 50)
 TITLE_COLOR = (255, 255, 255)
 BOUGHT_MESSAGE_DURATION = 0.5
-INSUFFICIENT_FUNDS_MESSAGE = "Not enough funds!"
 
 
 class Shop:
@@ -66,17 +65,14 @@ class Shop:
                 self.buy_message_position = (buy_box_rect.centerx, buy_box_rect.y - 30)
                 self.buy_message_end_time = time.time() + BOUGHT_MESSAGE_DURATION
 
-                if self.can_buy_item(tile.title, player):
-                    self.buy_item(tile.title, player)
-                    self.purchase_successful = True
-                else:
-                    self.purchase_successful = False
+                if self.can_afford_item(tile.title, player):
+                    self.purchase_successful = self.buy_item(tile.title, player)
 
                 self.selected_tile_index = self.tiles.index(tile)
-                return tile.title, self.purchase_successful  # Return if the purchase was successful and the title of the item
+                return tile.title, self.purchase_successful
         return None, False
 
-    def can_buy_item(self, item_title, player):
+    def can_afford_item(self, item_title, player):
         item = self.get_item(item_title)
         return item and 0 <= item["price"] <= player.coins
 
@@ -85,9 +81,14 @@ class Shop:
         if item and item["price"] <= player.coins:  # Check if the player has enough coins
             if item["title"] == "Speed Boost":
                 player.increase_speed()
-            elif item["title"] == "Coin Bonus":
-                player.coins += 50
+            elif item["title"] == "Shield":
+                if player.get_shield() <= 3:  # Change the condition to less than 3
+                    player.add_shield()
+                else:
+                    return False  # Moved the return statement here for clarity
             player.coins -= item["price"]
+            return True
+        return False  # Moved the return statement here for clarity
 
     def get_item(self, item_title):
         for item in self.shop_items:

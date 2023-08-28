@@ -3,18 +3,28 @@ from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WI
 
 
 class Player(pygame.sprite.Sprite):
+    SHIELD_COLORS = [(205, 127, 50), (192, 192, 192), (255, 223, 0), (0, 255, 255)]  # Bronze, Silver, Gold, Platinum
+
     def __init__(self):
         super(Player, self).__init__()
         self._initialize_graphics()
         self.speed = 7
-        self.coins = 0
+        self.coins = 20
+        self.shield = 0
 
     def _initialize_graphics(self):
         self.diameter = 50
+        self.shield_ring_radius = self.diameter // 2 + len(Player.SHIELD_COLORS) * 5
         self.color = (0, 0, 255)  # Blue
-        self.surf = pygame.Surface((self.diameter, self.diameter), pygame.SRCALPHA)
-        pygame.draw.circle(self.surf, self.color, (self.diameter // 2, self.diameter // 2), self.diameter // 2)
+
+        # Create a larger surface to accommodate the shield rings
+        self.surf = pygame.Surface((self.shield_ring_radius * 2, self.shield_ring_radius * 2), pygame.SRCALPHA)
+
+        pygame.draw.circle(self.surf, self.color, (self.shield_ring_radius, self.shield_ring_radius),
+                           self.diameter // 2)
         self.rect = self.surf.get_rect(center=(STATS_WIDTH + MAIN_GAME_WIDTH // 2, SCREEN_HEIGHT // 2))
+        self.shield_surf = pygame.Surface((self.shield_ring_radius * 2, self.shield_ring_radius * 2),
+                                          pygame.SRCALPHA)  # Surface for shield rings
 
     def update(self, pressed_keys):
         self._handle_movement(pressed_keys)
@@ -57,16 +67,39 @@ class Player(pygame.sprite.Sprite):
         self.speed += increment
 
     def add_shield(self):
-        self.shield_active = True
+        self.shield += 1
+        self._draw_shield_rings()
 
     def remove_shield(self):
-        self.shield_active = False
+        if self.shield > 0:
+            self.shield -= 1
+            self._draw_shield_rings()
 
-    def has_shield(self):
-        return self.shield_active
+            # Ensure the updated shield rings are on the main surface (self.surf)
+            self.surf.fill((0, 0, 0, 0))
+            pygame.draw.circle(self.surf, self.color, (self.shield_ring_radius, self.shield_ring_radius),
+                               self.diameter // 2)
+            self.surf.blit(self.shield_surf, (0, 0))
+
+    def get_shield(self):
+        return self.shield
 
     def purchase_item(self, price):
         if self.coins >= price:
             self.coins -= price
             return True
         return False
+
+    def _draw_shield_rings(self):
+        self.shield_surf.fill((0, 0, 0, 0))  # Clear the shield surface
+        for level in range(self.shield):
+            ring_color = Player.SHIELD_COLORS[level % len(Player.SHIELD_COLORS)]
+            ring_center = (self.shield_ring_radius, self.shield_ring_radius)
+            ring_radius = self.diameter // 2 + (level + 1) * 5  # Increase the radius for each ring
+            pygame.draw.circle(self.shield_surf, ring_color, ring_center, ring_radius, 3)
+        self.surf.blit(self.shield_surf, (0, 0))
+
+    def draw(self, screen):
+        self._draw_shield_rings()  # Draw shield rings on the shield surface
+        self.surf.blit(self.shield_surf, (0, 0))  # Blit the shield surface onto the main surface
+        screen.blit(self.surf, self.rect)  # Draw the main surface on the screen

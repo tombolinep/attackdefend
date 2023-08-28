@@ -14,6 +14,7 @@ class Audio:
         self.shield_hit_sound = mixer.Sound(resource_path('assets/shield_hit.mp3'))
         self.purchase_error_sound = mixer.Sound(resource_path('assets/purchase_error.wav'))
         self.purchase_success_sound = mixer.Sound(resource_path('assets/purchase_success.wav'))
+        self.purchase_error_sound.set_volume(0.6)
 
         # Setting the volume for all the sound effects
         sound_effects = [
@@ -25,7 +26,7 @@ class Audio:
             self.purchase_success_sound
         ]
         for sound in sound_effects:
-            sound.set_volume(0.2)  # Setting the volume to 0.2 for all sound files
+            sound.set_volume(0.1)  # Setting the volume to 0.2 for all sound files
 
     # The existing methods to play the respective sounds
     def play_bg_music(self):

@@ -97,6 +97,7 @@ class Game:
 
     def handle_events(self):
         for event in pygame.event.get():
+            self.enemies.update(self.player.rect.center)
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
@@ -119,7 +120,7 @@ class Game:
                     self.open_shop()
 
     def add_entity(self):
-        if random.random() < 0.1:
+        if random.random() < 0.8:
             enemy_type = "red"
         else:
             enemy_type = "white"
@@ -182,7 +183,7 @@ class Game:
     def update_sprites(self):
         for entity in self.all_sprites:
             self.screen.blit(entity.surf, entity.rect)
-        self.enemies.update()
+        self.enemies.update((self.player.rect.x, self.player.rect.y))
         self.powerups.update()
         self.coins.update()
         self.player.draw(self.screen)

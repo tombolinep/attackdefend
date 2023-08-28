@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self._initialize_graphics()
         self.speed = 7
-        self.coins = 20
+        self.coins = 0
         self.shield = 0
 
     def _initialize_graphics(self):

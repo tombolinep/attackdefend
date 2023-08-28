@@ -1,4 +1,8 @@
+import math
+
 import pygame
+
+from src.bullet import Bullet
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 
@@ -103,3 +107,7 @@ class Player(pygame.sprite.Sprite):
         self._draw_shield_rings()  # Draw shield rings on the shield surface
         self.surf.blit(self.shield_surf, (0, 0))  # Blit the shield surface onto the main surface
         screen.blit(self.surf, self.rect)  # Draw the main surface on the screen
+
+    def shoot(self):
+        new_bullet = Bullet(self.rect.centerx, self.rect.top)
+        return new_bullet

@@ -3,6 +3,7 @@ import random
 import math
 
 from src.audio import Audio
+from src.bullet import Bullet
 from src.button import Button
 from src.player import Player
 from src.enemy import Enemy
@@ -33,6 +34,7 @@ class Game:
         self.enemies = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
         self.running = True
         self.score = 0
@@ -52,6 +54,9 @@ class Game:
 
         self.ADDCOIN = pygame.USEREVENT + 3
         pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
+
+        self.SHOOT = pygame.USEREVENT + 4
+        pygame.time.set_timer(self.SHOOT, 1000)  # Fire every second
 
     def initialize_music(self):
         self.audio_manager = Audio()
@@ -118,6 +123,8 @@ class Game:
                 elif self.shop_button.is_hovered(pygame.mouse.get_pos()):
                     self.paused = True
                     self.open_shop()
+            elif event.type == self.SHOOT:
+                self.shoot_bullet()
 
     def add_entity(self):
         if random.random() < 0.8:
@@ -187,6 +194,7 @@ class Game:
         self.powerups.update()
         self.coins.update()
         self.player.draw(self.screen)
+        self.bullets.update()  # Add this line
 
     def check_collisions(self):
         colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies,
@@ -201,6 +209,11 @@ class Game:
         colliding_coin = pygame.sprite.spritecollideany(self.player, self.coins)
         if colliding_coin:
             self.handle_coin_collision(colliding_coin)
+
+        colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
+        for enemy_list in colliding_bullet_enemy.values():
+            for enemy in enemy_list:
+                enemy.kill()
 
     def handle_enemy_collision(self, enemy):
         if self.player.get_shield() > 0:
@@ -321,6 +334,27 @@ class Game:
             close_button.draw(self.screen)
             pygame.display.flip()
             self.clock.tick(30)
+
+    def shoot_bullet(self):
+        closest_enemy = None
+        closest_distance = float('inf')  # Initialize with a large value
+        for enemy in self.enemies:
+            distance = math.sqrt(
+                (enemy.rect.centerx - self.player.rect.centerx) ** 2 +
+                (enemy.rect.centery - self.player.rect.centery) ** 2
+            )
+            if distance < closest_distance:
+                closest_enemy = enemy
+                closest_distance = distance
+
+        if closest_enemy:
+            new_bullet = Bullet(
+                self.player.rect.centerx,
+                self.player.rect.centery,
+                closest_enemy
+            )
+            self.bullets.add(new_bullet)
+            self.all_sprites.add(new_bullet)
 
 
 if __name__ == "__main__":

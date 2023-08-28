@@ -56,7 +56,7 @@ class Game:
         pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
 
         self.SHOOT = pygame.USEREVENT + 4
-        pygame.time.set_timer(self.SHOOT, 1000)  # Fire every second
+        pygame.time.set_timer(self.SHOOT, 4200)  # Fire every second
 
     def initialize_music(self):
         self.audio_manager = Audio()
@@ -127,7 +127,7 @@ class Game:
                 self.shoot_bullet()
 
     def add_entity(self):
-        if random.random() < 0.8:
+        if random.random() < 0.1:
             enemy_type = "red"
         else:
             enemy_type = "white"

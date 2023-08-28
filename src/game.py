@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 
+from src.audio import Audio
 from src.button import Button
 from src.utils import resource_path
 from pygame import mixer
@@ -55,12 +56,8 @@ class Game:
         pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
 
     def initialize_music(self):
-        mixer.init()
-        self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
-        self.death_sound = pygame.mixer.Sound('assets/dead.mp3')
-        self.powerup_sound = pygame.mixer.Sound('assets/powerup.mp3')
-        self.coin_sound = pygame.mixer.Sound('assets/coin.mp3')
-        self.bg_music.set_volume(0.1)
+        self.audio_manager = Audio()
+        self.audio_manager.bg_music.set_volume(0.1)
 
     def initialize_ui_elements(self):
         self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", (150, 150, 150), (200, 200, 200))
@@ -88,7 +85,7 @@ class Game:
         return Shop(shop_window_x, shop_window_y, shop_window_width, shop_window_height, shop_items)
 
     def run(self):
-        self.bg_music.play(-1)
+        self.audio_manager.bg_music.play(-1)
         while self.running:
             self.handle_events()
             if not self.paused:
@@ -212,7 +209,7 @@ class Game:
             for enemy in self.enemies:
                 enemy.speed_up_temporarily()
         else:
-            self.death_sound.play()
+            self.audio_manager.death_sound.play()
             should_restart = Display.display_game_over(self.screen)
             if should_restart:
                 self.reset_game()
@@ -220,7 +217,7 @@ class Game:
                 self.running = False
 
     def handle_powerup_collision(self, powerup):
-        self.powerup_sound.play()
+        self.audio_manager.powerup_sound.play()
         powerup.apply_powerup(self.enemies)
         powerup.kill()
         self.display_nice_text = True
@@ -228,7 +225,7 @@ class Game:
         self.nice_text_position = powerup.rect.center
 
     def handle_coin_collision(self, coin):
-        self.coin_sound.play()
+        self.audio_manager.coin_sound.play()
         self.player.add_coin()
         coin.kill()
 
@@ -253,7 +250,7 @@ class Game:
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL  # Reset power-up timer
 
     def quit_game(self):
-        self.bg_music.stop()
+        self.audio_manager.bg_music.stop()
         pygame.quit()
 
     def pause_timers(self):

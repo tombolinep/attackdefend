@@ -312,7 +312,10 @@ class Game:
                         powerup_type, purchase_successful = self.shop.handle_click(pygame.mouse.get_pos(),
                                                                                    self.player)
                         if powerup_type and purchase_successful:
+                            self.audio_manager.play_purchase_success_sound()
                             self.handle_purchase(powerup_type)
+                        else:
+                            self.audio_manager.play_purchase_error_sound()
             self.shop.draw(self.screen, self.player)
             close_button.draw(self.screen)
             pygame.display.flip()

@@ -65,8 +65,8 @@ class Shop:
                 self.buy_message_position = (buy_box_rect.centerx, buy_box_rect.y - 30)
                 self.buy_message_end_time = time.time() + BOUGHT_MESSAGE_DURATION
 
-                if self.can_afford_item(tile.title, player):
-                    self.purchase_successful = self.buy_item(tile.title, player)
+                # Only attempt to buy the item, and set the success flag based on the result.
+                self.purchase_successful = self.buy_item(tile.title, player)
 
                 self.selected_tile_index = self.tiles.index(tile)
                 return tile.title, self.purchase_successful

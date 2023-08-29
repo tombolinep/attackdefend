@@ -1,4 +1,4 @@
-class ShopModel:
+class Shop:
     def __init__(self, shop_items):
         self.shop_items = [
             {"title": "Speed Boost", "description": "Increases player speed", "price": 5},

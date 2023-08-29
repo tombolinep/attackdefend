@@ -1,4 +1,4 @@
-# button.py
+# button_view.py
 
 import pygame
 
@@ -20,7 +20,7 @@ class Button:
         if event.type == pygame.MOUSEBUTTONDOWN:
             return self.is_hovered(pygame.mouse.get_pos())
         return False
-    
+
     def draw(self, screen):
         mouse_pos = pygame.mouse.get_pos()
         if self.is_hovered(mouse_pos):

@@ -4,7 +4,7 @@ from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WI
 from src.model.bullet import Bullet
 
 
-class PlayerModel:
+class Player:
     def __init__(self):
         self.speed = 7
         self.coins = 0
@@ -29,7 +29,7 @@ class PlayerModel:
     def remove_shield(self):
         if self.shield > 0:
             self.shield -= 1
-            
+
     def get_shield(self):
         return self.shield
 

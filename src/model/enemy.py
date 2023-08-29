@@ -1,28 +1,28 @@
 import pygame
 import random
-
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
 from src.model.player import Player
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, score, type="white"):
-        super(Enemy, self).__init__()
-        self.type = type
+    def __init__(self, score, enemy_type="white"):
+        super().__init__()
+        self.type = enemy_type
         self.surf = pygame.Surface((20, 10))
         if self.type == "red":
             self.surf.fill((255, 0, 0))  # Red color
         else:
             self.surf.fill((255, 255, 255))  # Default to white color
 
-        base_speed = random.randint(1, 2)
-        increment = score // 440  # Increase speed for every 100 points in the score
-        adjusted_speed = base_speed + increment
-        self.speed = min(adjusted_speed, 12)  # Adjust the maximum speed here
+        self.base_speed = random.randint(1, 2)
+        self.adjusted_speed = self.base_speed + score // 440
+        self.speed = min(self.adjusted_speed, 12)
 
-        # Choose a side from which the enemy should spawn: 0 = top, 1 = right, 2 = bottom, 3 = left
+        self.initial_position()
+        self.speedup_timer = pygame.time.get_ticks()
+
+    def initial_position(self):
         side = random.randint(0, 3)
-
         if side == 0:  # top
             self.rect = self.surf.get_rect(center=(random.randint(STATS_WIDTH, SCREEN_WIDTH), -10))
             self.dx, self.dy = 0, self.speed
@@ -35,9 +35,6 @@ class Enemy(pygame.sprite.Sprite):
         else:  # left
             self.rect = self.surf.get_rect(center=(STATS_WIDTH - 10, random.randint(0, SCREEN_HEIGHT)))
             self.dx, self.dy = self.speed, 0
-
-        self.initial_speed = self.speed
-        self.speedup_timer = pygame.time.get_ticks()
 
     def update(self, player_center=None):
         if self.type == "red" and player_center:
@@ -59,6 +56,6 @@ class Enemy(pygame.sprite.Sprite):
                 self.rect.y += dy * self.speed
         else:
             self.rect.move_ip(self.dx, self.dy)
-        if (self.rect.right < STATS_WIDTH or self.rect.left > STATS_WIDTH + MAIN_GAME_WIDTH or
+        if (self.rect.right < STATS_WIDTH or self.rect.left > SCREEN_WIDTH or
                 self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT):
             self.kill()

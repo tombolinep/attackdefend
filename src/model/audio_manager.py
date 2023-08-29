@@ -16,7 +16,6 @@ class Audio:
         self.purchase_success_sound = mixer.Sound(resource_path('../assets/purchase_success.wav'))
         self.purchase_error_sound.set_volume(0.6)
 
-        # Setting the volume for all the sound effects
         sound_effects = [
             self.bg_music,
             self.death_sound,
@@ -26,9 +25,8 @@ class Audio:
             self.purchase_success_sound
         ]
         for sound in sound_effects:
-            sound.set_volume(0.1)  # Setting the volume to 0.2 for all sound files
+            sound.set_volume(0.1)
 
-    # The existing methods to play the respective sounds
     def play_bg_music(self):
         self.bg_music.play(-1)
 
@@ -44,7 +42,6 @@ class Audio:
     def play_coin_sound(self):
         self.coin_sound.play()
 
-    # New method to play the shield hit sound
     def play_shield_hit_sound(self):
         self.shield_hit_sound.play()
 

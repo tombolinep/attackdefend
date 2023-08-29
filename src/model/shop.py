@@ -1,5 +1,5 @@
 import pygame
-from src.shoptile import ShopTile, EXTERNAL_MARGIN, INTERNAL_MARGIN
+from src.model.shoptile import ShopTile, EXTERNAL_MARGIN, INTERNAL_MARGIN
 import time
 
 BACKGROUND_COLOR = (50, 50, 50)

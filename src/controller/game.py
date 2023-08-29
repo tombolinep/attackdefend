@@ -2,17 +2,17 @@ import pygame
 import random
 import math
 
-from src.audio import Audio
-from src.bullet import Bullet
-from src.button import Button
-from src.player import Player
-from src.enemy import Enemy
-from src.powerup import PowerUp
-from src.display import Display
+from src.model.audio import Audio
+from src.model.bullet import Bullet
+from src.view.button import Button
+from src.model.player import Player
+from src.model.enemy import Enemy
+from src.model.powerup import PowerUp
+from src.view.display import Display
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, \
     MAIN_GAME_WIDTH, POWERUP_INTERVAL, COIN_INTERVAL
-from src.shop import Shop
-from src.coin import Coin
+from src.model.shop import Shop
+from src.model.coin import Coin
 
 
 class Game:

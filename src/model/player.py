@@ -1,8 +1,6 @@
-import math
-
 import pygame
 
-from src.bullet import Bullet
+from src.model.bullet import Bullet
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 

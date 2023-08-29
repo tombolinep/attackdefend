@@ -7,13 +7,13 @@ class Audio:
         mixer.init()
 
         # Loading all the sound effects
-        self.bg_music = mixer.Sound(resource_path('assets/tweakin.mp3'))
-        self.death_sound = mixer.Sound(resource_path('assets/dead.mp3'))
-        self.powerup_sound = mixer.Sound(resource_path('assets/powerup.mp3'))
-        self.coin_sound = mixer.Sound(resource_path('assets/coin.mp3'))
-        self.shield_hit_sound = mixer.Sound(resource_path('assets/shield_hit.mp3'))
-        self.purchase_error_sound = mixer.Sound(resource_path('assets/purchase_error.wav'))
-        self.purchase_success_sound = mixer.Sound(resource_path('assets/purchase_success.wav'))
+        self.bg_music = mixer.Sound(resource_path('../assets/tweakin.mp3'))
+        self.death_sound = mixer.Sound(resource_path('../assets/dead.mp3'))
+        self.powerup_sound = mixer.Sound(resource_path('../assets/powerup.mp3'))
+        self.coin_sound = mixer.Sound(resource_path('../assets/coin.mp3'))
+        self.shield_hit_sound = mixer.Sound(resource_path('../assets/shield_hit.mp3'))
+        self.purchase_error_sound = mixer.Sound(resource_path('../assets/purchase_error.wav'))
+        self.purchase_success_sound = mixer.Sound(resource_path('../assets/purchase_success.wav'))
         self.purchase_error_sound.set_volume(0.6)
 
         # Setting the volume for all the sound effects

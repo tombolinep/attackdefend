@@ -2,7 +2,7 @@ import pygame
 import random
 
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
-from src.player import Player
+from src.model.player import Player
 
 
 class Enemy(pygame.sprite.Sprite):

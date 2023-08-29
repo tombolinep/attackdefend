@@ -4,12 +4,17 @@ from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WI
 from src.model.bullet import Bullet
 
 
-class Player:
-    def __init__(self):
+class Player(pygame.sprite.Sprite):
+    def __init__(self, view=None):
+        super().__init__()
+        self.view = view
         self.speed = 7
         self.coins = 0
         self.shield = 0
-        self.rect = Rect(STATS_WIDTH + MAIN_GAME_WIDTH // 2, SCREEN_HEIGHT // 2, 50, 50)
+        # Create a basic sprite
+        self.image = pygame.Surface([50, 50])
+        self.image.fill((255, 0, 0))
+        self.rect = self.image.get_rect()
 
     def add_coin(self, amount=1):
         self.coins += amount
@@ -42,3 +47,7 @@ class Player:
     def shoot(self):
         new_bullet = Bullet(self.rect.centerx, self.rect.top)
         return new_bullet
+
+    def update(self):
+        if self.view:
+            self.view.update_shield()

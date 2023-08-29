@@ -2,5 +2,6 @@ class EnemyController:
     def __init__(self, model):
         self.model = model
 
-    def update(self, player_center=None):
-        self.model.update_position()
+    def update(self):
+        for enemy in self.model.sprites():
+            enemy.update_position()

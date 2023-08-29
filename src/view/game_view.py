@@ -3,7 +3,7 @@ from pygame.locals import KEYDOWN, QUIT
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 
 
-class Display:
+class GameView:
     @staticmethod
     def display_stats(screen, score, player_speed, average_enemy_speed, next_powerup_time, player_coins):
         font = pygame.font.SysFont(None, 36)
@@ -58,3 +58,9 @@ class Display:
         font = pygame.font.Font(None, size)
         text_surface = font.render(text, True, color)
         return text_surface
+
+    def draw_all(self, screen):
+        self.player_view.draw(screen)
+
+    def set_player_view(self, player_view):
+        self.player_view = player_view

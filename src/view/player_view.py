@@ -7,8 +7,8 @@ class PlayerView:
 
     def __init__(self, model):
         self.model = model
-        self._initialize_graphics()
         self.SHIELD_COLORS = [(205, 127, 50), (192, 192, 192), (255, 223, 0), (0, 255, 255)]
+        self._initialize_graphics()
 
     def _initialize_graphics(self):
         self.diameter = 50
@@ -34,7 +34,8 @@ class PlayerView:
         self.surf.blit(self.shield_surf, (0, 0))
 
     def draw(self, screen):
-        screen.blit(self.surf, self.model.rect)
+        # Use attributes from self.model to draw the player
+        screen.blit(self.model.image, self.model.rect)
 
     def update_shield(self):
         if self.model.get_shield() > 0:

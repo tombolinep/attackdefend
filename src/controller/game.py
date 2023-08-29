@@ -63,28 +63,6 @@ class Game:
 
     def initialize_ui_elements(self):
         self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", (150, 150, 150), (200, 200, 200))
-        self.shop_button = Button(SCREEN_WIDTH - 150, 60, 130, 40, "Shop", (150, 150, 150), (200, 200, 200))
-        self.shop = self.create_shop_window()
-
-    def create_shop_window(self):
-        shop_window_width = MAIN_GAME_WIDTH * 0.75
-        shop_window_height = SCREEN_HEIGHT * 0.75
-        border_width = (MAIN_GAME_WIDTH - shop_window_width) / 2
-        border_height = (SCREEN_HEIGHT - shop_window_height) / 2
-        shop_window_x = STATS_WIDTH + border_width
-        shop_window_y = border_height
-        shop_items = [
-            {"title": "Speed Boost", "description": "Increases player speed", "price": 5},
-            {"title": "Shield", "description": "Protects from one enemy", "price": 5},
-            {"title": "tbd", "description": "coming soon", "price": -1},
-            {"title": "tbd", "description": "coming soon", "price": -1},
-            {"title": "tbd", "description": "coming soon", "price": -1},
-            {"title": "tbd", "description": "coming soon", "price": -1},
-            {"title": "tbd", "description": "coming soon", "price": -1},
-            {"title": "tbd", "description": "coming soon", "price": -1},
-            {"title": "tbd", "description": "coming soon", "price": -1},
-        ]
-        return Shop(shop_window_x, shop_window_y, shop_window_width, shop_window_height, shop_items)
 
     def run(self):
         self.audio_manager.play_bg_music()
@@ -98,7 +76,6 @@ class Game:
 
     def draw_ui(self):
         self.pause_button.draw(self.screen)
-        self.shop_button.draw(self.screen)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -120,8 +97,7 @@ class Game:
                     self.paused = not self.paused
                     self.pause_button.text = "Resume" if self.paused else "Pause"
                 elif self.shop_button.is_hovered(pygame.mouse.get_pos()):
-                    self.paused = True
-                    self.open_shop()
+
             elif event.type == self.SHOOT:
                 self.shoot_bullet()
 
@@ -274,13 +250,6 @@ class Game:
         pygame.time.set_timer(self.ADDPOWERUP, POWERUP_INTERVAL)
         pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
 
-    def handle_purchase(self, powerup_type):
-        print(f"Purchased {powerup_type}!")
-        self.update_stats()
-        self.bought_timer = 2 * 30  # Assuming 30 FPS, this would be 2 seconds
-        buy_box = self.shop.get_buy_box(powerup_type)  # You might need to implement the get_buy_box method
-        self.bought_message_position = (buy_box.rect.left, buy_box.rect.top - 30)  # 30 pixels above the box
-
     def update_stats(self):
         # Clear the portion of the screen where the stats are displayed
         pygame.draw.rect(self.screen, (200, 200, 200), (0, 0, STATS_WIDTH, SCREEN_HEIGHT))
@@ -295,44 +264,6 @@ class Game:
 
         # Optional: You might also want to refresh the display here
         pygame.display.flip()
-
-    def open_shop(self):
-        shop_running = True
-        close_button_x = self.shop.rect.right - 90
-        close_button_y = self.shop.rect.top + 10
-        close_button = Button(close_button_x, close_button_y, 80, 40, "Close", (150, 150, 150), (200, 200, 200))
-
-        while shop_running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    shop_running = False
-                    self.running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        shop_running = False
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if close_button.is_hovered(pygame.mouse.get_pos()):
-                        shop_running = False
-                        self.paused = False
-                    elif self.pause_button.is_hovered(pygame.mouse.get_pos()):
-                        self.paused = not self.paused
-                        self.pause_button.text = "Resume" if self.paused else "Pause"
-                        if self.paused:
-                            self.pause_timers()
-                        else:
-                            self.resume_timers()
-                    else:
-                        powerup_type, purchase_successful = self.shop.handle_click(pygame.mouse.get_pos(),
-                                                                                   self.player)
-                        if powerup_type and purchase_successful:
-                            self.audio_manager.play_purchase_success_sound()
-                            self.handle_purchase(powerup_type)
-                        else:
-                            self.audio_manager.play_purchase_error_sound()
-            self.shop.draw(self.screen, self.player)
-            close_button.draw(self.screen)
-            pygame.display.flip()
-            self.clock.tick(30)
 
     def shoot_bullet(self):
         closest_enemy = None

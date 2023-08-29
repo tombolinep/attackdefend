@@ -1,5 +1,6 @@
 import pygame
 import math
+from src.utils import resource_path
 
 from src.constants import SCREEN_HEIGHT
 
@@ -11,6 +12,8 @@ class Bullet(pygame.sprite.Sprite):
         self.surf = pygame.Surface((10, 10))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(topleft=(x, y))
+        image_path = resource_path('assets/overhead.png')
+        self.surf = pygame.image.load(image_path).convert_alpha()
 
         self.speed = 5
         self.calculate_trajectory(target)

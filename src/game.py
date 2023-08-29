@@ -18,8 +18,8 @@ from src.coin import Coin
 class Game:
     def __init__(self):
         self.initialize_pygame()
-        self.initialize_events()  # Move this line up
-        self.initialize_game_attributes()  # Initialize events first, then game attributes
+        self.initialize_events()
+        self.initialize_game_attributes()
         self.initialize_music()
         self.initialize_ui_elements()
 

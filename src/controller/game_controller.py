@@ -4,6 +4,7 @@ from src.controller.collision_controller import CollisionController
 from src.controller.enemy_controller import EnemyController
 from src.controller.player_controller import PlayerController
 from src.model.player import Player
+from src.model.powerup import PowerUp
 from src.view.player_view import PlayerView
 
 
@@ -55,6 +56,7 @@ class GameController:
         self.model.automatic_shoot()
         self.model.bullets.update()
         self.model.coins.update()
+        self.model.powerups.update()
 
     def update_and_render(self):
         self.handle_events()

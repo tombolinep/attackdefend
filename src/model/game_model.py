@@ -3,11 +3,12 @@ from math import sqrt
 
 import pygame
 from src.constants import POWERUP_INTERVAL, SCREEN_HEIGHT, BULLET_INTERVAL, \
-    SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE  # Replace with your actual constants file
+    SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE, POWERUP_SIZE  # Replace with your actual constants file
 from src.model.audio_manager import Audio
 from src.model.bullet import Bullet
 from src.model.coin import Coin
 from src.model.enemy import Enemy
+from src.model.powerup import PowerUp
 
 
 class GameModel:
@@ -38,7 +39,10 @@ class GameModel:
         self.enemies.add(enemy)
         self.all_sprites.add(enemy)
 
-    def add_powerup(self, powerup):
+    def add_powerup(self):
+        x = random.randint(STATS_WIDTH, SCREEN_WIDTH - POWERUP_SIZE)
+        y = random.randint(0, SCREEN_HEIGHT - POWERUP_SIZE)
+        powerup = PowerUp(x, y)
         self.powerups.add(powerup)
         self.all_sprites.add(powerup)
 
@@ -48,7 +52,7 @@ class GameModel:
         coin = Coin(x, y)
         self.coins.add(coin)
         self.all_sprites.add(coin)
-        
+
     def find_closest_enemy(self):
         closest_enemy = None
         closest_distance = float("inf")

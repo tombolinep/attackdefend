@@ -54,6 +54,7 @@ class GameController:
         self.collision_controller.check_collisions()
         self.model.automatic_shoot()
         self.model.bullets.update()
+        self.model.coins.update()
 
     def update_and_render(self):
         self.handle_events()

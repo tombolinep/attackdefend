@@ -11,7 +11,6 @@ class GameView:
         self.player_view = None  # Initialized to None
         self.initialize_buttons()
 
-    # Setter for player_view
     def set_player_view(self, player_view):
         self.player_view = player_view
 

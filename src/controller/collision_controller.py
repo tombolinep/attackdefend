@@ -17,16 +17,26 @@ class CollisionController:
         self.screen = screen
         self.running = model.running
 
-    def collision_circle_rectangle(self, circle_sprite, rectangle_sprite):
-        dx = circle_sprite.rect.centerx - rectangle_sprite.rect.centerx
-        dy = circle_sprite.rect.centery - rectangle_sprite.rect.centery
+    def collision_circle_rectangle(self, circle, rect):
+        circle_distance_x = abs(circle.x - rect.x - rect.width // 2)
+        circle_distance_y = abs(circle.y - rect.y - rect.height // 2)
 
-        closest_x = max(rectangle_sprite.rect.left, min(circle_sprite.rect.centerx, rectangle_sprite.rect.right))
-        closest_y = max(rectangle_sprite.rect.top, min(circle_sprite.rect.centery, rectangle_sprite.rect.bottom))
-        dist_x = circle_sprite.rect.centerx - closest_x
-        dist_y = circle_sprite.rect.centery - closest_y
+        # If the circle and rectangle are far enough apart to not overlap, return False
+        if circle_distance_x > (rect.width // 2 + circle.diameter // 2):
+            return False
+        if circle_distance_y > (rect.height // 2 + circle.diameter // 2):
+            return False
 
-        return math.sqrt(dist_x ** 2 + dist_y ** 2) < circle_sprite.diameter / 2
+        # If the circle's center is inside the rectangle, then they are colliding
+        if circle_distance_x <= (rect.width // 2):
+            return True
+        if circle_distance_y <= (rect.height // 2):
+            return True
+
+        # Check for collision at rectangle corner.
+        corner_distance_sq = (circle_distance_x - rect.width // 2) ** 2 + (circle_distance_y - rect.height // 2) ** 2
+
+        return corner_distance_sq <= (circle.diameter // 2) ** 2
 
     def handle_enemy_collision(self, enemy):
         if self.player.get_shield() > 0:
@@ -52,18 +62,17 @@ class CollisionController:
         coin.kill()
 
     def check_collisions(self):
-        colliding_enemy = pygame.sprite.spritecollideany(self.player, self.enemies,
-                                                         collided=self.collision_circle_rectangle)
-        if colliding_enemy:
-            self.handle_enemy_collision(colliding_enemy)
+        for enemy in self.enemies:
+            if self.collision_circle_rectangle(self.player, enemy.rect):
+                self.handle_enemy_collision(enemy)
 
-        colliding_powerup = pygame.sprite.spritecollideany(self.player, self.powerups)
-        if colliding_powerup:
-            self.handle_powerup_collision(colliding_powerup)
+        for powerup in self.powerups:
+            if self.collision_circle_rectangle(self.player, powerup.rect):
+                self.handle_powerup_collision(powerup)
 
-        colliding_coin = pygame.sprite.spritecollideany(self.player, self.coins)
-        if colliding_coin:
-            self.handle_coin_collision(colliding_coin)
+        for coin in self.coins:
+            if self.collision_circle_rectangle(self.player, coin.rect):
+                self.handle_coin_collision(coin)
 
         colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for enemy_list in colliding_bullet_enemy.values():

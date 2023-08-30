@@ -7,13 +7,15 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, view=None):
         super().__init__()
         self.view = view
+        self.color = (0, 0, 255)
         self.speed = 7
         self.coins = 0
         self.shield = 0
         self.diameter = PLAYER_DIAMETER
         self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
         self.y = SCREEN_HEIGHT // 2
-        self.rect = pygame.Rect(self.x, self.y, self.diameter, self.diameter)
+        self.radius = self.diameter // 2
+        self.center = (self.x + self.radius, self.y + self.radius)
 
     def add_coin(self, amount=1):
         self.coins += amount
@@ -48,9 +50,6 @@ class Player(pygame.sprite.Sprite):
         return new_bullet
 
     def update(self):
-        # Update rect for collision detection
-        self.rect.x = self.x
-        self.rect.y = self.y
-        # Update the view if it exists
+        self.center = (self.x + self.radius, self.y + self.radius)
         if self.view:
             self.view.update_shield()

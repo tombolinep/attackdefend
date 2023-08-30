@@ -53,13 +53,20 @@ class GameModel:
         self.coins.add(coin)
         self.all_sprites.add(coin)
 
+    def add_bullet(self, bullet):
+        self.bullets.add(bullet)
+        self.all_sprites.add(bullet)
+
+    def increment_score(self):
+        self.score += 1
+
     def find_closest_enemy(self):
         closest_enemy = None
         closest_distance = float("inf")
 
         for enemy in self.enemies:
-            dx = enemy.rect.x - self.player.rect.x
-            dy = enemy.rect.y - self.player.rect.y
+            dx = enemy.rect.x - self.player.x
+            dy = enemy.rect.y - self.player.y
             distance = sqrt(dx ** 2 + dy ** 2)
 
             if distance < closest_distance:
@@ -69,12 +76,16 @@ class GameModel:
         return closest_enemy
 
     def calculate_target(self, closest_enemy):
-        dx = closest_enemy.rect.x - self.player.rect.x
-        dy = closest_enemy.rect.y - self.player.rect.y
+        dx = closest_enemy.rect.x - self.player.x
+        dy = closest_enemy.rect.y - self.player.y
+
+        if dy == 0:  # Add this check to avoid division by zero
+            dy = 1  # or some small value to prevent division by zero
+
         scale = SCREEN_HEIGHT / abs(dy)
 
-        target_x = self.player.rect.x + dx * scale
-        target_y = self.player.rect.y + dy * scale
+        target_x = self.player.x + dx * scale
+        target_y = self.player.y + dy * scale
 
         return target_x, target_y
 
@@ -83,17 +94,9 @@ class GameModel:
         if current_time >= self.next_bullet_time:
             closest_enemy = self.find_closest_enemy()
 
-            if closest_enemy:
+            if closest_enemy:  # Check for None here
                 target_x, target_y = self.calculate_target(closest_enemy)
-                bullet = Bullet(self.player.rect.x, self.player.rect.y, target_x, target_y)
+                bullet = Bullet(self.player.x, self.player.y, target_x, target_y)
                 self.add_bullet(bullet)
 
-            # Reset the timer
             self.next_bullet_time = current_time + BULLET_INTERVAL
-
-    def add_bullet(self, bullet):
-        self.bullets.add(bullet)
-        self.all_sprites.add(bullet)
-
-    def increment_score(self):
-        self.score += 1

@@ -1,6 +1,5 @@
 import pygame
-
-from src.constants import STATS_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, MAIN_GAME_WIDTH
+from src.constants import STATS_WIDTH, SCREEN_HEIGHT, MAIN_GAME_WIDTH
 
 
 class PlayerController:
@@ -11,21 +10,25 @@ class PlayerController:
     def update(self, pressed_keys):
         self._handle_movement(pressed_keys)
         self._keep_within_boundaries()
+        self.model.update()  # Make sure to update the model to calculate the new center
 
     def _handle_movement(self, pressed_keys):
+        dx, dy = 0, 0
         if pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]:
-            self.model.rect.move_ip(0, -self.model.speed)
+            dy = -self.model.speed
         if pressed_keys[pygame.K_DOWN] or pressed_keys[pygame.K_s]:
-            self.model.rect.move_ip(0, self.model.speed)
+            dy = self.model.speed
         if pressed_keys[pygame.K_LEFT] or pressed_keys[pygame.K_a]:
-            self.model.rect.move_ip(-self.model.speed, 0)
+            dx = -self.model.speed
         if pressed_keys[pygame.K_RIGHT] or pressed_keys[pygame.K_d]:
-            self.model.rect.move_ip(self.model.speed, 0)
-        self.model.x = self.model.rect.x
-        self.model.y = self.model.rect.y
+            dx = self.model.speed
+
+        # Update x and y in the model
+        self.model.x += dx
+        self.model.y += dy
 
     def _keep_within_boundaries(self):
-        self.model.rect.x = max(self.model.rect.x, STATS_WIDTH)
-        self.model.rect.x = min(self.model.rect.x, STATS_WIDTH + MAIN_GAME_WIDTH - self.model.rect.width)
-        self.model.rect.y = max(self.model.rect.y, 0)
-        self.model.rect.y = min(self.model.rect.y, SCREEN_HEIGHT - self.model.rect.height)
+        self.model.x = max(self.model.x, STATS_WIDTH)
+        self.model.x = min(self.model.x, STATS_WIDTH + MAIN_GAME_WIDTH - self.model.diameter)
+        self.model.y = max(self.model.y, 0)
+        self.model.y = min(self.model.y, SCREEN_HEIGHT - self.model.diameter)

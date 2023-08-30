@@ -1,6 +1,5 @@
 import pygame
-from pygame import Rect
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
+from src.constants import PLAYER_DIAMETER, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT
 from src.model.bullet import Bullet
 
 
@@ -11,10 +10,10 @@ class Player(pygame.sprite.Sprite):
         self.speed = 7
         self.coins = 0
         self.shield = 0
-        # Create a basic sprite
-        self.image = pygame.Surface([50, 50])
-        self.image.fill((255, 0, 0))
-        self.rect = self.image.get_rect()
+        self.diameter = PLAYER_DIAMETER
+        self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
+        self.y = SCREEN_HEIGHT // 2
+        self.rect = pygame.Rect(self.x, self.y, self.diameter, self.diameter)
 
     def add_coin(self, amount=1):
         self.coins += amount
@@ -25,7 +24,7 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
 
-    def increase_speed(self, increment=2):  # Increment can be adjusted based on your game's needs
+    def increase_speed(self, increment=2):
         self.speed += increment
 
     def add_shield(self):
@@ -49,5 +48,9 @@ class Player(pygame.sprite.Sprite):
         return new_bullet
 
     def update(self):
+        # Update rect for collision detection
+        self.rect.x = self.x
+        self.rect.y = self.y
+        # Update the view if it exists
         if self.view:
             self.view.update_shield()

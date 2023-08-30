@@ -36,7 +36,7 @@ class Enemy(pygame.sprite.Sprite):
             self.rect = self.surf.get_rect(center=(STATS_WIDTH - 10, random.randint(0, SCREEN_HEIGHT)))
             self.dx, self.dy = self.speed, 0
 
-    def update(self, player_center=None):
+    def update_position(self, player_center=None):
         if self.type == "red" and player_center:
             shield_space = len(Player.SHIELD_COLORS) * 5
             adjusted_player_center = (player_center[0] + shield_space, player_center[1] + shield_space)

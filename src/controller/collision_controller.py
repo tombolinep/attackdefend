@@ -45,9 +45,6 @@ class CollisionController:
         self.audio_manager.play_powerup_sound()
         powerup.apply_powerup(self.enemies)
         powerup.kill()
-        self.display_nice_text = True
-        self.nice_text_timer = pygame.time.get_ticks()
-        self.nice_text_position = powerup.rect.center
 
     def handle_coin_collision(self, coin):
         self.audio_manager.play_coin_sound()

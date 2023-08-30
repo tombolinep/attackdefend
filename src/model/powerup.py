@@ -3,7 +3,6 @@ import pygame
 
 class PowerUp:
     def __init__(self):
-        self.nice_text = None
         self.current_color_index = 0
         self.color_change_interval = 300
         self.last_color_change_time = pygame.time.get_ticks()

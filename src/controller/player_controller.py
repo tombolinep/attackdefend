@@ -1,6 +1,6 @@
 import pygame
 
-from src.constants import STATS_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH
+from src.constants import STATS_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, MAIN_GAME_WIDTH
 
 
 class PlayerController:
@@ -21,13 +21,11 @@ class PlayerController:
             self.model.rect.move_ip(-self.model.speed, 0)
         if pressed_keys[pygame.K_RIGHT] or pressed_keys[pygame.K_d]:
             self.model.rect.move_ip(self.model.speed, 0)
+        self.model.x = self.model.rect.x
+        self.model.y = self.model.rect.y
 
     def _keep_within_boundaries(self):
-        self.model.rect.left = max(self.model.rect.left, STATS_WIDTH)
-        self.model.rect.right = min(self.model.rect.right, SCREEN_WIDTH)
-        self.model.rect.top = max(self.model.rect.top, 0)
-        self.model.rect.bottom = min(self.model.rect.bottom, SCREEN_HEIGHT)
-
-    def update(self, pressed_keys):
-        self._handle_movement(pressed_keys)
-        self._keep_within_boundaries()
+        self.model.rect.x = max(self.model.rect.x, STATS_WIDTH)
+        self.model.rect.x = min(self.model.rect.x, STATS_WIDTH + MAIN_GAME_WIDTH - self.model.rect.width)
+        self.model.rect.y = max(self.model.rect.y, 0)
+        self.model.rect.y = min(self.model.rect.y, SCREEN_HEIGHT - self.model.rect.height)

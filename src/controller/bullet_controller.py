@@ -10,5 +10,6 @@ class BulletController:
         self.model.rect.y += self.model.dy * self.model.speed
 
         if self.model.rect.bottom < 0 or self.model.rect.top > SCREEN_HEIGHT:
+            self.model.kill()  # Assumes Bullet is a pygame.sprite.Sprite subclass
             return "kill"
         return None

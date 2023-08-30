@@ -73,6 +73,6 @@ class GameView:
     def calculate_average_enemy_speed(enemies):
         if len(enemies) > 0:
             total_enemy_speed = sum(enemy.speed for enemy in enemies)
-            return total_enemy_speed / len(enemies)
+            return round(total_enemy_speed / len(enemies), 2)
         else:
             return 0

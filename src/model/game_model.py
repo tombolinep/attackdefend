@@ -25,9 +25,30 @@ class GameModel:
         self.all_sprites = pygame.sprite.Group()
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
+        self.game_over = False
 
     def stop_game(self):
         self.running = False
+
+    def set_game_over(self, game_over):
+        self.game_over = game_over
+
+    def reset_game(self):
+        # Clear sprite groups
+        self.enemies.empty()
+        self.powerups.empty()
+        self.coins.empty()
+        self.bullets.empty()
+
+        # Re-add player to all_sprites
+        self.all_sprites.empty()
+        self.all_sprites.add(self.player)
+
+        # Reset game-related variables
+        self.score = 0
+        self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
+        self.running = True
+        self.game_over = False
 
     def set_player(self, player):
         self.player = player
@@ -100,3 +121,16 @@ class GameModel:
                 self.add_bullet(bullet)
 
             self.next_bullet_time = current_time + BULLET_INTERVAL
+
+    @staticmethod
+    def calculate_time_until_powerup(next_powerup_time):
+        current_time = pygame.time.get_ticks()
+        return max(0, (next_powerup_time - current_time) // 1000)  # Convert to seconds
+
+    @staticmethod
+    def calculate_average_enemy_speed(enemies):
+        if len(enemies) > 0:
+            total_enemy_speed = sum(enemy.speed for enemy in enemies)
+            return round(total_enemy_speed / len(enemies), 2)
+        else:
+            return 0

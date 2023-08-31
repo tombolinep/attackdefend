@@ -45,11 +45,7 @@ class CollisionController:
             enemy.kill()
         else:
             self.audio_manager.play_death_sound()
-            should_restart = GameView.display_game_over(self.screen)
-            if should_restart:
-                self.reset_game()
-            else:
-                self.running = False
+            self.model.set_game_over(True)
 
     def handle_powerup_collision(self, powerup):
         self.audio_manager.play_powerup_sound()

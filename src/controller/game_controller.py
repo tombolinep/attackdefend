@@ -1,4 +1,5 @@
 import pygame
+from pygame import KEYDOWN, K_r, K_q, K_ESCAPE, QUIT
 
 from src.controller.collision_controller import CollisionController
 from src.controller.enemy_controller import EnemyController
@@ -63,3 +64,13 @@ class GameController:
         if not self.model.paused:
             self.update_game()
         self.view.render(self.model)
+
+    def handle_game_over(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:  # Retry
+                    self.model.reset_game()
+                elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:  # Quit
+                    self.model.running = False
+            elif event.type == pygame.QUIT:
+                self.model.running = False

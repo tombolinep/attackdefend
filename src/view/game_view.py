@@ -1,5 +1,5 @@
 import pygame
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 from src.view.button_view import Button
 
 
@@ -56,23 +56,27 @@ class GameView:
             ("Score:", int(model.score)),
             ("Your speed:", model.player.speed),
             ("Coins:", model.player.coins),
-            ("Power-Up Timer:", self.calculate_time_until_powerup(model.next_powerup_time)),
-            ("Average enemy speed:", self.calculate_average_enemy_speed(model.enemies))
+            ("Power-Up Timer:", model.calculate_time_until_powerup(model.next_powerup_time)),
+            ("Average enemy speed:", model.calculate_average_enemy_speed(model.enemies))
         ]
 
         for i, (text, value) in enumerate(stats):
             stat_surface = self.font.render(f"{text} {value}", True, (0, 0, 0))
             self.screen.blit(stat_surface, (10, 10 + i * 30))
 
-    @staticmethod
-    def calculate_time_until_powerup(next_powerup_time):
-        current_time = pygame.time.get_ticks()
-        return max(0, (next_powerup_time - current_time) // 1000)  # Convert to seconds
+    def display_game_over(self):
+        font = pygame.font.Font(None, 74)
+        text_surface = font.render('Game Over', True, (255, 0, 0))
 
-    @staticmethod
-    def calculate_average_enemy_speed(enemies):
-        if len(enemies) > 0:
-            total_enemy_speed = sum(enemy.speed for enemy in enemies)
-            return round(total_enemy_speed / len(enemies), 2)
-        else:
-            return 0
+        text_rect = text_surface.get_rect(center=(STATS_WIDTH + MAIN_GAME_WIDTH / 2, SCREEN_HEIGHT / 2 - 50))
+
+        instruction_font = pygame.font.Font(None, 36)
+        instruction_surface = instruction_font.render('Press R to Retry or Q to Quit', True, (255, 255, 255))
+
+        instruction_rect = instruction_surface.get_rect(
+            center=(STATS_WIDTH + MAIN_GAME_WIDTH / 2, SCREEN_HEIGHT / 2 + 50))
+
+        self.screen.blit(text_surface, text_rect)
+        self.screen.blit(instruction_surface, instruction_rect)
+
+        pygame.display.flip()

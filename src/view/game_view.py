@@ -16,7 +16,7 @@ class GameView:
 
     def render(self, model):
         self.clear_screen()
-        self.render_ui()
+        self.render_ui(model)
 
         # Render player
         if self.player_view:
@@ -29,10 +29,16 @@ class GameView:
     def clear_screen(self):
         self.screen.fill((0, 0, 0))
 
-    def render_ui(self):
+    def render_ui(self, model):
         pygame.draw.rect(self.screen, (200, 200, 200), (0, 0, STATS_WIDTH, SCREEN_HEIGHT))
+        self.update_button_texts(model)
         for button in self.buttons:
             self.draw_button(button)
+
+    def update_button_texts(self, model):
+        for button in self.buttons:
+            if button.text == "Pause" or button.text == "Resume":
+                button.text = "Resume" if model.paused else "Pause"
 
     def draw_button(self, button):
         button_rect = button.rect

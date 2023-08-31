@@ -21,14 +21,8 @@ def main():
     controller = GameController(model, view, screen, event_dispatcher, time_manager)
 
     while model.running:
-        if model.game_over:
-            controller.handle_game_over()
-            view.display_game_over()
-            pygame.display.flip()
-        else:
-            controller.handle_events()
-            controller.update_and_render()
-
+        controller.handle_events()
+        controller.update_and_render()  # This now includes rendering even when paused
         clock.tick(60)
 
     pygame.quit()

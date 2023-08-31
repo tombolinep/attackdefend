@@ -5,7 +5,6 @@ from src.controller.collision_controller import CollisionController
 from src.controller.enemy_controller import EnemyController
 from src.controller.player_controller import PlayerController
 from src.model.player import Player
-from src.model.powerup import PowerUp
 from src.view.player_view import PlayerView
 
 
@@ -19,6 +18,8 @@ class GameController:
         self.initialize_game()
         self.enemy_controller = EnemyController(model.enemies)
         self.collision_controller = CollisionController(model, screen)
+        self.event_dispatcher.view = view
+        self.event_dispatcher.add_listener("pause_game", self.toggle_pause)
 
     def initialize_game(self):
         player = Player()
@@ -44,7 +45,8 @@ class GameController:
             elif event.type == self.time_manager.ADDPOWERUP:
                 self.model.add_powerup()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.event_dispatcher.handle_event(event)
+                mouse_pos = event.pos
+                self.check_buttons(mouse_pos)
             elif event.type == self.time_manager.SHOOT:
                 self.model.automatic_shoot()
 
@@ -60,9 +62,11 @@ class GameController:
         self.model.powerups.update()
 
     def update_and_render(self):
-        self.handle_events()
         if not self.model.paused:
-            self.update_game()
+            self.update_game()  # Update game state only if not paused
+            self.render()  # Always render the view
+
+    def render(self):
         self.view.render(self.model)
 
     def handle_game_over(self):
@@ -74,3 +78,14 @@ class GameController:
                     self.model.running = False
             elif event.type == pygame.QUIT:
                 self.model.running = False
+
+    def toggle_pause(self, data=None):
+        self.model.paused = not self.model.paused
+
+    def check_buttons(self, mouse_pos):
+        for button in self.view.buttons:
+            if button.rect.collidepoint(mouse_pos):
+                if button.text == "Pause":
+                    self.event_dispatcher.dispatch_event("pause_game", {})
+                elif button.text == "Shop":
+                    pass  # Handle Shop logic

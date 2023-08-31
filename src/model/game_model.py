@@ -33,6 +33,12 @@ class GameModel:
     def set_game_over(self, game_over):
         self.game_over = game_over
 
+    def toggle_pause(self):
+        self.paused = not self.paused
+
+    def set_pause(self, pause_state):
+        self.paused = pause_state
+
     def reset_game(self):
         # Clear sprite groups
         self.enemies.empty()

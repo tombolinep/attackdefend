@@ -4,8 +4,11 @@ from pygame import KEYDOWN, K_r, K_q, K_ESCAPE, QUIT
 from src.controller.collision_controller import CollisionController
 from src.controller.enemy_controller import EnemyController
 from src.controller.player_controller import PlayerController
+from src.controller.shop_controller import ShopController
 from src.model.player import Player
+from src.model.shop import Shop
 from src.view.player_view import PlayerView
+from src.view.shop_view import ShopView
 
 
 class GameController:
@@ -20,6 +23,7 @@ class GameController:
         self.collision_controller = CollisionController(model, screen)
         self.event_dispatcher.view = view
         self.event_dispatcher.add_listener("pause_game", self.toggle_pause)
+        self.event_dispatcher.add_listener("open_shop", self.open_shop)
 
     def initialize_game(self):
         player = Player()
@@ -88,4 +92,11 @@ class GameController:
                 if button.text == "Pause":
                     self.event_dispatcher.dispatch_event("pause_game", {})
                 elif button.text == "Shop":
-                    pass  # Handle Shop logic
+                    self.event_dispatcher.dispatch_event("open_shop", {})
+
+    def open_shop(self, data=None):
+        shop_model = Shop()
+        shop_view = ShopView(shop_model, self)  # pass in 'self' as GameController object
+        shop_controller = ShopController(shop_model, shop_view, self.screen, self.event_dispatcher)
+
+        powerup_type = shop_controller.open_shop(self.model.player)

@@ -3,7 +3,7 @@ from math import sqrt
 
 import pygame
 from src.constants import POWERUP_INTERVAL, SCREEN_HEIGHT, BULLET_INTERVAL, \
-    SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE, POWERUP_SIZE  # Replace with your actual constants file
+    SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE, POWERUP_SIZE
 from src.model.audio_manager import Audio
 from src.model.bullet import Bullet
 from src.model.coin import Coin
@@ -131,7 +131,7 @@ class GameModel:
     @staticmethod
     def calculate_time_until_powerup(next_powerup_time):
         current_time = pygame.time.get_ticks()
-        return max(0, (next_powerup_time - current_time) // 1000)  # Convert to seconds
+        return max(0, (next_powerup_time - current_time) // 1000)
 
     @staticmethod
     def calculate_average_enemy_speed(enemies):

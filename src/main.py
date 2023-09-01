@@ -11,7 +11,7 @@ from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption('Attack and Defend')
+    pygame.display.set_caption('SpaceJungle')
     clock = pygame.time.Clock()
 
     model = GameModel()
@@ -22,7 +22,7 @@ def main():
 
     while model.running:
         controller.handle_events()
-        controller.update_and_render()  # This now includes rendering even when paused
+        controller.update_and_render()
         clock.tick(60)
 
     pygame.quit()

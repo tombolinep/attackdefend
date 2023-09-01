@@ -15,10 +15,10 @@ class ShopTileView:
 
     def _initialize_buttons(self, width):
         button_width = (width - 2 * INTERNAL_MARGIN - 5) / 2
-        self.buy_button = pygame.Rect(self.rect.x + INTERNAL_MARGIN, self.rect.y + self.rect.height - 40, button_width,
-                                      30)
-        self.sell_button = pygame.Rect(self.rect.x + self.rect.width - INTERNAL_MARGIN - button_width,
-                                       self.rect.y + self.rect.height - 40, button_width, 30)
+        self.buy_button = pygame.Rect(self.rect.x + INTERNAL_MARGIN + 10, self.rect.y + self.rect.height + 15,
+                                      button_width, 30)
+        self.sell_button = pygame.Rect(self.rect.x + self.rect.width - INTERNAL_MARGIN - button_width + 13,
+                                       self.rect.y + self.rect.height + 15, button_width, 30)
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, border_radius=10, width=BORDER_THICKNESS)
@@ -45,23 +45,31 @@ class ShopTileView:
                                         self.sell_button.centery - sell_text_surface.get_height() // 2))
 
     def _draw_texts(self, screen):
-        # Render item title
+        # Render and underline item title
         title_font = pygame.font.Font(None, 28)
         title_surface = title_font.render(self.model.title, True, (255, 255, 255))
-        screen.blit(title_surface, (self.rect.centerx - title_surface.get_width() // 2, self.rect.y + 10))
+        title_rect = title_surface.get_rect(center=(self.rect.centerx, self.rect.y + 30))
+        pygame.draw.line(screen, (255, 255, 255), (title_rect.left, title_rect.bottom),
+                         (title_rect.right, title_rect.bottom), 2)
+        screen.blit(title_surface, title_rect)
 
         # Render item description
         description_font = pygame.font.Font(None, 18)
         wrapped_description = self._wrap_text(self.model.description, description_font,
                                               self.rect.width - 2 * INTERNAL_MARGIN)
+        description_y = self.rect.y + 55
+        description_area_width = self.rect.width - 2 * INTERNAL_MARGIN
         for idx, line in enumerate(wrapped_description):
             description_surface = description_font.render(line, True, (255, 255, 255))
-            screen.blit(description_surface, (self.rect.x + INTERNAL_MARGIN, self.rect.y + 50 + idx * 20))
+            description_surface_width = description_surface.get_width()  # Get the width of the rendered text
+            description_x_offset = (description_area_width - description_surface_width) // 2  # Calculate the offset
+            description_x = self.rect.x + INTERNAL_MARGIN + description_x_offset
+            screen.blit(description_surface, (description_x, description_y + idx * 20))
 
         # Render item price
         price_font = pygame.font.Font(None, 22)
         price_surface = price_font.render(f"Price: {self.model.price} coins", True, (255, 255, 255))
-        screen.blit(price_surface, (self.rect.x + INTERNAL_MARGIN, self.rect.y + self.rect.height - 90))
+        screen.blit(price_surface, (self.rect.centerx - 50, self.rect.y + self.rect.height - 80))
 
     def _wrap_text(self, text, font, max_width):
         words = text.split(' ')

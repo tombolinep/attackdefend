@@ -28,15 +28,16 @@ class EventDispatcher:
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
 
-            for controller in self.shop_tile_controllers:
-                action, title, price = controller.handle_click(pos)
+            if self.view.shop_button.is_clicked(pos):  # Check if the shop button is clicked
+                self.dispatch_event("open_shop")  # Dispatch an event to open the shop
+            else:
+                for controller in self.shop_tile_controllers:
+                    action, title, price = controller.handle_click(pos)
 
-                if action == 'buy':
-                    self.dispatch_event("buy_item", {"title": title, "price": price})
-                elif action == 'sell':
-                    self.dispatch_event("sell_item", {"title": title, "price": price})
-                elif self.is_pause_button_clicked(pos):
-                    self.dispatch_event("pause_game")
+                    if action == 'buy':
+                        self.dispatch_event("buy_item", {"title": title, "price": price})
+                    elif action == 'sell':
+                        self.dispatch_event("sell_item", {"title": title, "price": price})
 
     def dispatch_button_click(self, mouse_pos):
         if self.view.pause_button.is_clicked(mouse_pos):

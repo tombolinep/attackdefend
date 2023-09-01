@@ -1,5 +1,5 @@
 class Shop:
-    def __init__(self, shop_items):
+    def __init__(self):
         self.shop_items = [
             {"title": "Speed Boost", "description": "Increases player speed", "price": 5},
             {"title": "Shield", "description": "Protects from one enemy", "price": 5},

@@ -1,6 +1,7 @@
 import pygame
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 from src.view.button_view import Button
+from src.view.shop_view import ShopView
 
 
 class GameView:

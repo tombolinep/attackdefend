@@ -1,3 +1,5 @@
+import logging
+
 import pygame
 from pygame import KEYDOWN, K_r, K_q, K_ESCAPE, QUIT
 
@@ -11,6 +13,8 @@ from src.model.shop import Shop
 from src.view.pause_view import PauseView
 from src.view.player_view import PlayerView
 from src.view.shop_view import ShopView
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class GameController:
@@ -29,6 +33,11 @@ class GameController:
         self.event_dispatcher.add_listener("open_shop", self.open_shop)
         self.pause_model = PauseModel()
         self.pause_view = PauseView(self.pause_model, self)
+        self.last_log_time = 0
+        self.coin_start_time = None
+        self.powerup_start_time = None
+        self.coin_interval = time_manager.COIN_INTERVAL
+        self.powerup_interval = time_manager.POWERUP_INTERVAL
 
     def initialize_game(self):
         player = Player()
@@ -54,13 +63,19 @@ class GameController:
                 if event.type == self.time_manager.ADDENEMY:
                     self.model.add_enemy()
                 elif event.type == self.time_manager.ADDCOIN:
+                    self.coin_start_time = pygame.time.get_ticks()
                     self.model.add_coin()
                 elif event.type == self.time_manager.ADDPOWERUP:
+                    self.powerup_start_time = pygame.time.get_ticks()
                     self.model.add_powerup()
                 elif event.type == self.time_manager.SHOOT:
                     self.model.automatic_shoot()
 
     def update_game(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_log_time >= 1000:
+            self.last_log_time = current_time
+            self.update_timer_logs()
         if not self.model.paused:
             pressed_keys = pygame.key.get_pressed()
             self.player_controller.update(pressed_keys)
@@ -71,6 +86,15 @@ class GameController:
             self.model.bullets.update()
             self.model.coins.update()
             self.model.powerups.update()
+
+    def update_timer_logs(self):
+        current_time = pygame.time.get_ticks()
+        if self.coin_start_time:
+            coin_time_remaining = self.coin_interval - (current_time - self.coin_start_time)
+            logging.info(f"Coin Timer: {coin_time_remaining}ms remaining")
+        if self.powerup_start_time:
+            powerup_time_remaining = self.powerup_interval - (current_time - self.powerup_start_time)
+            logging.info(f"Powerup Timer: {powerup_time_remaining}ms remaining")
 
     def update_and_render(self):
         self.update_game()  # Always update the game state

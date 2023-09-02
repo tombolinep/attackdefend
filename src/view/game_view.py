@@ -74,7 +74,6 @@ class GameView:
             ("Score:", int(model.score)),
             ("Your speed:", model.player.speed),
             ("Coins:", model.player.coins),
-            ("Power-Up Timer:", model.calculate_time_until_powerup(model.next_powerup_time)),
             ("Average enemy speed:", model.calculate_average_enemy_speed(model.enemies))
         ]
 

@@ -28,8 +28,7 @@ class GameController:
         self.enemy_controller = EnemyController(model.enemies)
         self.collision_controller = CollisionController(model, screen)
         self.event_dispatcher.view = view
-        self.event_dispatcher.add_listener("pause_game",
-                                           self.toggle_pause)  # Changed from render_pause_menu to toggle_pause
+        self.event_dispatcher.add_listener("pause_game", self.toggle_pause)
         self.event_dispatcher.add_listener("open_shop", self.open_shop)
         self.pause_model = PauseModel()
         self.pause_view = PauseView(self.pause_model, self)
@@ -91,10 +90,10 @@ class GameController:
         current_time = pygame.time.get_ticks()
         if self.coin_start_time:
             coin_time_remaining = self.coin_interval - (current_time - self.coin_start_time)
-            logging.info(f"Coin Timer: {coin_time_remaining}ms remaining")
+            # logging.info(f"Coin Timer: {coin_time_remaining}ms remaining")
         if self.powerup_start_time:
             powerup_time_remaining = self.powerup_interval - (current_time - self.powerup_start_time)
-            logging.info(f"Powerup Timer: {powerup_time_remaining}ms remaining")
+            # logging.info(f"Powerup Timer: {powerup_time_remaining}ms remaining")
 
     def update_and_render(self):
         self.update_game()  # Always update the game state
@@ -118,7 +117,7 @@ class GameController:
     def toggle_pause(self, data=None):
         self.model.paused = not self.model.paused
         if self.model.paused:
-            self.pause_view.draw(self.screen)  # Draw pause menu once
+            self.pause_view.draw(self.screen)
         pygame.display.flip()
 
     def check_buttons(self, mouse_pos):
@@ -133,8 +132,4 @@ class GameController:
         shop_model = Shop()
         shop_view = ShopView(shop_model, self)  # pass in 'self' as GameController object
         shop_controller = ShopController(shop_model, shop_view, self.screen, self.event_dispatcher)
-
         powerup_type = shop_controller.open_shop(self.model.player)
-
-    def render_pause_menu(self, data=None):
-        self.update_and_render()

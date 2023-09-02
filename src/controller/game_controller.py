@@ -5,8 +5,10 @@ from src.controller.collision_controller import CollisionController
 from src.controller.enemy_controller import EnemyController
 from src.controller.player_controller import PlayerController
 from src.controller.shop_controller import ShopController
+from src.model.pause import PauseModel
 from src.model.player import Player
 from src.model.shop import Shop
+from src.view.pause_view import PauseView
 from src.view.player_view import PlayerView
 from src.view.shop_view import ShopView
 
@@ -22,8 +24,11 @@ class GameController:
         self.enemy_controller = EnemyController(model.enemies)
         self.collision_controller = CollisionController(model, screen)
         self.event_dispatcher.view = view
-        self.event_dispatcher.add_listener("pause_game", self.toggle_pause)
+        self.event_dispatcher.add_listener("pause_game",
+                                           self.toggle_pause)  # Changed from render_pause_menu to toggle_pause
         self.event_dispatcher.add_listener("open_shop", self.open_shop)
+        self.pause_model = PauseModel()
+        self.pause_view = PauseView(self.pause_model, self)
 
     def initialize_game(self):
         player = Player()
@@ -42,36 +47,39 @@ class GameController:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.model.running = False
-            elif event.type == self.time_manager.ADDENEMY:
-                self.model.add_enemy()
-            elif event.type == self.time_manager.ADDCOIN:
-                self.model.add_coin()
-            elif event.type == self.time_manager.ADDPOWERUP:
-                self.model.add_powerup()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 self.check_buttons(mouse_pos)
-            elif event.type == self.time_manager.SHOOT:
-                self.model.automatic_shoot()
+            elif not self.model.paused:
+                if event.type == self.time_manager.ADDENEMY:
+                    self.model.add_enemy()
+                elif event.type == self.time_manager.ADDCOIN:
+                    self.model.add_coin()
+                elif event.type == self.time_manager.ADDPOWERUP:
+                    self.model.add_powerup()
+                elif event.type == self.time_manager.SHOOT:
+                    self.model.automatic_shoot()
 
     def update_game(self):
-        pressed_keys = pygame.key.get_pressed()
-        self.player_controller.update(pressed_keys)
-        self.model.increment_score()
-        self.enemy_controller.update()
-        self.collision_controller.check_collisions()
-        self.model.automatic_shoot()
-        self.model.bullets.update()
-        self.model.coins.update()
-        self.model.powerups.update()
+        if not self.model.paused:
+            pressed_keys = pygame.key.get_pressed()
+            self.player_controller.update(pressed_keys)
+            self.model.increment_score()
+            self.enemy_controller.update()
+            self.collision_controller.check_collisions()
+            self.model.automatic_shoot()
+            self.model.bullets.update()
+            self.model.coins.update()
+            self.model.powerups.update()
 
     def update_and_render(self):
-        if not self.model.paused:
-            self.update_game()  # Update game state only if not paused
-            self.render()  # Always render the view
+        self.update_game()  # Always update the game state
+        self.render()  # Always render the main view and overlay pause view if needed
 
     def render(self):
-        self.view.render(self.model)
+        if not self.model.paused:
+            self.view.render(self.model)  # Continue to render the main game view
+            pygame.display.update()  # Update the screen regardless of game state
 
     def handle_game_over(self):
         for event in pygame.event.get():
@@ -85,12 +93,15 @@ class GameController:
 
     def toggle_pause(self, data=None):
         self.model.paused = not self.model.paused
+        if self.model.paused:
+            self.pause_view.draw(self.screen)  # Draw pause menu once
+        pygame.display.flip()
 
     def check_buttons(self, mouse_pos):
         for button in self.view.buttons:
             if button.rect.collidepoint(mouse_pos):
-                if button.text == "Pause":
-                    self.event_dispatcher.dispatch_event("pause_game", {})
+                if button.text == "Pause" or button.text == "Resume":
+                    self.event_dispatcher.dispatch_event("pause_game", {})  # Ensuring the pause event is dispatched
                 elif button.text == "Shop":
                     self.event_dispatcher.dispatch_event("open_shop", {})
 
@@ -100,3 +111,6 @@ class GameController:
         shop_controller = ShopController(shop_model, shop_view, self.screen, self.event_dispatcher)
 
         powerup_type = shop_controller.open_shop(self.model.player)
+
+    def render_pause_menu(self, data=None):
+        self.update_and_render()

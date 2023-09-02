@@ -6,6 +6,7 @@ class Button:
         self.rect = pygame.Rect(x, y, width, height)  # Define the button's rect
         self.text = text
         self.color = color
+        self.normal_color = color
         self.hover_color = hover_color
 
     def is_hovered(self, mouse_pos):
@@ -23,6 +24,6 @@ class Button:
             pygame.draw.rect(screen, self.color, self.rect)  # Use rect
 
         font = pygame.font.SysFont(None, 36)
-        text_surface = font.render(self.text, True, (0, 0, 0))
+        text_surface = font.render(self.text, True, (255, 255, 255))  # Text will always be white
         text_rect = text_surface.get_rect(center=self.rect.center)  # Use rect center
         screen.blit(text_surface, text_rect)

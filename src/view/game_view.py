@@ -42,6 +42,12 @@ class GameView:
                 button.text = "Resume" if model.paused else "Pause"
 
     def draw_button(self, button):
+        mouse_pos = pygame.mouse.get_pos()
+        if button.rect.collidepoint(mouse_pos):
+            button.color = button.hover_color
+        else:
+            button.color = button.normal_color
+
         button_rect = button.rect
         pygame.draw.rect(self.screen, button.color, button_rect)
         text_surface = self.font.render(button.text, True, (0, 0, 0))
@@ -54,8 +60,13 @@ class GameView:
                 self.screen.blit(entity.surf, entity.rect)
 
     def initialize_buttons(self):
-        self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", (150, 150, 150), (200, 200, 200))
-        self.shop_button = Button(SCREEN_WIDTH - 150, 60, 130, 40, "Shop", (150, 150, 150), (200, 200, 200))
+        common_button_color = (150, 150, 150)
+        common_button_hover_color = (200, 200, 200)
+
+        self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", common_button_color,
+                                   common_button_hover_color)
+        self.shop_button = Button(SCREEN_WIDTH - 150, 60, 130, 40, "Shop", common_button_color,
+                                  common_button_hover_color)
         self.buttons = [self.pause_button, self.shop_button]
 
     def display_stats(self, model):

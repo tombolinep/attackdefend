@@ -26,6 +26,7 @@ class GameModel:
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
         self.game_over = False
+        self.isPauseMenuVisible = False
 
     def stop_game(self):
         self.running = False

@@ -27,10 +27,6 @@ class Shop:
                 return item
         return None
 
-    def can_afford_item(self, item_title, player):
-        item = self.get_item(item_title)
-        return item and 0 <= item["price"] <= player.coins
-
     def buy_item(self, item_title, player):
         item = self.get_item(item_title)
         if item and item["price"] <= player.coins:

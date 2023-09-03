@@ -32,7 +32,7 @@ class ShopView:
             tile_y = self.y + (index // 3) * self.tile_height
             tile_model = ShopTile(item['title'], item['description'], item['price'], item['limit'])
             tile_view = ShopTileView(tile_x, tile_y, self.tile_width, self.tile_height, tile_model)
-            tile_controller = ShopTileController(tile_model, tile_view, self.event_dispatcher)
+            tile_controller = ShopTileController(tile_model, tile_view, self.event_dispatcher, self.model)
             self.tiles.append((tile_model, tile_view, tile_controller))
 
         # Use the same dimensions as your existing buttons
@@ -109,7 +109,7 @@ class ShopView:
         screen.blit(text, (self.x + index * 100 + 15, self.y + 25))
 
     def display_purchase_message(self, screen, position, message, color=(255, 255, 255)):
-        font = pygame.font.SysFont(None, 15)
+        font = pygame.font.SysFont(None, 15)  # Change the font size here
         text_surface = font.render(message, True, color)
         screen.blit(text_surface, position)
 

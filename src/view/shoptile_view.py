@@ -14,6 +14,10 @@ class ShopTileView:
         self._initialize_buttons(width)
         self.checkbox_size = 20
         self.checkbox_spacing = 5
+        self.status_message_position = (self.buy_button.x + 10, self.buy_button.y - 30)
+        self.status_message = None
+        self.status_message_color = (255, 255, 255)
+        self.status_expires_at = None
 
     def _initialize_buttons(self, width):
         button_width = (width - 2 * INTERNAL_MARGIN - 5) / 2
@@ -27,6 +31,7 @@ class ShopTileView:
         self._draw_buttons(screen)
         self._draw_texts(screen)
         self._draw_checkboxes(screen)
+        self._draw_status_message(screen)
 
     def _draw_rect(self, screen, rect, color, width=0, radius=0):
         pygame.draw.rect(screen, color, rect, border_radius=radius, width=width)
@@ -123,3 +128,35 @@ class ShopTileView:
                 new_checkbox_size
             )
             pygame.draw.rect(screen, (255, 255, 255), checkbox_rect, 2)  # Draw white outline
+
+    def set_status_message(self, message, color):
+        self.status_message = message
+        self.status_message_color = color
+        self.status_expires_at = pygame.time.get_ticks() + 2000  # 2 seconds = 2000 milliseconds
+
+    def _draw_status_message(self, screen):
+        current_time = pygame.time.get_ticks()
+
+        # Check if the status message should be displayed
+        if self.status_message and current_time < self.status_expires_at:
+            font = pygame.font.SysFont(None, 24)
+            text_surface = font.render(self.status_message, True, self.status_message_color)
+
+            # Adjust the position down by 10 pixels
+            adjusted_position = (self.buy_button.centerx, self.status_message_position[1] + 18)
+
+            text_rect = text_surface.get_rect()
+            text_rect.centerx = adjusted_position[0]  # Set centerx to match buy_button's centerx
+            text_rect.centery = adjusted_position[1]
+
+            screen.blit(text_surface, text_rect.topleft)
+
+        # Remove the status message if its time has expired
+        elif self.status_message and current_time >= self.status_expires_at:
+            self.status_message = None
+
+    def is_buy_button_clicked(self, pos):
+        x, y = pos
+        if self.buy_button.collidepoint(x, y):
+            return True
+        return False

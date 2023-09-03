@@ -8,9 +8,10 @@ from src.view.shoptile_view import ShopTileView
 
 
 class ShopView:
-    def __init__(self, model, game_controller):
+    def __init__(self, model, game_controller, event_dispatcher):
         self.model = model
         self.game_controller = game_controller
+        self.event_dispatcher = event_dispatcher
 
         self.width = int(MAIN_GAME_WIDTH * 0.7)
         self.height = int(SCREEN_HEIGHT * 0.85)
@@ -31,7 +32,7 @@ class ShopView:
             tile_y = self.y + (index // 3) * self.tile_height
             tile_model = ShopTile(item['title'], item['description'], item['price'], item['limit'])
             tile_view = ShopTileView(tile_x, tile_y, self.tile_width, self.tile_height, tile_model)
-            tile_controller = ShopTileController(tile_model, tile_view)
+            tile_controller = ShopTileController(tile_model, tile_view, self.event_dispatcher)
             self.tiles.append((tile_model, tile_view, tile_controller))
 
         # Use the same dimensions as your existing buttons
@@ -48,6 +49,8 @@ class ShopView:
 
         self.close_button = Button(close_button_x, close_button_y, close_button_width, close_button_height, "[Close]",
                                    button_color, button_hover_color)
+
+        self.messages = []
 
     def draw(self, screen, player):
         num_rows = -(-len(self.tiles) // 3)
@@ -86,6 +89,17 @@ class ShopView:
             tile_view.rect.x = tile_x
             tile_view.draw(screen)
 
+        current_time = pygame.time.get_ticks()
+        new_messages = []
+        for message in self.messages:
+            if message["expire_time"] > current_time:
+                new_messages.append(message)
+                font = pygame.font.SysFont('Arial', 30)
+                text_surface = font.render(message["message"], True, message["color"])
+                screen.blit(text_surface, message["position"])
+
+        self.messages = new_messages
+
     def create_shop_window(self, screen, shop_items):
         pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.width * len(shop_items), self.height))
 
@@ -94,8 +108,10 @@ class ShopView:
         text = pygame.font.SysFont('Arial', 20).render(item['title'], True, (0, 0, 0))
         screen.blit(text, (self.x + index * 100 + 15, self.y + 25))
 
-    def display_purchase_message(self, screen, position, message):
-        pygame.font.init()
-        font = pygame.font.SysFont('Arial', 30)
-        text_surface = font.render(message, True, (255, 255, 255))
+    def display_purchase_message(self, screen, position, message, color=(255, 255, 255)):
+        font = pygame.font.SysFont(None, 15)
+        text_surface = font.render(message, True, color)
         screen.blit(text_surface, position)
+
+        expire_time = pygame.time.get_ticks() + 2000  # 2000 milliseconds = 2 seconds
+        self.messages.append({"message": message, "expire_time": expire_time, "color": color, "position": position})

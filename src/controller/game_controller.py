@@ -130,6 +130,6 @@ class GameController:
 
     def open_shop(self, data=None):
         shop_model = Shop()
-        shop_view = ShopView(shop_model, self)  # pass in 'self' as GameController object
+        shop_view = ShopView(shop_model, self, self.event_dispatcher)  # pass in 'self' as GameController object
         shop_controller = ShopController(shop_model, shop_view, self.screen, self.event_dispatcher)
         powerup_type = shop_controller.open_shop(self.model.player)

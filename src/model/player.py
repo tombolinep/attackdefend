@@ -4,14 +4,28 @@ from src.model.bullet import Bullet
 
 
 class Player(pygame.sprite.Sprite):
+    ATTRIBUTE_DEFAULTS = {
+        'speed': 7,
+        'shield': 0,
+        'reload_speed': 1,
+        'diameter': PLAYER_DIAMETER,
+        'tractor_beam_enabled': False,
+        'warp_field_enabled': False,
+        'num_of_guns': 1,
+        'rocket_launcher_enabled': False,
+        'laser_enabled': False
+    }
+
     def __init__(self, view=None):
         super().__init__()
         self.view = view
         self.color = (0, 0, 255)
-        self.speed = 7
-        self.coins = 0
-        self.shield = 0
-        self.diameter = PLAYER_DIAMETER
+        self.coins = 100
+
+        # Initialize attributes using defaults
+        for attribute, default_value in self.ATTRIBUTE_DEFAULTS.items():
+            setattr(self, attribute, default_value)
+
         self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
         self.y = SCREEN_HEIGHT // 2
         self.radius = self.diameter // 2
@@ -45,6 +59,26 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
 
+    def can_sell_item(self, attribute, decrease_amount):
+        if not attribute:
+            return False
+        default_value = self.ATTRIBUTE_DEFAULTS.get(attribute)
+        current_value = getattr(self, attribute, None)
+        if current_value is None or default_value is None:
+            return False
+        if isinstance(default_value, int):
+            return current_value - decrease_amount >= default_value
+        if isinstance(default_value, bool):
+            return current_value == True
+        return False
+
+    def sell_item(self, attribute, decrease_amount, item_price):
+        if self.can_sell_item(attribute, decrease_amount):
+            setattr(self, attribute, getattr(self, attribute) - decrease_amount)
+            self.coins += item_price
+            return True
+        return False
+
     def shoot(self):
         new_bullet = Bullet(self.rect.centerx, self.rect.top)
         return new_bullet
@@ -53,3 +87,14 @@ class Player(pygame.sprite.Sprite):
         self.center = (self.x + self.radius, self.y + self.radius)
         if self.view:
             self.view.update_shield()
+
+    def update_attribute(self, attribute, amount):
+        if not attribute:
+            return False
+        if hasattr(self, attribute):
+            current_value = getattr(self, attribute)
+            new_value = current_value + amount
+            setattr(self, attribute, new_value)
+            return True
+        else:
+            raise AttributeError(f"{attribute} is not an attribute of Player.")

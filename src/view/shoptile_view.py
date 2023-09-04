@@ -129,10 +129,11 @@ class ShopTileView:
             )
             pygame.draw.rect(screen, (255, 255, 255), checkbox_rect, 2)  # Draw white outline
 
-    def set_status_message(self, message, color):
+    def set_status_message(self, message, color, button_clicked):
         self.status_message = message
         self.status_message_color = color
         self.status_expires_at = pygame.time.get_ticks() + 2000  # 2 seconds = 2000 milliseconds
+        self.last_clicked_button = button_clicked
 
     def _draw_status_message(self, screen):
         current_time = pygame.time.get_ticks()
@@ -141,9 +142,10 @@ class ShopTileView:
         if self.status_message and current_time < self.status_expires_at:
             font = pygame.font.SysFont(None, 24)
             text_surface = font.render(self.status_message, True, self.status_message_color)
-
-            # Adjust the position down by 10 pixels
-            adjusted_position = (self.buy_button.centerx, self.status_message_position[1] + 18)
+            if self.last_clicked_button == "buy":
+                adjusted_position = (self.buy_button.centerx, self.status_message_position[1] + 18)
+            else:
+                adjusted_position = (self.sell_button.centerx, self.status_message_position[1] + 18)
 
             text_rect = text_surface.get_rect()
             text_rect.centerx = adjusted_position[0]  # Set centerx to match buy_button's centerx

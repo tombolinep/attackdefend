@@ -35,15 +35,12 @@ class ShopView:
             tile_controller = ShopTileController(tile_model, tile_view, self.event_dispatcher, self.model)
             self.tiles.append((tile_model, tile_view, tile_controller))
 
-        # Use the same dimensions as your existing buttons
         close_button_width = 130
         close_button_height = 40
 
-        # Initialize the close button at the position where you want it
         close_button_x = self.x + self.width - close_button_width - 20
         close_button_y = self.y + 20
 
-        # Use the same color scheme as your existing buttons
         button_color = (50, 50, 50)
         button_hover_color = (75, 75, 75)
 

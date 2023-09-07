@@ -148,7 +148,7 @@ class ShopTileView:
                 adjusted_position = (self.sell_button.centerx, self.status_message_position[1] + 18)
 
             text_rect = text_surface.get_rect()
-            text_rect.centerx = adjusted_position[0]  # Set centerx to match buy_button's centerx
+            text_rect.centerx = adjusted_position[0]
             text_rect.centery = adjusted_position[1]
 
             screen.blit(text_surface, text_rect.topleft)

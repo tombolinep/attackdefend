@@ -1,7 +1,7 @@
 import pygame
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
 from src.view.button_view import Button
-from src.view.shop_view import ShopView
+from src.utils import resource_path
 
 
 class GameView:
@@ -12,7 +12,7 @@ class GameView:
         self.player_view = None  # Initialized to None
         self.initialize_buttons()
 
-        self.background_image = pygame.image.load('assets/space_background.jpg')
+        self.background_image = pygame.image.load(resource_path('assets/space_background.jpg'))
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.background_x_pos = 0
 

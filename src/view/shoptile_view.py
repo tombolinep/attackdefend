@@ -183,7 +183,6 @@ class ShopTileView:
     def is_buy_button_clicked(self, pos):
         x, y = pos
         if self.buy_button.collidepoint(x, y):
-            print("Buy button clicked")
             return True
         return False
 
@@ -197,21 +196,16 @@ class ShopTileView:
             self.items_purchased = new_quantity
             item_type = "integer"
         else:
-            print(f"Warning: Unsupported type for new quantity: {type(new_quantity)}")
             return
-
-        print(f"New quantity for {self.model.title} (type: {item_type}): {self.items_purchased}")
 
     def update_checkbox(self, attribute, count, player, screen):
         # Get the current value of the attribute from attribute_modifiers
         current_value = player.attribute_modifiers.get(attribute, None)
 
         if current_value is None:
-            print(f"No attribute found for: {attribute}")
             return
 
         # Check if the current value matches the count; if not, redraw the checkboxes
         if current_value != count:
             self._draw_checkboxes(screen, player)
-        else:
-            print(f"No change for attribute: {attribute}")
+

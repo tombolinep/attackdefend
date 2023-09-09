@@ -3,4 +3,4 @@ class ShopTile:
         self.title = title
         self.description = description
         self.price = price
-        self.limit = limit  # Add this line
+        self.limit = limit

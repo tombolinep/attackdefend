@@ -1,4 +1,5 @@
 from src.controller.shop_controller import ShopController
+from src.model.audio_manager import Audio
 
 
 class ShopTileController:
@@ -19,6 +20,7 @@ class ShopTileController:
         self.view = view
         self.event_dispatcher = event_dispatcher
         self.shop_model = shop_model
+        self.audio_manager = Audio()
 
     def handle_click(self, pos, player, item_title, action):
         item_price = self.get_item_price(item_title)
@@ -35,6 +37,14 @@ class ShopTileController:
         return False
 
     def handle_buy(self, player, item_title, item_price, attribute_to_update):
+        item_limit = self.model.limit
+        current_quantity = player.attribute_modifiers.get(attribute_to_update)
+
+        if item_limit is not None and current_quantity >= item_limit:
+            self.view.set_status_message("Item limit reached", (255, 0, 0), "buy")
+            self.audio_manager.play_purchase_error_sound()
+            return False
+
         if self.can_afford_item(item_title, player):
             player.add_coin(-item_price)
             self.update_player_attribute(player, attribute_to_update, increment=True)
@@ -46,9 +56,11 @@ class ShopTileController:
                 self.view.update_items_purchased(new_quantity, attribute_to_update)
 
             self.view.set_status_message("Bought!", (0, 255, 0), "buy")
+            self.audio_manager.play_purchase_success_sound()
             return True
         else:
             self.view.set_status_message("Cannot afford", (255, 0, 0), "buy")
+            self.audio_manager.play_purchase_error_sound()
             return False
 
     def handle_sell(self, player, item_title, item_price, attribute_to_update):
@@ -81,9 +93,11 @@ class ShopTileController:
                 self.view.update_items_purchased(new_quantity, attribute_to_update)
 
             self.view.set_status_message("Sold!", (0, 255, 0), "sell")
+            self.audio_manager.play_purchase_success_sound()
             return True
         else:
             self.view.set_status_message("Cannot sell", (255, 0, 0), "sell")
+            self.audio_manager.play_purchase_error_sound()
             return False
 
     def update_player_attribute(self, player, attribute_to_update, increment=True):

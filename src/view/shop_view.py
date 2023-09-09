@@ -31,7 +31,7 @@ class ShopView:
             tile_x = self.x + (index % 3) * self.tile_width
             tile_y = self.y + (index // 3) * self.tile_height
             tile_model = ShopTile(item['title'], item['description'], item['price'], item['limit'])
-            tile_view = ShopTileView(tile_x, tile_y, self.tile_width, self.tile_height, tile_model)
+            tile_view = ShopTileView(tile_x, tile_y, self.tile_width, self.tile_height, tile_model, self.model.player)
             tile_controller = ShopTileController(tile_model, tile_view, self.event_dispatcher, self.model)
             self.tiles.append((tile_model, tile_view, tile_controller))
 

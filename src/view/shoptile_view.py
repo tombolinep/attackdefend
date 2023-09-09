@@ -6,9 +6,22 @@ BORDER_THICKNESS = 2
 
 
 class ShopTileView:
-    def __init__(self, x, y, width, height, model):
+    ITEM_TO_ATTRIBUTE_MAP = {
+        "Quantum Thrusters": "speed",
+        "Energy Shield": "shield",
+        "Rapid Charge System": "reload_speed",
+        "Dimensional Compression": "diameter",
+        "Tractor Beam": "tractor_beam_enabled",
+        "Warp Field Generator": "warp_field_enabled",
+        "Extra Blaster Mount": "num_of_guns",
+        "Rocket Launcher": "rocket_launcher_enabled",
+        "Laser Core Upgrade": "laser_enabled",
+    }
+
+    def __init__(self, x, y, width, height, model, player):
         self.rect = pygame.Rect(x, y + 10, width, height)
         self.model = model
+        self.player = player
         self.color = (100, 100, 100)
         self.hover_color = (150, 150, 150)
         self._initialize_buttons(width)
@@ -18,6 +31,7 @@ class ShopTileView:
         self.status_message = None
         self.status_message_color = (255, 255, 255)
         self.status_expires_at = None
+        self.checkbox_counts = {}
 
     def _initialize_buttons(self, width):
         button_width = (width - 2 * INTERNAL_MARGIN - 5) / 2
@@ -30,7 +44,7 @@ class ShopTileView:
         self._draw_rect(screen, self.rect, self.color, BORDER_THICKNESS, 10)
         self._draw_buttons(screen)
         self._draw_texts(screen)
-        self._draw_checkboxes(screen)
+        self._draw_checkboxes(screen, self.player)
         self._draw_status_message(screen)
 
     def _draw_rect(self, screen, rect, color, width=0, radius=0):
@@ -100,11 +114,11 @@ class ShopTileView:
             lines.append(line)
         return lines
 
-    def _draw_checkboxes(self, screen):
+    def _draw_checkboxes(self, screen, player):
         new_checkbox_size = int(self.checkbox_size * 1.5)  # Increase the size by 50%
         new_checkbox_spacing = int(self.checkbox_spacing * 1.5)  # Optionally, increase the spacing by 50% too
 
-        # Calculate the height occupied by the description.
+        # Calculate the height occupied by the description
         description_font = pygame.font.Font(None, 18)
         wrapped_description = self._wrap_text(self.model.description, description_font,
                                               self.rect.width - 2 * INTERNAL_MARGIN)
@@ -120,6 +134,12 @@ class ShopTileView:
         center_x = self.rect.x + self.rect.width // 2
         checkbox_start_x = center_x - total_checkboxes_width // 2
 
+        # Get the attribute linked to the current item
+        item_title = self.model.title  # Assuming self.model.title holds the item title; adjust if necessary
+
+        attribute_to_update = self.ITEM_TO_ATTRIBUTE_MAP.get(item_title, None)
+        attribute_value = player.attribute_modifiers.get(attribute_to_update)
+
         for i in range(self.model.limit):
             checkbox_rect = pygame.Rect(
                 checkbox_start_x + (new_checkbox_size + new_checkbox_spacing) * i,
@@ -128,6 +148,9 @@ class ShopTileView:
                 new_checkbox_size
             )
             pygame.draw.rect(screen, (255, 255, 255), checkbox_rect, 2)  # Draw white outline
+
+            if i < attribute_value:
+                pygame.draw.rect(screen, (255, 255, 255), checkbox_rect)  # Fill the rectangle
 
     def set_status_message(self, message, color, button_clicked):
         self.status_message = message
@@ -160,5 +183,35 @@ class ShopTileView:
     def is_buy_button_clicked(self, pos):
         x, y = pos
         if self.buy_button.collidepoint(x, y):
+            print("Buy button clicked")
             return True
         return False
+
+    def update_items_purchased(self, new_quantity, attribute_to_update):
+        self.model.attribute_to_update = attribute_to_update
+
+        if isinstance(new_quantity, bool):
+            self.items_purchased = new_quantity
+            item_type = "boolean"
+        elif isinstance(new_quantity, int):
+            self.items_purchased = new_quantity
+            item_type = "integer"
+        else:
+            print(f"Warning: Unsupported type for new quantity: {type(new_quantity)}")
+            return
+
+        print(f"New quantity for {self.model.title} (type: {item_type}): {self.items_purchased}")
+
+    def update_checkbox(self, attribute, count, player, screen):
+        # Get the current value of the attribute from attribute_modifiers
+        current_value = player.attribute_modifiers.get(attribute, None)
+
+        if current_value is None:
+            print(f"No attribute found for: {attribute}")
+            return
+
+        # Check if the current value matches the count; if not, redraw the checkboxes
+        if current_value != count:
+            self._draw_checkboxes(screen, player)
+        else:
+            print(f"No change for attribute: {attribute}")

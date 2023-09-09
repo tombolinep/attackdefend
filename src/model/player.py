@@ -21,10 +21,11 @@ class Player(pygame.sprite.Sprite):
         self.view = view
         self.color = (0, 0, 255)
         self.coins = 100
+        self.attribute_modifiers = {key: 0 if isinstance(value, int) else value for key, value in
+                                    self.ATTRIBUTE_DEFAULTS.items()}
 
-        # Initialize attributes using defaults
-        for attribute, default_value in self.ATTRIBUTE_DEFAULTS.items():
-            setattr(self, attribute, default_value)
+        for attribute in self.ATTRIBUTE_DEFAULTS:
+            setattr(self, attribute, self.get_effective_attribute(attribute))
 
         self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
         self.y = SCREEN_HEIGHT // 2
@@ -40,15 +41,18 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
 
-    def increase_speed(self, increment=2):
-        self.speed += increment
+    def increase_speed(self, increment=1):
+        self.attribute_modifiers['speed'] += increment
+        self.speed = self.get_effective_attribute('speed')
 
     def add_shield(self):
-        self.shield += 1
+        self.attribute_modifiers['shield'] += 1
+        self.shield = self.get_effective_attribute('shield')
 
     def remove_shield(self):
-        if self.shield > 0:
-            self.shield -= 1
+        if self.attribute_modifiers['shield'] > 0:
+            self.attribute_modifiers['shield'] -= 1
+            self.shield = self.get_effective_attribute('shield')
 
     def get_shield(self):
         return self.shield
@@ -74,7 +78,8 @@ class Player(pygame.sprite.Sprite):
 
     def sell_item(self, attribute, decrease_amount, item_price):
         if self.can_sell_item(attribute, decrease_amount):
-            setattr(self, attribute, getattr(self, attribute) - decrease_amount)
+            self.attribute_modifiers[attribute] -= decrease_amount
+            setattr(self, attribute, self.get_effective_attribute(attribute))
             self.coins += item_price
             return True
         return False
@@ -98,3 +103,37 @@ class Player(pygame.sprite.Sprite):
             return True
         else:
             raise AttributeError(f"{attribute} is not an attribute of Player.")
+
+    def get_effective_attribute(self, attribute):
+        base_value, modifier = self._get_base_and_modifier_values(attribute)
+
+        if base_value is None:
+            raise AttributeError(f"No default value found for attribute: {attribute}")
+
+        if isinstance(base_value, bool):
+            return modifier
+        else:
+            return base_value + modifier
+
+    def _get_base_and_modifier_values(self, attribute):
+        return self.ATTRIBUTE_DEFAULTS.get(attribute), self.attribute_modifiers.get(attribute)
+
+    def update_attribute_modifier(self, attribute, change):
+        if attribute in self.attribute_modifiers:
+            current_value = getattr(self, attribute)
+
+            if isinstance(current_value, bool):
+                self.attribute_modifiers[attribute] = bool(change)
+            else:
+                self.attribute_modifiers[attribute] = min(max(0, self.attribute_modifiers[attribute] + change),
+                                                          self.ATTRIBUTE_DEFAULTS[attribute])
+            setattr(self, attribute, self.get_effective_attribute(attribute))
+        else:
+            raise AttributeError(f"No modifier found for attribute: {attribute}")
+
+    def reset_attribute_modifier(self, attribute):
+        if attribute in self.attribute_modifiers:
+            default_value = False if isinstance(self.attribute_modifiers[attribute], bool) else 0
+            self.attribute_modifiers[attribute] = default_value
+        else:
+            raise AttributeError(f"No modifier found for attribute: {attribute}")

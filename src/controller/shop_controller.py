@@ -19,6 +19,11 @@ class ShopController:
         return None, False
 
     def open_shop(self, player):
+        print(player.attribute_modifiers)  # Debugging line to check the values
+
+        for tile_model, tile_view, tile_controller in self.view.tiles:
+            tile_controller.update_checkbox_states(player, self.screen)
+
         shop_running = True
         while shop_running:
             for event in pygame.event.get():

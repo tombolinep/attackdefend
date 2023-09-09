@@ -11,7 +11,6 @@ class GameView:
         self.font = pygame.font.Font(None, 36)
         self.player_view = None  # Initialized to None
         self.initialize_buttons()
-
         self.background_image = pygame.image.load(resource_path('assets/space_background.jpg'))
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.background_x_pos = 0
@@ -83,9 +82,17 @@ class GameView:
     def display_stats(self, model):
         stats = [
             ("Score:", int(model.score)),
-            ("Your speed:", model.player.speed),
+            ("Your speed:", model.player.get_effective_attribute('speed')),
             ("Coins:", model.player.coins),
-            ("Average enemy speed:", model.calculate_average_enemy_speed(model.enemies))
+            ("Average enemy speed:", model.calculate_average_enemy_speed(model.enemies)),
+            ("Shield:", model.player.get_effective_attribute('shield')),
+            ("Reload Speed:", model.player.get_effective_attribute('reload_speed')),
+            ("Size:", model.player.get_effective_attribute('diameter')),
+            ("Tractor Beam Enabled:", model.player.get_effective_attribute('tractor_beam_enabled')),
+            ("Warp Field Enabled:", model.player.get_effective_attribute('warp_field_enabled')),
+            ("Number of Guns:", model.player.get_effective_attribute('num_of_guns')),
+            ("Rocket Launcher Enabled:", model.player.get_effective_attribute('rocket_launcher_enabled')),
+            ("Laser Enabled:", model.player.get_effective_attribute('laser_enabled')),
         ]
 
         for i, (text, value) in enumerate(stats):

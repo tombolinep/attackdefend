@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 class GameController:
     def __init__(self, model, view, screen, event_dispatcher, time_manager):
+        self.player_controller = None
         self.model = model
         self.view = view
         self.screen = screen
@@ -74,7 +75,6 @@ class GameController:
         current_time = pygame.time.get_ticks()
         if current_time - self.last_log_time >= 1000:
             self.last_log_time = current_time
-            self.update_timer_logs()
         if not self.model.paused:
             pressed_keys = pygame.key.get_pressed()
             self.player_controller.update(pressed_keys)
@@ -86,30 +86,21 @@ class GameController:
             self.model.coins.update()
             self.model.powerups.update()
 
-    def update_timer_logs(self):
-        current_time = pygame.time.get_ticks()
-        if self.coin_start_time:
-            coin_time_remaining = self.coin_interval - (current_time - self.coin_start_time)
-            # logging.info(f"Coin Timer: {coin_time_remaining}ms remaining")
-        if self.powerup_start_time:
-            powerup_time_remaining = self.powerup_interval - (current_time - self.powerup_start_time)
-            # logging.info(f"Powerup Timer: {powerup_time_remaining}ms remaining")
-
     def update_and_render(self):
-        self.update_game()  # Always update the game state
-        self.render()  # Always render the main view and overlay pause view if needed
+        self.update_game()
+        self.render()
 
     def render(self):
         if not self.model.paused:
-            self.view.render(self.model)  # Continue to render the main game view
-            pygame.display.update()  # Update the screen regardless of game state
+            self.view.render(self.model)
+            pygame.display.update()
 
     def handle_game_over(self):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:  # Retry
+                if event.key == pygame.K_r:
                     self.model.reset_game()
-                elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:  # Quit
+                elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                     self.model.running = False
             elif event.type == pygame.QUIT:
                 self.model.running = False
@@ -124,12 +115,12 @@ class GameController:
         for button in self.view.buttons:
             if button.rect.collidepoint(mouse_pos):
                 if button.text == "Pause" or button.text == "Resume":
-                    self.event_dispatcher.dispatch_event("pause_game", {})  # Ensuring the pause event is dispatched
+                    self.event_dispatcher.dispatch_event("pause_game", {})
                 elif button.text == "Shop":
                     self.event_dispatcher.dispatch_event("open_shop", {})
 
     def open_shop(self, data=None):
         shop_model = Shop(self.model.player)
-        shop_view = ShopView(shop_model, self, self.event_dispatcher)  # pass in 'self' as GameController object
+        shop_view = ShopView(shop_model, self, self.event_dispatcher)
         shop_controller = ShopController(shop_model, shop_view, self.screen, self.event_dispatcher)
         powerup_type = shop_controller.open_shop(self.model.player)

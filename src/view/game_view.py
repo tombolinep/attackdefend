@@ -12,6 +12,10 @@ class GameView:
         self.player_view = None  # Initialized to None
         self.initialize_buttons()
 
+        self.background_image = pygame.image.load('assets/space_background.jpg')
+        self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.background_x_pos = 0
+
     def set_player_view(self, player_view):
         self.player_view = player_view
 
@@ -27,8 +31,15 @@ class GameView:
         self.display_stats(model)
         pygame.display.flip()
 
+        # Update the x-coordinate for scrolling
+        self.background_x_pos -= 0.1
+        if self.background_x_pos <= -SCREEN_WIDTH:
+            self.background_x_pos = 0
+
     def clear_screen(self):
-        self.screen.fill((0, 0, 0))
+        # Blit the background image twice to create a scrolling effect
+        self.screen.blit(self.background_image, (self.background_x_pos, 0))
+        self.screen.blit(self.background_image, (self.background_x_pos + SCREEN_WIDTH, 0))
 
     def render_ui(self, model):
         pygame.draw.rect(self.screen, (200, 200, 200), (0, 0, STATS_WIDTH, SCREEN_HEIGHT))

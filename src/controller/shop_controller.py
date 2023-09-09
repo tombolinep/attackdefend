@@ -32,7 +32,19 @@ class ShopController:
 
     def handle_mouse_button_down(self, event, player):
         pos = event.pos
-        action, item_title = self.determine_action(pos)
+
+        # Check if the close button was clicked
+        if self.view.close_button.is_hovered(pos):
+            pygame.event.post(pygame.event.Event(pygame.QUIT))  # Dispatch a QUIT event to close the shop
+            return
+
+        action_item_tuple = self.determine_action(pos)
+
+        # Check if action_item_tuple is None to prevent unpacking error
+        if action_item_tuple is None:
+            return
+
+        action, item_title = action_item_tuple
 
         if action and item_title:  # Ensure both action and item_title are not None before proceeding
             self.handle_click(pos, player, item_title, action)

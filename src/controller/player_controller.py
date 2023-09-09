@@ -28,7 +28,9 @@ class PlayerController:
         self.model.y += dy
 
     def _keep_within_boundaries(self):
-        self.model.x = max(self.model.x, STATS_WIDTH)
-        self.model.x = min(self.model.x, STATS_WIDTH + MAIN_GAME_WIDTH - self.model.diameter)
-        self.model.y = max(self.model.y, 0)
-        self.model.y = min(self.model.y, SCREEN_HEIGHT - self.model.diameter)
+        half_diameter = self.model.diameter / 2
+
+        self.model.x = max(self.model.x, STATS_WIDTH + half_diameter)
+        self.model.x = min(self.model.x, STATS_WIDTH + MAIN_GAME_WIDTH - half_diameter)
+        self.model.y = max(self.model.y, half_diameter)
+        self.model.y = min(self.model.y, SCREEN_HEIGHT - half_diameter)

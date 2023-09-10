@@ -81,7 +81,7 @@ class GameView:
 
     def display_stats(self, model):
 
-        rapid_charge_system_count = model.player.attribute_modifiers.get('reload_speed', 0)
+        rapid_charge_system_count = model.player.attributes_bought.get('reload_speed', 0)
         adjusted_bullet_interval = BULLET_INTERVAL - (500 * rapid_charge_system_count)
         time_per_shot_in_seconds = adjusted_bullet_interval / 1000
 
@@ -116,19 +116,43 @@ class GameView:
             else:
                 continue
 
-    def display_game_over(self):
-        font = pygame.font.Font(None, 74)
-        text_surface = font.render('Game Over', True, (255, 0, 0))
+    def display_game_over(self, model):
 
-        text_rect = text_surface.get_rect(center=(STATS_WIDTH + MAIN_GAME_WIDTH / 2, SCREEN_HEIGHT / 2 - 50))
+        # Change font (use a custom font if possible)
+        font = pygame.font.Font(None, 74)
+
+        # Create text surfaces with a shadow effect
+        text_surface = font.render('Game Over', True, (255, 0, 0))
+        text_shadow_surface = font.render('Game Over', True, (128, 0, 0))
+
+        score_font = pygame.font.Font(None, 50)
+        score_text = f'Score: {model.score}'
+        score_surface = score_font.render(score_text, True, (255, 255, 255))
+        score_shadow_surface = score_font.render(score_text, True, (128, 128, 128))
 
         instruction_font = pygame.font.Font(None, 36)
         instruction_surface = instruction_font.render('Press R to Retry or Q to Quit', True, (255, 255, 255))
+        instruction_shadow_surface = instruction_font.render('Press R to Retry or Q to Quit', True, (128, 128, 128))
+
+        # Get rect objects for text and shadow surfaces
+        text_rect = text_surface.get_rect(center=(STATS_WIDTH + MAIN_GAME_WIDTH / 2, SCREEN_HEIGHT / 2 - 100))
+        text_shadow_rect = text_shadow_surface.get_rect(
+            center=(text_rect.centerx + 3, text_rect.centery + 3))  # Slightly offset
+
+        score_rect = score_surface.get_rect(center=(STATS_WIDTH + MAIN_GAME_WIDTH / 2, SCREEN_HEIGHT / 2 - 20))
+        score_shadow_rect = score_shadow_surface.get_rect(center=(score_rect.centerx + 2, score_rect.centery + 2))
 
         instruction_rect = instruction_surface.get_rect(
             center=(STATS_WIDTH + MAIN_GAME_WIDTH / 2, SCREEN_HEIGHT / 2 + 50))
+        instruction_shadow_rect = instruction_shadow_surface.get_rect(
+            center=(instruction_rect.centerx + 2, instruction_rect.centery + 2))
 
+        # Blit shadow surfaces followed by text surfaces
+        self.screen.blit(text_shadow_surface, text_shadow_rect)
         self.screen.blit(text_surface, text_rect)
+        self.screen.blit(score_shadow_surface, score_shadow_rect)
+        self.screen.blit(score_surface, score_rect)
+        self.screen.blit(instruction_shadow_surface, instruction_shadow_rect)
         self.screen.blit(instruction_surface, instruction_rect)
 
         pygame.display.flip()

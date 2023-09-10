@@ -54,7 +54,7 @@ class ShopTileController:
 
     def update_player_attribute(self, player, attribute_to_update, increment=True):
         base_value = player.ATTRIBUTE_DEFAULTS.get(attribute_to_update)
-        modifier = player.attribute_modifiers.get(attribute_to_update, 0)
+        modifier = player.attributes_bought.get(attribute_to_update, 0)
 
         item_title = self.get_item_title_from_attribute(attribute_to_update)
         change_amount = self.ATTRIBUTE_CHANGE_AMOUNTS.get(item_title)
@@ -68,11 +68,11 @@ class ShopTileController:
         new_value = base_value + (modifier * custom_modifier)
 
         setattr(player, attribute_to_update, new_value)
-        player.attribute_modifiers[attribute_to_update] = modifier
+        player.attributes_bought[attribute_to_update] = modifier
 
     def handle_buy(self, player, item_title, item_price, attribute_to_update):
         item_limit = self.model.limit
-        current_quantity = player.attribute_modifiers.get(attribute_to_update, 0)
+        current_quantity = player.attributes_bought.get(attribute_to_update, 0)
 
         change_amount = self.ATTRIBUTE_CHANGE_AMOUNTS.get(item_title)
 
@@ -91,7 +91,7 @@ class ShopTileController:
             player.add_coin(-item_price)
             self.update_player_attribute(player, attribute_to_update, increment=True)
 
-            new_quantity = player.attribute_modifiers.get(attribute_to_update)
+            new_quantity = player.attributes_bought.get(attribute_to_update)
 
             if isinstance(new_quantity, (int, float)):
                 self.view.update_items_purchased(new_quantity, attribute_to_update)
@@ -106,7 +106,7 @@ class ShopTileController:
 
     def handle_sell(self, player, item_title, item_price, attribute_to_update):
         item_limit = self.model.limit
-        current_quantity = player.attribute_modifiers.get(attribute_to_update, 0)
+        current_quantity = player.attributes_bought.get(attribute_to_update, 0)
 
         change_amount = self.ATTRIBUTE_CHANGE_AMOUNTS.get(item_title)
 
@@ -125,7 +125,7 @@ class ShopTileController:
             player.add_coin(int(item_price * 0.7))
             self.update_player_attribute(player, attribute_to_update, increment=False)
 
-            new_quantity = player.attribute_modifiers.get(attribute_to_update)
+            new_quantity = player.attributes_bought.get(attribute_to_update)
 
             if isinstance(new_quantity, (int, float)):
                 self.view.update_items_purchased(new_quantity, attribute_to_update)
@@ -160,7 +160,7 @@ class ShopTileController:
             return 0
 
     def update_checkbox(self, player, attribute):
-        current_value = player.attribute_modifiers.get(attribute)
+        current_value = player.attributes_bought.get(attribute)
         if isinstance(current_value, int):
             count = current_value
         elif isinstance(current_value, bool):
@@ -178,7 +178,7 @@ class ShopTileController:
 
     def update_checkbox_states(self, player, screen):
         for item_title, attribute in self.ITEM_TO_ATTRIBUTE_MAP.items():
-            count = player.attribute_modifiers.get(attribute)
+            count = player.attributes_bought.get(attribute)
             current_count_in_view = self.view.checkbox_counts.get(attribute)
 
             # Update the checkbox in the view only if the count has changed

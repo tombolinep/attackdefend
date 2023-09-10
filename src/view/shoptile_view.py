@@ -133,7 +133,7 @@ class ShopTileView:
         checkbox_start_x = center_x - total_checkboxes_width // 2
 
         attribute_to_update = self.ITEM_TO_ATTRIBUTE_MAP.get(self.model.title, "")
-        attribute_value = player.attribute_modifiers.get(attribute_to_update, 0)
+        attribute_value = player.attributes_bought.get(attribute_to_update, 0)
 
         for i in range(self.model.limit):
             checkbox_rect = pygame.Rect(
@@ -197,7 +197,7 @@ class ShopTileView:
 
     def update_checkbox(self, attribute, count, player, screen):
         # Get the current value of the attribute from attribute_modifiers
-        current_value = player.attribute_modifiers.get(attribute, None)
+        current_value = player.attributes_bought.get(attribute, None)
 
         if current_value is None:
             return

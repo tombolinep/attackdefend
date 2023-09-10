@@ -23,7 +23,7 @@ def main():
     while model.running:
         if model.game_over:
             controller.handle_game_over()
-            view.display_game_over()
+            view.display_game_over(model)
             pygame.display.flip()
         else:
             controller.handle_events()

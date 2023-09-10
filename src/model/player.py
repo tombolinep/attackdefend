@@ -24,11 +24,11 @@ class Player(pygame.sprite.Sprite):
         self.view = view
         self.color = (0, 0, 255)
         self.coins = 100
-        self.attribute_modifiers = {key: 0 if isinstance(value, int) else value for key, value in
-                                    self.ATTRIBUTE_DEFAULTS.items()}
+        self.attributes_bought = {key: 0 if isinstance(value, int) else value for key, value in
+                                  self.ATTRIBUTE_DEFAULTS.items()}
 
         for attribute in self.ATTRIBUTE_DEFAULTS:
-            setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + self.attribute_modifiers[attribute])
+            setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + self.attributes_bought[attribute])
 
         self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
         self.y = SCREEN_HEIGHT // 2
@@ -45,19 +45,19 @@ class Player(pygame.sprite.Sprite):
         return False
 
     def update_attribute(self, attribute, change_amount, action):
-        current_value: int | Any = self.attribute_modifiers.get(attribute, 0)
+        current_value: int | Any = self.attributes_bought.get(attribute, 0)
 
         if action in ["buy", "increase"]:
             new_value = current_value + change_amount
         elif action in ["sell", "decrease"]:
             new_value = current_value - change_amount
 
-        self.attribute_modifiers[attribute] = new_value
+        self.attributes_bought[attribute] = new_value
         setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + new_value)
 
     def get_effective_attribute(self, attribute):
         base_value = getattr(self, attribute, 0)
-        modifier = self.attribute_modifiers.get(attribute, 0)
+        modifier = self.attributes_bought.get(attribute, 0)
         return base_value + modifier
 
     def purchase_item(self, price):
@@ -71,7 +71,7 @@ class Player(pygame.sprite.Sprite):
             return False
 
         default_value = self.ATTRIBUTE_DEFAULTS.get(attribute)
-        current_value = self.attribute_modifiers.get(attribute, default_value)
+        current_value = self.attributes_bought.get(attribute, default_value)
 
         if current_value is None or default_value is None:
             return False
@@ -85,7 +85,7 @@ class Player(pygame.sprite.Sprite):
 
     def sell_item(self, attribute, decrease_amount, item_price):
         if self.can_sell_item(attribute, decrease_amount):
-            self.attribute_modifiers[attribute] -= decrease_amount
+            self.attributes_bought[attribute] -= decrease_amount
             setattr(self, attribute, self.attribute)
             self.coins += item_price
             return True

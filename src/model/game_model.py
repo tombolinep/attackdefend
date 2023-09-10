@@ -120,7 +120,7 @@ class GameModel:
 
     def automatic_shoot(self):
         current_time = pygame.time.get_ticks()
-        rapid_charge_system_count = self.player.attribute_modifiers.get('reload_speed', 0)
+        rapid_charge_system_count = self.player.attributes_bought.get('reload_speed', 0)
         adjusted_bullet_interval = BULLET_INTERVAL - (500 * rapid_charge_system_count)
         num_of_guns = self.player.num_of_guns
         # print(f"Number of guns: {num_of_guns}")  # Debugging line to check the number of guns

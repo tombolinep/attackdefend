@@ -1,13 +1,10 @@
 import pygame
-from src.constants import POWERUP_INTERVAL, COIN_INTERVAL
+from src.constants import POWERUP_INTERVAL, COIN_INTERVAL, BULLET_INTERVAL, ROCKET_INTERVAL
 import logging
 
 
 class TimeManager:
     def __init__(self):
-        self.COIN_INTERVAL = COIN_INTERVAL  # Assuming COIN_INTERVAL is defined elsewhere
-        self.POWERUP_INTERVAL = POWERUP_INTERVAL  # Assuming POWERUP_INTERVAL is defined elsewhere
-
         self.coin_timer_active = True
         self.powerup_timer_active = True
         self.initialize_events()
@@ -17,15 +14,16 @@ class TimeManager:
         pygame.time.set_timer(self.ADDENEMY, 250)
 
         self.SHOOT = pygame.USEREVENT + 2
-        pygame.time.set_timer(self.SHOOT, 4200)
+        pygame.time.set_timer(self.SHOOT, BULLET_INTERVAL)
 
         self.ADDCOIN = pygame.USEREVENT + 3
-        pygame.time.set_timer(self.ADDCOIN, self.COIN_INTERVAL)
-        logging.info(f"Coin Timer Initialized: {self.COIN_INTERVAL}")
+        pygame.time.set_timer(self.ADDCOIN, COIN_INTERVAL)
 
         self.ADDPOWERUP = pygame.USEREVENT + 4
-        pygame.time.set_timer(self.ADDPOWERUP, self.POWERUP_INTERVAL)
-        logging.info(f"Powerup Timer Initialized: {self.POWERUP_INTERVAL}")
+        pygame.time.set_timer(self.ADDPOWERUP, POWERUP_INTERVAL)
+
+        self.ROCKET_SHOOT = pygame.USEREVENT + 5
+        pygame.time.set_timer(self.ROCKET_SHOOT, ROCKET_INTERVAL)
 
     def pause_timers(self):
         self.coin_timer_active = pygame.time.get_timer(self.ADDCOIN) != 0

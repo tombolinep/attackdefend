@@ -10,6 +10,7 @@ from src.model.bullet import Bullet
 from src.model.coin import Coin
 from src.model.enemy import Enemy
 from src.model.powerup import PowerUp
+from src.model.rocket import Rocket
 
 
 class GameModel:
@@ -23,6 +24,7 @@ class GameModel:
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
+        self.rockets = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
@@ -47,6 +49,7 @@ class GameModel:
         self.powerups.empty()
         self.coins.empty()
         self.bullets.empty()
+        self.rockets.empty()
 
         # Re-add player to all_sprites
         self.all_sprites.empty()
@@ -86,6 +89,10 @@ class GameModel:
         self.bullets.add(bullet)
         self.all_sprites.add(bullet)
 
+    def add_rocket(self, rocket):
+        self.bullets.add(rocket)
+        self.all_sprites.add(rocket)
+
     def increment_score(self):
         self.score += 1
 
@@ -123,7 +130,6 @@ class GameModel:
         rapid_charge_system_count = self.player.attributes_bought.get('reload_speed', 0)
         adjusted_bullet_interval = BULLET_INTERVAL - (500 * rapid_charge_system_count)
         num_of_guns = self.player.num_of_guns
-        # print(f"Number of guns: {num_of_guns}")  # Debugging line to check the number of guns
 
         if current_time >= self.next_bullet_time:
             closest_enemy = self.find_closest_enemy()
@@ -142,6 +148,12 @@ class GameModel:
 
             self.next_bullet_time = current_time + adjusted_bullet_interval
 
+    def rocket_shoot(self):
+        if self.player.attributes_bought.get('rocket_launcher_enabled'):
+            target_x, target_y = self.calculate_highest_enemy_density_target()
+            new_rocket = Rocket(self.player.x, self.player.y, target_x, target_y)
+            self.add_rocket(new_rocket)
+
     @staticmethod
     def calculate_time_until_powerup(next_powerup_time):
         current_time = pygame.time.get_ticks()
@@ -154,3 +166,30 @@ class GameModel:
             return round(total_enemy_speed / len(enemies), 2)
         else:
             return 0
+
+    def calculate_highest_enemy_density_target(self):
+        grid_size = 100  # Define the size of each grid cell
+        cols = (SCREEN_WIDTH - STATS_WIDTH) // grid_size
+        rows = SCREEN_HEIGHT // grid_size
+
+        # Create a 2D list to hold the number of enemies in each cell
+        grid = [[0 for _ in range(cols)] for _ in range(rows)]
+
+        # Iterate over each enemy and increment the count in the corresponding cell
+        for enemy in self.enemies:
+            col = (enemy.rect.x - STATS_WIDTH) // grid_size
+            row = enemy.rect.y // grid_size
+            col = max(0, min(col, cols - 1))
+            row = max(0, min(row, rows - 1))
+            grid[row][col] += 1
+
+
+        # Find the cell with the highest enemy density
+        max_density = max(max(row) for row in grid)
+        target_row, target_col = next((r, c) for r, row in enumerate(grid) for c, val in enumerate(row) if val == max_density)
+
+        # Calculate the target coordinates as the center of this cell
+        target_x = STATS_WIDTH + target_col * grid_size + grid_size // 2
+        target_y = target_row * grid_size + grid_size // 2
+
+        return target_x, target_y

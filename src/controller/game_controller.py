@@ -3,6 +3,7 @@ import logging
 import pygame
 from pygame import KEYDOWN, K_r, K_q, K_ESCAPE, QUIT
 
+from src.constants import COIN_INTERVAL, POWERUP_INTERVAL
 from src.controller.collision_controller import CollisionController
 from src.controller.enemy_controller import EnemyController
 from src.controller.player_controller import PlayerController
@@ -36,8 +37,8 @@ class GameController:
         self.last_log_time = 0
         self.coin_start_time = None
         self.powerup_start_time = None
-        self.coin_interval = time_manager.COIN_INTERVAL
-        self.powerup_interval = time_manager.POWERUP_INTERVAL
+        self.coin_interval = COIN_INTERVAL
+        self.powerup_interval = POWERUP_INTERVAL
         self.shop_model = Shop(self.model.player, model.audio_manager)
         self.shop_view = ShopView(self.shop_model, self, self.event_dispatcher)
         self.shop_controller = ShopController(self.shop_model, self.shop_view, self.screen, self.event_dispatcher)
@@ -73,6 +74,8 @@ class GameController:
                     self.model.add_powerup()
                 elif event.type == self.time_manager.SHOOT:
                     self.model.automatic_shoot()
+                elif event.type == self.time_manager.ROCKET_SHOOT:
+                    self.model.rocket_shoot()
 
     def update_game(self):
         current_time = pygame.time.get_ticks()
@@ -86,6 +89,7 @@ class GameController:
             self.collision_controller.check_collisions()
             self.model.automatic_shoot()
             self.model.bullets.update()
+            self.model.rockets.update()
             self.model.coins.update()
             self.model.powerups.update()
 

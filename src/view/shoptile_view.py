@@ -120,23 +120,18 @@ class ShopTileView:
         new_checkbox_size = int(self.checkbox_size * 1.5)  # Increase the size by 50%
         new_checkbox_spacing = int(self.checkbox_spacing * 1.5)  # Optionally, increase the spacing by 50% too
 
-        # Calculate the height occupied by the description
         description_font = pygame.font.Font(None, 18)
         wrapped_description = self._wrap_text(self.model.description, description_font,
                                               self.rect.width - 2 * INTERNAL_MARGIN)
         description_height = len(wrapped_description) * 20  # 20 is the line height for the description
 
-        # Calculate the vertical starting position for the checkboxes
         checkbox_start_y = self.rect.y + 55 + description_height + 10  # 55 is the initial Y position for the description, 10 is spacing
 
-        # Calculate the total width of all checkboxes and the spaces between them
         total_checkboxes_width = self.model.limit * new_checkbox_size + (self.model.limit - 1) * new_checkbox_spacing
 
-        # Calculate the horizontal starting position for the checkboxes
         center_x = self.rect.x + self.rect.width // 2
         checkbox_start_x = center_x - total_checkboxes_width // 2
 
-        # Get the attribute linked to the current item
         attribute_to_update = self.ITEM_TO_ATTRIBUTE_MAP.get(self.model.title, "")
         attribute_value = player.attribute_modifiers.get(attribute_to_update, 0)
 
@@ -150,7 +145,7 @@ class ShopTileView:
             pygame.draw.rect(screen, (255, 255, 255), checkbox_rect, 2)  # Draw white outline
 
             if i < attribute_value:
-                pygame.draw.rect(screen, (255, 255, 255), checkbox_rect)  # Fill the rectangle
+                pygame.draw.rect(screen, (255, 255, 255), checkbox_rect)
 
     def set_status_message(self, message, color, button_clicked):
         self.status_message = message
@@ -189,10 +184,12 @@ class ShopTileView:
     def update_items_purchased(self, new_quantity, attribute_to_update):
         self.model.attribute_to_update = attribute_to_update
 
+        if new_quantity > self.model.limit or new_quantity < -self.model.limit:  # Added check for negative values
+            return
         if isinstance(new_quantity, bool):
             self.items_purchased = new_quantity
             item_type = "boolean"
-        elif isinstance(new_quantity, int):
+        elif isinstance(new_quantity, (int, float)):
             self.items_purchased = new_quantity
             item_type = "integer"
         else:

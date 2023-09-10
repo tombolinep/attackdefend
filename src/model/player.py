@@ -1,3 +1,5 @@
+from typing import Any
+
 import pygame
 from src.constants import PLAYER_DIAMETER, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT
 from src.model.bullet import Bullet
@@ -41,10 +43,16 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
 
-    def update_attribute_value(self, attribute_to_update, change_amount):
-        current_value = self.attribute_modifiers.get(attribute_to_update, 0)
-        self.attribute_modifiers[attribute_to_update] = max(0, current_value + change_amount)
-        setattr(self, attribute_to_update, self.get_effective_attribute(attribute_to_update))
+    def update_attribute(self, attribute, change_amount, action):
+        current_value: int | Any = self.attribute_modifiers.get(attribute, 0)
+
+        if action in ["buy", "increase"]:
+            new_value = current_value + change_amount
+        elif action in ["sell", "decrease"]:
+            new_value = current_value - change_amount
+
+        self.attribute_modifiers[attribute] = new_value
+        setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + new_value)
 
     def get_effective_attribute(self, attribute):
         base_value = getattr(self, attribute, 0)
@@ -60,6 +68,7 @@ class Player(pygame.sprite.Sprite):
     def can_sell_item(self, attribute, decrease_amount):
         if not attribute:
             return False
+
         default_value = self.ATTRIBUTE_DEFAULTS.get(attribute)
         current_value = getattr(self, attribute, None)
         if current_value is None or default_value is None:

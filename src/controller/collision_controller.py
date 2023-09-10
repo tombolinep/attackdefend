@@ -41,7 +41,7 @@ class CollisionController:
     def handle_enemy_collision(self, enemy):
         if self.player.shield > 0:
             self.audio_manager.play_shield_hit_sound()
-            self.player.update_attribute_value('shield', change_amount=-1)
+            self.player.update_attribute(attribute='shield', action='decrease', change_amount=1)
             enemy.kill()
         else:
             self.audio_manager.play_death_sound()

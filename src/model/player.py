@@ -70,13 +70,16 @@ class Player(pygame.sprite.Sprite):
             return False
 
         default_value = self.ATTRIBUTE_DEFAULTS.get(attribute)
-        current_value = getattr(self, attribute, None)
+        current_value = self.attribute_modifiers.get(attribute, default_value)
+
         if current_value is None or default_value is None:
             return False
-        if isinstance(default_value, int):
+        if attribute == "diameter" or attribute == "reload_speed":
+            return current_value - decrease_amount >= 0
+        if isinstance(default_value, (int, float)):
             return current_value - decrease_amount >= default_value
         if isinstance(default_value, bool):
-            return current_value == True
+            return current_value
         return False
 
     def sell_item(self, attribute, decrease_amount, item_price):

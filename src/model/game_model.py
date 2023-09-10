@@ -119,15 +119,18 @@ class GameModel:
 
     def automatic_shoot(self):
         current_time = pygame.time.get_ticks()
+        rapid_charge_system_count = self.player.attribute_modifiers.get('reload_speed', 0)
+        adjusted_bullet_interval = BULLET_INTERVAL - (500 * rapid_charge_system_count)
+
         if current_time >= self.next_bullet_time:
             closest_enemy = self.find_closest_enemy()
 
-            if closest_enemy:  # Check for None here
+            if closest_enemy:
                 target_x, target_y = self.calculate_target(closest_enemy)
                 bullet = Bullet(self.player.x, self.player.y, target_x, target_y)
                 self.add_bullet(bullet)
 
-            self.next_bullet_time = current_time + BULLET_INTERVAL
+            self.next_bullet_time = current_time + adjusted_bullet_interval
 
     @staticmethod
     def calculate_time_until_powerup(next_powerup_time):

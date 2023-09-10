@@ -1,5 +1,5 @@
 import pygame
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, BULLET_INTERVAL
 from src.view.button_view import Button
 from src.utils import resource_path
 
@@ -80,24 +80,41 @@ class GameView:
         self.buttons = [self.pause_button, self.shop_button]
 
     def display_stats(self, model):
+
+        rapid_charge_system_count = model.player.attribute_modifiers.get('reload_speed', 0)
+        adjusted_bullet_interval = BULLET_INTERVAL - (500 * rapid_charge_system_count)
+        time_per_shot_in_seconds = adjusted_bullet_interval / 1000
+
         stats = [
             ("Score:", int(model.score)),
-            ("Your speed:", model.player.speed),
             ("Coins:", model.player.coins),
-            ("Average enemy speed:", model.calculate_average_enemy_speed(model.enemies)),
-            ("Shield:", model.player.shield),
-            ("Reload Speed:", model.player.reload_speed),
+            ("", ""),
+            ("Enemy speed:", model.calculate_average_enemy_speed(model.enemies)),
+            ("", ""),
+            ("Speed:", model.player.speed),
             ("Size:", model.player.diameter),
-            ("Tractor Beam Enabled:", model.player.tractor_beam_enabled),
-            ("Warp Field Enabled:", model.player.warp_field_enabled),
+            ("Shield:", model.player.shield),
+            ("Fire Rate:", round(time_per_shot_in_seconds, 2)),
             ("Number of Guns:", model.player.num_of_guns),
-            ("Rocket Launcher Enabled:", model.player.rocket_launcher_enabled),
-            ("Laser Enabled:", model.player.laser_enabled),
+            ("Tractor Beam:", "True" if model.player.tractor_beam_enabled else "False"),
+            ("Warp Field:", "True" if model.player.warp_field_enabled else "False"),
+            ("Rocket Launcher:", "True" if model.player.rocket_launcher_enabled else "False"),
+            ("Laser:", "True" if model.player.laser_enabled else "False"),
         ]
 
+        header_font = pygame.font.Font(None, 32)  # Adjust font size for headers
+        value_font = pygame.font.Font(None, 32)  # Adjust font size for values
+
         for i, (text, value) in enumerate(stats):
-            stat_surface = self.font.render(f"{text} {value}", True, (0, 0, 0))
-            self.screen.blit(stat_surface, (10, 10 + i * 30))
+            if text:
+                font = header_font if ":" in text else value_font
+                color = (0, 0, 0) if ":" in text else (0, 0, 139)  # Dark blue for values
+                text_surface = font.render(text, True, color)
+                value_surface = font.render(f"{value}", True, (0, 0, 139))  # Dark blue for values
+                self.screen.blit(text_surface, (10, 10 + i * 30))
+                self.screen.blit(value_surface, (220, 10 + i * 30))  # Adjust x-value for alignment
+            else:
+                continue
 
     def display_game_over(self):
         font = pygame.font.Font(None, 74)

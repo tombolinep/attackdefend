@@ -1,6 +1,7 @@
 class Shop:
-    def __init__(self, player):
+    def __init__(self, player, audio_manager):
         self.player = player
+        self.audio_manager = audio_manager
         self.shop_items = [
             {"title": "Quantum Thrusters", "description": "Upgrade your ship's engines for a speed boost", "price": 5,
              "limit": 5},

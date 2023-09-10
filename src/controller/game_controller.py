@@ -38,6 +38,9 @@ class GameController:
         self.powerup_start_time = None
         self.coin_interval = time_manager.COIN_INTERVAL
         self.powerup_interval = time_manager.POWERUP_INTERVAL
+        self.shop_model = Shop(self.model.player, model.audio_manager)
+        self.shop_view = ShopView(self.shop_model, self, self.event_dispatcher)
+        self.shop_controller = ShopController(self.shop_model, self.shop_view, self.screen, self.event_dispatcher)
 
     def initialize_game(self):
         player = Player()
@@ -120,7 +123,4 @@ class GameController:
                     self.event_dispatcher.dispatch_event("open_shop", {})
 
     def open_shop(self, data=None):
-        shop_model = Shop(self.model.player)
-        shop_view = ShopView(shop_model, self, self.event_dispatcher)
-        shop_controller = ShopController(shop_model, shop_view, self.screen, self.event_dispatcher)
-        powerup_type = shop_controller.open_shop(self.model.player)
+        powerup_type = self.shop_controller.open_shop(self.model.player)

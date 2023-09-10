@@ -1,5 +1,4 @@
 from src.controller.shop_controller import ShopController
-from src.model.audio_manager import Audio
 
 
 class ShopTileController:
@@ -15,12 +14,12 @@ class ShopTileController:
         "Laser Core Upgrade": "laser_enabled",
     }
 
-    def __init__(self, model, view, event_dispatcher, shop_model):
+    def __init__(self, model, view, event_dispatcher, shop_model, audio_manager):
         self.model = model
         self.view = view
         self.event_dispatcher = event_dispatcher
         self.shop_model = shop_model
-        self.audio_manager = Audio()
+        self.audio_manager = audio_manager
 
     def handle_click(self, pos, player, item_title, action):
         item_price = self.get_item_price(item_title)
@@ -51,7 +50,6 @@ class ShopTileController:
 
             new_quantity = player.attribute_modifiers.get(attribute_to_update)
 
-            # Update the view to reflect the new model state, only for integer attributes
             if isinstance(new_quantity, int):
                 self.view.update_items_purchased(new_quantity, attribute_to_update)
 
@@ -65,7 +63,6 @@ class ShopTileController:
 
     def handle_sell(self, player, item_title, item_price, attribute_to_update):
         if player.can_sell_item(attribute_to_update, 1):
-            # Determine the current modifier and adjust it to handle the sale
             current_modifier = player.attribute_modifiers.get(attribute_to_update)
 
             if isinstance(current_modifier, bool):
@@ -73,22 +70,11 @@ class ShopTileController:
             else:
                 new_modifier = max(0, current_modifier - 1)
 
-            # Update the attribute modifier in the player's data structure
             player.attribute_modifiers[attribute_to_update] = new_modifier
-
-            # Adjust the player's coin balance to reflect the sale
             player.add_coin(int(item_price * 0.7))
-
-            # Update the player's attribute to reflect the change in modifiers
             player.update_attribute(attribute_to_update, -1 if not isinstance(new_modifier, bool) else False)
-
-            # Set the Player's attribute to the effective value after applying the modifier
             setattr(player, attribute_to_update, player.get_effective_attribute(attribute_to_update))
-
-            # Update the view to show the new state of items purchased
             new_quantity = player.attribute_modifiers[attribute_to_update]
-
-            # Update the view to reflect the new model state, only for integer attributes
             if isinstance(new_quantity, int):
                 self.view.update_items_purchased(new_quantity, attribute_to_update)
 
@@ -101,22 +87,17 @@ class ShopTileController:
             return False
 
     def update_player_attribute(self, player, attribute_to_update, increment=True):
-        # Get the base value and the modifier
         base_value = player.ATTRIBUTE_DEFAULTS.get(attribute_to_update)
         modifier = player.attribute_modifiers.get(attribute_to_update)
 
-        # Determine the new value based on the attribute type
         if isinstance(base_value, bool):
             new_value = True
         else:
-            # For integer attributes, calculate the new value based on the modifier
             new_value = base_value + modifier
             if increment:
                 new_value += 1
             else:
-                new_value = max(base_value, new_value - 1)  # Ensure the value doesn't go below the default
-
-        # Update both the attribute and the modifier
+                new_value = max(base_value, new_value - 1)
         setattr(player, attribute_to_update, new_value)
         player.attribute_modifiers[attribute_to_update] = new_value - base_value
 

@@ -6,6 +6,11 @@ BORDER_THICKNESS = 2
 
 
 class ShopTileView:
+    WHITE_COLOR = (255, 255, 255)
+    FONT_SIZE_24 = 24
+    FONT_SIZE_18 = 18
+    FONT_SIZE_22 = 22
+    FONT_SIZE_28 = 28
     ITEM_TO_ATTRIBUTE_MAP = {
         "Quantum Thrusters": "speed",
         "Energy Shield": "shield",
@@ -24,14 +29,21 @@ class ShopTileView:
         self.player = player
         self.color = (100, 100, 100)
         self.hover_color = (150, 150, 150)
-        self._initialize_buttons(width)
         self.checkbox_size = 20
         self.checkbox_spacing = 5
+        self.font_24 = pygame.font.Font(None, self.FONT_SIZE_24)
+        self.font_18 = pygame.font.Font(None, self.FONT_SIZE_18)
+        self.font_22 = pygame.font.Font(None, self.FONT_SIZE_22)
+        self.font_28 = pygame.font.Font(None, self.FONT_SIZE_28)
+        self._initialize_buttons(width)
         self.status_message_position = (self.buy_button.x + 10, self.buy_button.y - 30)
         self.status_message = None
         self.status_message_color = (255, 255, 255)
         self.status_expires_at = None
         self.checkbox_counts = {}
+
+        self._wrapped_description = self._wrap_text(self.model.description, self.font_18,
+                                                    self.rect.width - 2 * INTERNAL_MARGIN)
 
     def _initialize_buttons(self, width):
         button_width = (width - 2 * INTERNAL_MARGIN - 5) / 2
@@ -69,7 +81,7 @@ class ShopTileView:
 
     def _draw_texts(self, screen):
         self._draw_title(screen)
-        self._draw_description(screen)
+        self._draw_description(screen, self._wrapped_description)
         self._draw_price(screen)
 
     def _draw_title(self, screen):
@@ -80,23 +92,13 @@ class ShopTileView:
                          (title_rect.right, title_rect.bottom), 2)
         screen.blit(title_surface, title_rect)
 
-    def _draw_description(self, screen):
-        description_font = pygame.font.Font(None, 18)
-        wrapped_description = self._wrap_text(self.model.description, description_font,
-                                              self.rect.width - 2 * INTERNAL_MARGIN)
-
-        # Calculate total width of each line in the description.
-        text_widths = [description_font.size(line)[0] for line in wrapped_description]
-
+    def _draw_description(self, screen, wrapped_description):
+        description_font = pygame.font.Font(None, self.FONT_SIZE_18)
         description_y = self.rect.y + 55
 
-        for idx, (line, line_width) in enumerate(zip(wrapped_description, text_widths)):
-            description_surface = description_font.render(line, True, (255, 255, 255))
-
-            # Calculate the horizontal starting position for each line.
-            center_x = self.rect.x + self.rect.width // 2
-            text_start_x = center_x - line_width // 2
-
+        for idx, line in enumerate(wrapped_description):
+            description_surface = description_font.render(line, True, self.WHITE_COLOR)
+            text_start_x = self.rect.centerx - description_font.size(line)[0] // 2
             screen.blit(description_surface, (text_start_x, description_y + idx * 20))
 
     def _draw_price(self, screen):
@@ -108,9 +110,9 @@ class ShopTileView:
         words = text.split(' ')
         lines = []
         while words:
-            line = ''
-            while words and font.size(line + words[0])[0] <= max_width:
-                line = line + (words.pop(0) + ' ')
+            line = words.pop(0)
+            while words and font.size(line + ' ' + words[0])[0] <= max_width:
+                line += ' ' + words.pop(0)
             lines.append(line)
         return lines
 
@@ -135,10 +137,8 @@ class ShopTileView:
         checkbox_start_x = center_x - total_checkboxes_width // 2
 
         # Get the attribute linked to the current item
-        item_title = self.model.title  # Assuming self.model.title holds the item title; adjust if necessary
-
-        attribute_to_update = self.ITEM_TO_ATTRIBUTE_MAP.get(item_title, None)
-        attribute_value = player.attribute_modifiers.get(attribute_to_update)
+        attribute_to_update = self.ITEM_TO_ATTRIBUTE_MAP.get(self.model.title, "")
+        attribute_value = player.attribute_modifiers.get(attribute_to_update, 0)
 
         for i in range(self.model.limit):
             checkbox_rect = pygame.Rect(
@@ -208,4 +208,3 @@ class ShopTileView:
         # Check if the current value matches the count; if not, redraw the checkboxes
         if current_value != count:
             self._draw_checkboxes(screen, player)
-

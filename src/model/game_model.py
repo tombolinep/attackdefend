@@ -90,7 +90,7 @@ class GameModel:
         self.all_sprites.add(bullet)
 
     def add_rocket(self, rocket):
-        self.bullets.add(rocket)
+        self.rockets.add(rocket)
         self.all_sprites.add(rocket)
 
     def increment_score(self):
@@ -183,10 +183,10 @@ class GameModel:
             row = max(0, min(row, rows - 1))
             grid[row][col] += 1
 
-
         # Find the cell with the highest enemy density
         max_density = max(max(row) for row in grid)
-        target_row, target_col = next((r, c) for r, row in enumerate(grid) for c, val in enumerate(row) if val == max_density)
+        target_row, target_col = next(
+            (r, c) for r, row in enumerate(grid) for c, val in enumerate(row) if val == max_density)
 
         # Calculate the target coordinates as the center of this cell
         target_x = STATS_WIDTH + target_col * grid_size + grid_size // 2

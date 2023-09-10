@@ -14,6 +14,18 @@ class ShopTileController:
         "Laser Core Upgrade": "laser_enabled",
     }
 
+    ATTRIBUTE_CHANGE_AMOUNTS = {
+        "Quantum Thrusters": 1,
+        "Energy Shield": 1,
+        "Rapid Charge System": -0.5,
+        "Dimensional Compression": -5,
+        "Tractor Beam": True,  # Enable Tractor Beam
+        "Warp Field Generator": True,  # Disable Warp Field Generator
+        "Extra Blaster Mount": True,  # Enable Extra Blaster Mount
+        "Rocket Launcher": True,  # Disable Rocket Launcher
+        "Laser Core Upgrade": True,  # Enable Laser Core Upgrade
+    }
+
     def __init__(self, model, view, event_dispatcher, shop_model, audio_manager):
         self.model = model
         self.view = view
@@ -62,19 +74,20 @@ class ShopTileController:
             return False
 
     def handle_sell(self, player, item_title, item_price, attribute_to_update):
+        item_limit = self.model.limit
+        current_quantity = player.attribute_modifiers.get(attribute_to_update)
+
+        if item_limit is not None and current_quantity <= 0:
+            self.view.set_status_message("No items to sell", (255, 0, 0), "sell")
+            self.audio_manager.play_purchase_error_sound()
+            return False
+
         if player.can_sell_item(attribute_to_update, 1):
-            current_modifier = player.attribute_modifiers.get(attribute_to_update)
-
-            if isinstance(current_modifier, bool):
-                new_modifier = False
-            else:
-                new_modifier = max(0, current_modifier - 1)
-
-            player.attribute_modifiers[attribute_to_update] = new_modifier
             player.add_coin(int(item_price * 0.7))
-            player.update_attribute(attribute_to_update, -1 if not isinstance(new_modifier, bool) else False)
-            setattr(player, attribute_to_update, player.get_effective_attribute(attribute_to_update))
-            new_quantity = player.attribute_modifiers[attribute_to_update]
+            self.update_player_attribute(player, attribute_to_update, increment=False)
+
+            new_quantity = player.attribute_modifiers.get(attribute_to_update)
+
             if isinstance(new_quantity, int):
                 self.view.update_items_purchased(new_quantity, attribute_to_update)
 

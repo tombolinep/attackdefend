@@ -39,9 +39,9 @@ class CollisionController:
         return corner_distance_sq <= (circle.diameter // 2) ** 2
 
     def handle_enemy_collision(self, enemy):
-        if self.player.get_shield() > 0:
+        if self.player.shield > 0:
             self.audio_manager.play_shield_hit_sound()
-            self.player.remove_shield()
+            self.player.update_attribute_value('shield', change_amount=-1)
             enemy.kill()
         else:
             self.audio_manager.play_death_sound()

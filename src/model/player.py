@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
                                     self.ATTRIBUTE_DEFAULTS.items()}
 
         for attribute in self.ATTRIBUTE_DEFAULTS:
-            setattr(self, attribute, self.get_effective_attribute(attribute))
+            setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + self.attribute_modifiers[attribute])
 
         self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
         self.y = SCREEN_HEIGHT // 2
@@ -41,21 +41,15 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
 
-    def increase_speed(self, increment=1):
-        self.attribute_modifiers['speed'] += increment
-        self.speed = self.get_effective_attribute('speed')
+    def update_attribute_value(self, attribute_to_update, change_amount):
+        current_value = self.attribute_modifiers.get(attribute_to_update, 0)
+        self.attribute_modifiers[attribute_to_update] = max(0, current_value + change_amount)
+        setattr(self, attribute_to_update, self.get_effective_attribute(attribute_to_update))
 
-    def add_shield(self):
-        self.attribute_modifiers['shield'] += 1
-        self.shield = self.get_effective_attribute('shield')
-
-    def remove_shield(self):
-        if self.attribute_modifiers['shield'] > 0:
-            self.attribute_modifiers['shield'] -= 1
-            self.shield = self.get_effective_attribute('shield')
-
-    def get_shield(self):
-        return self.shield
+    def get_effective_attribute(self, attribute):
+        base_value = getattr(self, attribute, 0)
+        modifier = self.attribute_modifiers.get(attribute, 0)
+        return base_value + modifier
 
     def purchase_item(self, price):
         if self.coins >= price:
@@ -92,48 +86,3 @@ class Player(pygame.sprite.Sprite):
         self.center = (self.x + self.radius, self.y + self.radius)
         if self.view:
             self.view.update_shield()
-
-    def update_attribute(self, attribute, amount):
-        if not attribute:
-            return False
-        if hasattr(self, attribute):
-            current_value = getattr(self, attribute)
-            new_value = current_value + amount
-            setattr(self, attribute, new_value)
-            return True
-        else:
-            raise AttributeError(f"{attribute} is not an attribute of Player.")
-
-    def get_effective_attribute(self, attribute):
-        base_value, modifier = self._get_base_and_modifier_values(attribute)
-
-        if base_value is None:
-            raise AttributeError(f"No default value found for attribute: {attribute}")
-
-        if isinstance(base_value, bool):
-            return modifier
-        else:
-            return base_value + modifier
-
-    def _get_base_and_modifier_values(self, attribute):
-        return self.ATTRIBUTE_DEFAULTS.get(attribute), self.attribute_modifiers.get(attribute)
-
-    def update_attribute_modifier(self, attribute, change):
-        if attribute in self.attribute_modifiers:
-            current_value = getattr(self, attribute)
-
-            if isinstance(current_value, bool):
-                self.attribute_modifiers[attribute] = bool(change)
-            else:
-                self.attribute_modifiers[attribute] = min(max(0, self.attribute_modifiers[attribute] + change),
-                                                          self.ATTRIBUTE_DEFAULTS[attribute])
-            setattr(self, attribute, self.get_effective_attribute(attribute))
-        else:
-            raise AttributeError(f"No modifier found for attribute: {attribute}")
-
-    def reset_attribute_modifier(self, attribute):
-        if attribute in self.attribute_modifiers:
-            default_value = False if isinstance(self.attribute_modifiers[attribute], bool) else 0
-            self.attribute_modifiers[attribute] = default_value
-        else:
-            raise AttributeError(f"No modifier found for attribute: {attribute}")

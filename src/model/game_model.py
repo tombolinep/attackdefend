@@ -1,3 +1,4 @@
+import math
 import random
 from math import sqrt
 
@@ -121,14 +122,23 @@ class GameModel:
         current_time = pygame.time.get_ticks()
         rapid_charge_system_count = self.player.attribute_modifiers.get('reload_speed', 0)
         adjusted_bullet_interval = BULLET_INTERVAL - (500 * rapid_charge_system_count)
+        num_of_guns = self.player.num_of_guns
+        # print(f"Number of guns: {num_of_guns}")  # Debugging line to check the number of guns
 
         if current_time >= self.next_bullet_time:
             closest_enemy = self.find_closest_enemy()
 
             if closest_enemy:
                 target_x, target_y = self.calculate_target(closest_enemy)
-                bullet = Bullet(self.player.x, self.player.y, target_x, target_y)
-                self.add_bullet(bullet)
+
+                for i in range(num_of_guns):
+                    angle_offset = math.radians(i * 10 - (5 * (num_of_guns - 1)))
+
+                    bullet = Bullet(self.player.x + (i * 20 - (10 * (num_of_guns - 1))),
+                                    self.player.y + (i * 10 - (5 * (num_of_guns - 1))),
+                                    target_x, target_y)
+                    bullet.adjust_trajectory(angle_offset)
+                    self.add_bullet(bullet)
 
             self.next_bullet_time = current_time + adjusted_bullet_interval
 

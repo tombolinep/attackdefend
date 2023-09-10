@@ -1,3 +1,4 @@
+import math
 from typing import Any
 
 import pygame
@@ -74,7 +75,7 @@ class Player(pygame.sprite.Sprite):
 
         if current_value is None or default_value is None:
             return False
-        if attribute == "diameter" or attribute == "reload_speed":
+        if attribute == "diameter" or attribute == "reload_speed" or "num_of_guns":
             return current_value - decrease_amount >= 0
         if isinstance(default_value, (int, float)):
             return current_value - decrease_amount >= default_value
@@ -85,14 +86,24 @@ class Player(pygame.sprite.Sprite):
     def sell_item(self, attribute, decrease_amount, item_price):
         if self.can_sell_item(attribute, decrease_amount):
             self.attribute_modifiers[attribute] -= decrease_amount
-            setattr(self, attribute, self.get_effective_attribute(attribute))
+            setattr(self, attribute, self.attribute)
             self.coins += item_price
             return True
         return False
 
     def shoot(self):
-        new_bullet = Bullet(self.rect.centerx, self.rect.top)
-        return new_bullet
+        num_of_guns = self.num_of_guns
+        print(f"Number of guns: {num_of_guns}")  # Debugging line to check the number of guns
+        bullets = []
+        for i in range(num_of_guns):
+            angle_offset = math.radians(i * 10 - (5 * (num_of_guns - 1)))
+
+            new_bullet = Bullet(self.rect.centerx + (i * 20 - (10 * (num_of_guns - 1))),
+                                self.rect.top + (i * 10 - (5 * (num_of_guns - 1))))
+
+            new_bullet.adjust_trajectory(angle_offset)
+            bullets.append(new_bullet)
+        return bullets
 
     def update(self):
         self.center = (self.x + self.radius, self.y + self.radius)

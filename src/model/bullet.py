@@ -31,3 +31,9 @@ class Bullet(pygame.sprite.Sprite):
     def is_out_of_bounds(self):
         return (self.rect.x < STATS_WIDTH or self.rect.y < 0 or
                 self.rect.x > SCREEN_WIDTH or self.rect.y > SCREEN_HEIGHT)
+
+    def adjust_trajectory(self, angle_offset):
+        angle = math.atan2(self.dy, self.dx)
+        angle += math.radians(angle_offset)
+        self.dx = math.cos(angle)
+        self.dy = math.sin(angle)

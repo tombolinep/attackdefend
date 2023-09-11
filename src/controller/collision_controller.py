@@ -73,6 +73,11 @@ class CollisionController:
             if self.collision_circle_rectangle(self.player, enemy.rect):
                 self.handle_enemy_collision(enemy)
 
+            if self.player.warp_field_enabled and self.player.is_point_in_warp_field(enemy.rect.center):
+                enemy.in_warp_field = True
+            else:
+                enemy.in_warp_field = False
+
         for powerup in self.powerups:
             if self.collision_circle_rectangle(self.player, powerup.rect):
                 self.handle_powerup_collision(powerup)

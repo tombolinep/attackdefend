@@ -17,9 +17,10 @@ class Enemy(pygame.sprite.Sprite):
         self.base_speed = random.randint(1, 2)
         self.adjusted_speed = self.base_speed + score // 440
         self.speed = min(self.adjusted_speed, 12)
-
+        self.previous_speed = None
         self.initial_position()
         self.speedup_timer = pygame.time.get_ticks()
+        self.in_warp_field = False
 
     def initial_position(self):
         side = random.randint(0, 3)
@@ -37,25 +38,32 @@ class Enemy(pygame.sprite.Sprite):
             self.dx, self.dy = self.speed, 0
 
     def update_position(self, player_center=None):
-        if self.type == "red" and player_center:
+        slowdown_factor = 0.5 if self.in_warp_field else 1.0
+
+        if player_center:
             shield_space = len(Player.SHIELD_COLORS) * 5
             adjusted_player_center = (player_center[0] + shield_space, player_center[1] + shield_space)
 
             dx = adjusted_player_center[0] - self.rect.centerx
             dy = adjusted_player_center[1] - self.rect.centery
 
-            distance = (dx ** 2 + dy ** 2) ** 0.5
+            distance = (dx ** 2 + dy ** 2) ** 0.8
             if distance > 0:
                 dx /= distance
                 dy /= distance
 
-            if distance < self.speed:
+            new_speed = max(1, self.speed * slowdown_factor)
+
+            if distance < new_speed:
                 self.rect.center = adjusted_player_center
             else:
-                self.rect.x += dx * self.speed
-                self.rect.y += dy * self.speed
+                self.rect.x += dx * new_speed
+                self.rect.y += dy * new_speed
         else:
-            self.rect.move_ip(self.dx, self.dy)
+            self.rect.move_ip(self.dx * slowdown_factor, self.dy * slowdown_factor)
+
         if (self.rect.right < STATS_WIDTH or self.rect.left > SCREEN_WIDTH or
                 self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT):
             self.kill()
+
+

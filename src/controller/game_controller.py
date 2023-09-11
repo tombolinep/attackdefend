@@ -42,6 +42,7 @@ class GameController:
         self.shop_model = Shop(self.model.player, model.audio_manager)
         self.shop_view = ShopView(self.shop_model, self, self.event_dispatcher)
         self.shop_controller = ShopController(self.shop_model, self.shop_view, self.screen, self.event_dispatcher)
+        self.music_muted = False
 
     def initialize_game(self):
         player = Player()
@@ -51,7 +52,7 @@ class GameController:
         self.view.set_player_view(player_view)
 
         self.player_controller = PlayerController(player, player_view)
-        self.model.audio_manager.play_bg_music()
+        #self.model.audio_manager.play_bg_music()
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -61,7 +62,12 @@ class GameController:
                 if event.key == pygame.K_ESCAPE:
                     self.model.running = False
                 elif event.key == pygame.K_m:
-                    self.model.audio_manager.stop_bg_music()
+                    if not self.music_muted:
+                        self.music_muted = True
+                        self.model.audio_manager.stop_bg_music()
+                    else:
+                        self.model.audio_manager.play_bg_music()
+                        self.music_muted = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 self.check_buttons(mouse_pos)

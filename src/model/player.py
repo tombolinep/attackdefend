@@ -2,7 +2,7 @@ import math
 from typing import Any
 
 import pygame
-from src.constants import PLAYER_DIAMETER, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT
+from src.constants import PLAYER_DIAMETER, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT, WARP_FIELD_DIAMETER
 from src.model.bullet import Bullet
 
 
@@ -93,7 +93,6 @@ class Player(pygame.sprite.Sprite):
 
     def shoot(self):
         num_of_guns = self.num_of_guns
-        print(f"Number of guns: {num_of_guns}")  # Debugging line to check the number of guns
         bullets = []
         for i in range(num_of_guns):
             angle_offset = math.radians(i * 10 - (5 * (num_of_guns - 1)))
@@ -109,3 +108,6 @@ class Player(pygame.sprite.Sprite):
         self.center = (self.x + self.radius, self.y + self.radius)
         if self.view:
             self.view.update_shield()
+
+    def is_point_in_warp_field(self, point):
+        return ((self.x - point[0])**2 + (self.y - point[1])**2)**0.5 < (WARP_FIELD_DIAMETER / 2)

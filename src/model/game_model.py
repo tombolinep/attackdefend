@@ -151,8 +151,9 @@ class GameModel:
     def rocket_shoot(self):
         if self.player.attributes_bought.get('rocket_launcher_enabled'):
             target_x, target_y = self.calculate_highest_enemy_density_target()
-            new_rocket = Rocket(self.player.x, self.player.y, target_x, target_y)
+            new_rocket = Rocket(self.player.x, self.player.y, target_x, target_y, self.audio_manager)
             self.add_rocket(new_rocket)
+            self.audio_manager.play_rocket_launch()
 
     @staticmethod
     def calculate_time_until_powerup(next_powerup_time):

@@ -10,12 +10,17 @@ class PlayerView:
         self._initialize_graphics()
 
     def _initialize_graphics(self):
-        self.diameter = self.model.diameter
+        self.diameter = 50
         self.shield_ring_radius = self.diameter // 2 + len(self.SHIELD_COLORS) * 5
         self.shield_surf = pygame.Surface((self.shield_ring_radius * 2, self.shield_ring_radius * 2), pygame.SRCALPHA)
 
+        self.player_image = pygame.image.load('assets/player.png')
+        self.player_image = pygame.transform.scale(self.player_image, (self.diameter, self.diameter))
+        self.player_rect = self.player_image.get_rect()
+
     def render(self, screen):
-        pygame.draw.circle(screen, self.model.color, (self.model.x, self.model.y), self.model.diameter // 2)
+        self.player_rect.center = (self.model.x, self.model.y)
+        screen.blit(self.player_image, self.player_rect.topleft)
         self._draw_shield_rings(screen)
 
     def _draw_shield_rings(self, screen):

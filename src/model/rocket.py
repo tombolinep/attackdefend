@@ -4,8 +4,9 @@ from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
 
 
 class Rocket(pygame.sprite.Sprite):
-    def __init__(self, x, y, target_x, target_y):
+    def __init__(self, x, y, target_x, target_y, audio_manager):
         super().__init__()
+        self.audio_manager = audio_manager
         self.surf = pygame.Surface((20, 20))
         self.surf.fill((255, 0, 0))
         self.rect = self.surf.get_rect()
@@ -46,15 +47,10 @@ class Rocket(pygame.sprite.Sprite):
     def explode(self):
         self.is_exploding = True
         self.start_time = get_ticks()
-
-        # Create a new surface for the explosion with a transparent background
         self.surf = pygame.Surface((self.explosion_radius * 2, self.explosion_radius * 2), pygame.SRCALPHA)
-
-        # Draw a red circle to represent the explosion on the new surface with reduced opacity (e.g., 128)
         pygame.draw.circle(self.surf, (255, 0, 0, 128), (self.explosion_radius, self.explosion_radius),
                            self.explosion_radius)
-
-        # Adjust the rect attribute to center it on the rocket's current position
+        self.audio_manager.play_rocket_explosion()
         self.rect = self.surf.get_rect(center=self.rect.center)
 
     def draw(self, screen):

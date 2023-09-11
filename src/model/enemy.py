@@ -10,9 +10,9 @@ class Enemy(pygame.sprite.Sprite):
         self.type = enemy_type
         self.surf = pygame.Surface((20, 10))
         if self.type == "red":
-            self.surf.fill((255, 0, 0))  # Red color
+            self.surf.fill((255, 0, 0))
         else:
-            self.surf.fill((255, 255, 255))  # Default to white color
+            self.surf.fill((255, 255, 255))
 
         self.base_speed = random.randint(1, 2)
         self.adjusted_speed = self.base_speed + score // 440

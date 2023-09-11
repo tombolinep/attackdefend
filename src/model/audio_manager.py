@@ -14,7 +14,11 @@ class Audio:
         self.shield_hit_sound = mixer.Sound(resource_path('assets/shield_hit.mp3'))
         self.purchase_error_sound = mixer.Sound(resource_path('assets/purchase_error.wav'))
         self.purchase_success_sound = mixer.Sound(resource_path('assets/purchase_success.wav'))
+        self.rocket_launch = mixer.Sound(resource_path('assets/rocket_launch.mp3'))
+        self.rocket_explosion = mixer.Sound(resource_path('assets/rocket_explosion.mp3'))
         self.purchase_error_sound.set_volume(0.6)
+        self.rocket_launch.set_volume(0.7)
+        self.rocket_explosion.set_volume(0.7)
 
         sound_effects = [
             self.bg_music,
@@ -50,3 +54,9 @@ class Audio:
 
     def play_purchase_success_sound(self):
         self.purchase_success_sound.play()
+
+    def play_rocket_launch(self):
+        self.rocket_launch.play()
+
+    def play_rocket_explosion(self):
+        self.rocket_explosion.play()

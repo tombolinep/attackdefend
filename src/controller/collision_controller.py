@@ -18,7 +18,7 @@ class CollisionController:
 
     def collision_circle_circle(self, circle1, circle2):
         distance = math.sqrt((circle1['x'] - circle2['x']) ** 2 + (circle1['y'] - circle2['y']) ** 2)
-        return distance <= (circle1['diameter'] // 2 + circle2['diameter'] // 2)
+        return distance <= ((circle1['diameter'] // 2) + (circle2['diameter'] // 2))
 
     def collision_circle_rectangle(self, circle, rect):
         circle_distance_x = abs(circle.x - rect.x - rect.width // 2)
@@ -64,18 +64,9 @@ class CollisionController:
         if rocket.is_exploding:
             for enemy in self.enemies.copy():
                 if self.collision_circle_circle(
-                        {'x': rocket.rect.x, 'y': rocket.rect.y, 'diameter': 2 * rocket.explosion_radius},
-                        {'x': enemy.rect.x, 'y': enemy.rect.y, 'diameter': enemy.rect.width}):
+                        {'x': rocket.rect.centerx, 'y': rocket.rect.centery, 'diameter': 2 * rocket.explosion_radius},
+                        {'x': enemy.rect.centerx, 'y': enemy.rect.centery, 'diameter': enemy.rect.width}):
                     enemy.kill()
-
-            pygame.draw.circle(self.screen, (255, 0, 0), rocket.rect.center, rocket.explosion_radius)
-
-        if rocket.is_exploding:
-            for enemy in self.enemies.copy():
-                if self.collision_circle_circle(
-                        {'x': rocket.rect.x, 'y': rocket.rect.y, 'diameter': 2 * rocket.explosion_radius},
-                        {'x': enemy.rect.x, 'y': enemy.rect.y, 'diameter': enemy.rect.width}):
-                    enemy.kill()  #
 
     def check_collisions(self):
         for enemy in self.enemies:

@@ -60,6 +60,8 @@ class GameController:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.model.running = False
+                elif event.key == pygame.K_m:
+                    self.model.audio_manager.stop_bg_music()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 self.check_buttons(mouse_pos)

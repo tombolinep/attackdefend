@@ -52,7 +52,7 @@ class GameController:
         self.view.set_player_view(player_view)
 
         self.player_controller = PlayerController(player, player_view)
-        #self.model.audio_manager.play_bg_music()
+        # self.model.audio_manager.play_bg_music()
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -84,6 +84,8 @@ class GameController:
                     self.model.automatic_shoot()
                 elif event.type == self.time_manager.ROCKET_SHOOT:
                     self.model.rocket_shoot()
+                elif event.type == self.time_manager.LASER_SHOOT:
+                    self.model.rocket_shoot()
 
     def update_game(self):
         current_time = pygame.time.get_ticks()
@@ -98,6 +100,7 @@ class GameController:
             self.model.automatic_shoot()
             self.model.bullets.update()
             self.model.rockets.update()
+            self.model.lasers.update()
             self.model.coins.update()
             self.model.powerups.update()
 

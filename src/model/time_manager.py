@@ -1,5 +1,5 @@
 import pygame
-from src.constants import POWERUP_INTERVAL, COIN_INTERVAL, BULLET_INTERVAL, ROCKET_INTERVAL
+from src.constants import POWERUP_INTERVAL, COIN_INTERVAL, BULLET_INTERVAL, ROCKET_INTERVAL, LASER_INTERVAL
 import logging
 
 
@@ -24,6 +24,9 @@ class TimeManager:
 
         self.ROCKET_SHOOT = pygame.USEREVENT + 5
         pygame.time.set_timer(self.ROCKET_SHOOT, ROCKET_INTERVAL)
+
+        self.LASER_SHOOT = pygame.USEREVENT + 6
+        pygame.time.set_timer(self.LASER_SHOOT, LASER_INTERVAL)
 
     def pause_timers(self):
         self.coin_timer_active = pygame.time.get_timer(self.ADDCOIN) != 0

@@ -52,21 +52,17 @@ class Enemy(pygame.sprite.Sprite):
                 dx /= distance
                 dy /= distance
 
-            # Keeping the new speed as a float to retain the reduced speed accurately
             if self.speed > 1:
                 new_speed = self.speed * slowdown_factor
 
                 if distance < new_speed:
                     self.rect.center = adjusted_player_center
                 else:
-                    # Using round() to prevent speeds from being truncated to zero
                     self.rect.x += round(dx * new_speed)
                     self.rect.y += round(dy * new_speed)
         else:
-            # Applying the slowdown factor directly to self.dx and self.dy and using round() when updating the position
             self.rect.move_ip(round(self.dx * slowdown_factor), round(self.dy * slowdown_factor))
 
         if (self.rect.right < STATS_WIDTH or self.rect.left > SCREEN_WIDTH or
                 self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT):
             self.kill()
-

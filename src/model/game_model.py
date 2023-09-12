@@ -25,6 +25,7 @@ class GameModel:
         self.coins = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.rockets = pygame.sprite.Group()
+        self.lasers = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
@@ -50,6 +51,7 @@ class GameModel:
         self.coins.empty()
         self.bullets.empty()
         self.rockets.empty()
+        self.lasers.empty()
 
         # Re-add player to all_sprites
         self.all_sprites.empty()
@@ -92,6 +94,10 @@ class GameModel:
     def add_rocket(self, rocket):
         self.rockets.add(rocket)
         self.all_sprites.add(rocket)
+
+    def add_laser(self, laser):
+        self.lasers.add(laser)
+        self.all_sprites.add(laser)
 
     def increment_score(self):
         self.score += 1
@@ -155,6 +161,13 @@ class GameModel:
             self.add_rocket(new_rocket)
             self.audio_manager.play_rocket_launch()
 
+    def laser_shoot(self):
+        if self.player.attributes_bought.get('laser_beam_enabled'):
+            random_enemy = self.find_random_enemy()
+            if random_enemy:
+                target_x, target_y = self.calculate_target(random_enemy)
+                new_laser_beam = Laser(self.player.x, self.player.y, target_x, target_y, self.audio_manager)
+
     @staticmethod
     def calculate_time_until_powerup(next_powerup_time):
         current_time = pygame.time.get_ticks()
@@ -167,6 +180,11 @@ class GameModel:
             return round(total_enemy_speed / len(enemies), 2)
         else:
             return 0
+
+    def find_random_enemy(self):
+        if self.enemies:
+            return random.choice(self.enemies)
+        return None
 
     def calculate_highest_enemy_density_target(self):
         grid_size = 100  # Define the size of each grid cell

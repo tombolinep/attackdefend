@@ -38,7 +38,7 @@ class Enemy(pygame.sprite.Sprite):
             self.dx, self.dy = self.speed, 0
 
     def update_position(self, player_center=None):
-        slowdown_factor = 0.5 if self.in_warp_field else 1.0
+        slowdown_factor = 0.8 if self.in_warp_field else 1.0
 
         if player_center:
             shield_space = len(Player.SHIELD_COLORS) * 5
@@ -47,23 +47,26 @@ class Enemy(pygame.sprite.Sprite):
             dx = adjusted_player_center[0] - self.rect.centerx
             dy = adjusted_player_center[1] - self.rect.centery
 
-            distance = (dx ** 2 + dy ** 2) ** 0.8
+            distance = (dx ** 2 + dy ** 2) ** 0.5
             if distance > 0:
                 dx /= distance
                 dy /= distance
 
-            new_speed = max(1, self.speed * slowdown_factor)
+            # Keeping the new speed as a float to retain the reduced speed accurately
+            if self.speed > 1:
+                new_speed = self.speed * slowdown_factor
 
-            if distance < new_speed:
-                self.rect.center = adjusted_player_center
-            else:
-                self.rect.x += dx * new_speed
-                self.rect.y += dy * new_speed
+                if distance < new_speed:
+                    self.rect.center = adjusted_player_center
+                else:
+                    # Using round() to prevent speeds from being truncated to zero
+                    self.rect.x += round(dx * new_speed)
+                    self.rect.y += round(dy * new_speed)
         else:
-            self.rect.move_ip(self.dx * slowdown_factor, self.dy * slowdown_factor)
+            # Applying the slowdown factor directly to self.dx and self.dy and using round() when updating the position
+            self.rect.move_ip(round(self.dx * slowdown_factor), round(self.dy * slowdown_factor))
 
         if (self.rect.right < STATS_WIDTH or self.rect.left > SCREEN_WIDTH or
                 self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT):
             self.kill()
-
 

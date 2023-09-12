@@ -85,7 +85,7 @@ class GameController:
                 elif event.type == self.time_manager.ROCKET_SHOOT:
                     self.model.rocket_shoot()
                 elif event.type == self.time_manager.LASER_SHOOT:
-                    self.model.rocket_shoot()
+                    self.model.laser_shoot()
 
     def update_game(self):
         current_time = pygame.time.get_ticks()

@@ -1,45 +1,44 @@
 import pygame
+import math
 from pygame.time import get_ticks
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
+
+from src.constants import STATS_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, x, y, target_x, target_y, audio_manager):
         super().__init__()
         self.audio_manager = audio_manager
-        self.surf = pygame.Surface((10, 10))
-        self.surf.fill((0, 255, 0))  # Giving it a green color for differentiation
-        self.rect = self.surf.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = 10  # Assuming laser to be faster than rocket
+        self.x = x
+        self.y = y
         self.target_x = target_x
         self.target_y = target_y
-        self.calculate_trajectory()
-        self.start_time = get_ticks()
-        self.duration = 500  # Duration for which the laser exists
 
-    def calculate_trajectory(self):
-        dx = self.target_x - self.rect.x
-        dy = self.target_y - self.rect.y
-        distance = max(1, (dx ** 2 + dy ** 2) ** 0.5)  # Ensure non-zero distance
-        self.dx = dx / distance
-        self.dy = dy / distance
+        self.color = (255, 0, 0)
+        dx = self.target_x - self.x
+        dy = self.target_y - self.y
+        self.length = max(1, (dx ** 2 + dy ** 2) ** 0.5)
+
+        self.angle = math.degrees(math.atan2(dy, dx))
+        self.start_time = get_ticks()
+        self.duration = 500
 
     def update(self):
+        print("update laser")
         current_time = get_ticks()
-
-        if current_time - self.start_time < self.duration:
-            self.rect.x += self.dx * self.speed
-            self.rect.y += self.dy * self.speed
-            if self.is_out_of_bounds():
-                self.kill()
-        else:
-            self.kill()  # The laser beam will be destroyed after its duration ends
-
-    def draw(self, screen):
-        screen.blit(self.surf, self.rect)
+        if current_time - self.start_time >= self.duration:
+            return True
 
     def is_out_of_bounds(self):
-        return (self.rect.x < STATS_WIDTH or self.rect.y < 0 or
-                self.rect.x > SCREEN_WIDTH or self.rect.y > SCREEN_HEIGHT)
+        rect = self.get_rect()
+        return (rect.x < STATS_WIDTH or rect.y < 0 or
+                rect.x > SCREEN_WIDTH or rect.y > SCREEN_HEIGHT)
+
+    def draw(self, screen):
+        image = pygame.Surface((self.length, 5), pygame.SRCALPHA)
+        image.fill(self.color)
+
+        image = pygame.transform.rotate(image, -self.angle)
+        rect = image.get_rect(center=(self.x, self.y))
+
+        screen.blit(image, rect)

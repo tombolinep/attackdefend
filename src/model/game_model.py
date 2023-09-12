@@ -9,6 +9,7 @@ from src.model.audio_manager import Audio
 from src.model.bullet import Bullet
 from src.model.coin import Coin
 from src.model.enemy import Enemy
+from src.model.laser import Laser
 from src.model.powerup import PowerUp
 from src.model.rocket import Rocket
 
@@ -162,12 +163,14 @@ class GameModel:
             self.audio_manager.play_rocket_launch()
 
     def laser_shoot(self):
-        if self.player.attributes_bought.get('laser_beam_enabled'):
+        print("laser shoot")
+        if self.player.attributes_bought.get('laser_enabled'):
+            print("laser shootin")
             random_enemy = self.find_random_enemy()
             if random_enemy:
                 target_x, target_y = self.calculate_target(random_enemy)
                 new_laser_beam = Laser(self.player.x, self.player.y, target_x, target_y, self.audio_manager)
-
+                self.add_laser(new_laser_beam)
     @staticmethod
     def calculate_time_until_powerup(next_powerup_time):
         current_time = pygame.time.get_ticks()
@@ -182,9 +185,11 @@ class GameModel:
             return 0
 
     def find_random_enemy(self):
-        if self.enemies:
-            return random.choice(self.enemies)
-        return None
+        if not self.enemies:
+            return None
+        enemies_list = list(self.enemies)
+        return random.choice(enemies_list)
+
 
     def calculate_highest_enemy_density_target(self):
         grid_size = 100  # Define the size of each grid cell

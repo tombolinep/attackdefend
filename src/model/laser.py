@@ -14,7 +14,7 @@ class Laser(pygame.sprite.Sprite):
 
         self.target_x = target_x
         self.target_y = target_y
-        self.speed = 50
+        self.speed = 5000
 
         self.calculate_trajectory()
 

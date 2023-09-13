@@ -1,44 +1,52 @@
 import pygame
-import math
 from pygame.time import get_ticks
-
-from src.constants import STATS_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT
-
+from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, x, y, target_x, target_y, audio_manager):
         super().__init__()
         self.audio_manager = audio_manager
-        self.x = x
-        self.y = y
+
+        self.start_point = (x, y)
+        self.end_point = (x, y)  # Initially, the end point is the start point
+
         self.target_x = target_x
         self.target_y = target_y
+        self.speed = 5  # Adjust speed as necessary
 
-        self.color = (255, 0, 0)
-        dx = self.target_x - self.x
-        dy = self.target_y - self.y
-        self.length = max(1, (dx ** 2 + dy ** 2) ** 0.5)
+        self.calculate_trajectory()
 
-        self.angle = math.degrees(math.atan2(dy, dx))
         self.start_time = get_ticks()
-        self.duration = 500
+        self.duration = 1500  # Adjust duration as necessary
 
-    def update(self):
-        print("update laser")
-        current_time = get_ticks()
-        if current_time - self.start_time >= self.duration:
-            return True
+        self.is_shooting = True
+        self.screen = pygame.display.get_surface()  # Get the currently set video surface
 
-    def is_out_of_bounds(self):
-        rect = self.get_rect()
-        return (rect.x < STATS_WIDTH or rect.y < 0 or
-                rect.x > SCREEN_WIDTH or rect.y > SCREEN_HEIGHT)
+        self.surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)  # Creating a transparent surface
+        self.rect = self.surf.get_rect()
+
+    def calculate_trajectory(self):
+        dx = self.target_x - self.start_point[0]
+        dy = self.target_y - self.start_point[1]
+        distance = max(1, (dx ** 2 + dy ** 2) ** 0.5)  # Ensure non-zero distance
+        self.dx = dx / distance
+        self.dy = dy / distance
+
+    def shoot(self):
+        self.surf.fill((0, 0, 0, 0))  # Clearing the surface at the start of each shoot call
+        self.end_point = (self.end_point[0] + self.dx * self.speed, self.end_point[1] + self.dy * self.speed)
+        pygame.draw.line(self.surf, (0, 255, 0), self.start_point, self.end_point, 2)
 
     def draw(self, screen):
-        image = pygame.Surface((self.length, 5), pygame.SRCALPHA)
-        image.fill(self.color)
+        # Blit the surface onto the screen
+        screen.blit(self.surf, (0, 0))
 
-        image = pygame.transform.rotate(image, -self.angle)
-        rect = image.get_rect(center=(self.x, self.y))
+    def update(self):
+        current_time = get_ticks()
 
-        screen.blit(image, rect)
+        if self.is_shooting:
+            if current_time - self.start_time < self.duration:
+                self.shoot()
+            else:
+                self.is_shooting = False
+                self.kill()

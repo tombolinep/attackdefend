@@ -54,6 +54,7 @@ class Rocket(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=self.rect.center)
 
     def draw(self, screen):
+        print("rocket draw")
         if not self.is_exploding:
             screen.blit(self.surf, self.rect)
         else:

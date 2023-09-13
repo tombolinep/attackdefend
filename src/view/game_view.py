@@ -66,7 +66,7 @@ class GameView:
 
     def draw_sprites(self, sprites):
         for entity in sprites:
-            if hasattr(entity, 'surf'):  # Check if the sprite has a 'surf' attribute
+            if hasattr(entity, 'surf'):
                 self.screen.blit(entity.surf, entity.rect)
 
     def initialize_buttons(self):

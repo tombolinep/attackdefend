@@ -163,11 +163,11 @@ class GameModel:
             self.audio_manager.play_rocket_launch()
 
     def laser_shoot(self):
-        print("laser shoot")
         if self.player.attributes_bought.get('laser_enabled'):
-            print("laser shootin")
+            print("laser shooting")
             random_enemy = self.find_random_enemy()
             if random_enemy:
+                print("random enemy")
                 target_x, target_y = self.calculate_target(random_enemy)
                 new_laser_beam = Laser(self.player.x, self.player.y, target_x, target_y, self.audio_manager)
                 self.add_laser(new_laser_beam)

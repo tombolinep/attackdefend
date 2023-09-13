@@ -5,8 +5,8 @@ class TractorBeam(pygame.sprite.Sprite):
     def __init__(self, game_model):
         super().__init__()
         self.game_model = game_model
-        self.range = 2000  # Adjust as necessary
-        self.pull_strength = 2  # Adjust as necessary
+        self.range = 300
+        self.pull_strength = 1
 
     def update(self):
         if not self.game_model.player.attributes_bought.get('tractor_beam_enabled') == 1:

@@ -34,11 +34,14 @@ class Laser(pygame.sprite.Sprite):
     def shoot(self):
         self.surf.fill((0, 0, 0, 0))  # Clearing the surface at the start of each shoot call
 
-        self.target.x, self.target.y = self.target.x +10, self.target.y +5
+        # Update the target position to point to the center of the enemy rect
+        target_center_x = self.target.x + self.target.width / 2
+        target_center_y = self.target.y + self.target.height / 2
+
         self.start_point = (self.player.x, self.player.y)  # Update the start point to the player's current position
 
-        # Set the end point directly to the target coordinates
-        self.end_point = (self.target.x, self.target.y)
+        # Set the end point to the target's center coordinates
+        self.end_point = (target_center_x, target_center_y)
 
         laser_radius = 5  # Adjust the radius as necessary
 

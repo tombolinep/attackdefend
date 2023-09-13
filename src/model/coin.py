@@ -5,7 +5,9 @@ class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.surf = pygame.Surface((20, 20))
-        self.surf.fill((255, 175, 0))  # Initial color
+        self.surf.fill((255, 175, 0))
+        self.x = x
+        self.y = y
 
         self.colors = [
             (255, 175, 0),
@@ -28,3 +30,5 @@ class Coin(pygame.sprite.Sprite):
             self.last_color_change_time = current_time
             self.current_color_index = (self.current_color_index + 1) % len(self.colors)
             self.surf.fill(self.colors[self.current_color_index])  # Update color
+        self.rect.x = self.x
+        self.rect.y = self.y

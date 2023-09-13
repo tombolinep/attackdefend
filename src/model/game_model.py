@@ -12,6 +12,7 @@ from src.model.enemy import Enemy
 from src.model.laser import Laser
 from src.model.powerup import PowerUp
 from src.model.rocket import Rocket
+from src.model.tractor_beam import TractorBeam
 
 
 class GameModel:
@@ -27,11 +28,13 @@ class GameModel:
         self.bullets = pygame.sprite.Group()
         self.rockets = pygame.sprite.Group()
         self.lasers = pygame.sprite.Group()
+        self.tractor_beams = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
         self.game_over = False
         self.isPauseMenuVisible = False
+        self.add_tractor_beam(TractorBeam(self))
 
     def stop_game(self):
         self.running = False
@@ -100,6 +103,10 @@ class GameModel:
         self.lasers.add(laser)
         self.all_sprites.add(laser)
 
+    def add_tractor_beam(self, tractor_beam):
+        self.tractor_beams.add(tractor_beam)
+        self.all_sprites.add(tractor_beam)
+
     def increment_score(self):
         self.score += 1
 
@@ -166,12 +173,7 @@ class GameModel:
         if self.player.attributes_bought.get('laser_enabled'):
             enemy = self.find_random_enemy()
             if enemy:
-                # Target the current exact position of the enemy
-                target_x = enemy.rect.x
-                target_y = enemy.rect.y
-
-                # Create a new laser beam that targets the current position
-                new_laser_beam = Laser(self.player, target_x, target_y, self.audio_manager)
+                new_laser_beam = Laser(self.player, enemy.rect, self.audio_manager)
                 self.add_laser(new_laser_beam)
 
     @staticmethod

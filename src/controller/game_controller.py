@@ -103,6 +103,7 @@ class GameController:
             self.model.lasers.update()
             self.model.coins.update()
             self.model.powerups.update()
+            self.model.tractor_beams.update()
 
     def update_and_render(self):
         self.update_game()

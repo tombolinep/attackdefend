@@ -164,13 +164,16 @@ class GameModel:
 
     def laser_shoot(self):
         if self.player.attributes_bought.get('laser_enabled'):
-            print("laser shooting")
-            random_enemy = self.find_random_enemy()
-            if random_enemy:
-                print("random enemy")
-                target_x, target_y = self.calculate_target(random_enemy)
-                new_laser_beam = Laser(self.player.x, self.player.y, target_x, target_y, self.audio_manager)
+            enemy = self.find_random_enemy()
+            if enemy:
+                # Target the current exact position of the enemy
+                target_x = enemy.rect.x
+                target_y = enemy.rect.y
+
+                # Create a new laser beam that targets the current position
+                new_laser_beam = Laser(self.player, target_x, target_y, self.audio_manager)
                 self.add_laser(new_laser_beam)
+
     @staticmethod
     def calculate_time_until_powerup(next_powerup_time):
         current_time = pygame.time.get_ticks()
@@ -185,11 +188,11 @@ class GameModel:
             return 0
 
     def find_random_enemy(self):
-        if not self.enemies:
+        all_enemies = [e for e in self.all_sprites if isinstance(e, Enemy)]
+        if all_enemies:
+            return random.choice(all_enemies)
+        else:
             return None
-        enemies_list = list(self.enemies)
-        return random.choice(enemies_list)
-
 
     def calculate_highest_enemy_density_target(self):
         grid_size = 100  # Define the size of each grid cell

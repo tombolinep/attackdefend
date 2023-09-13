@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.view = view
         self.color = (0, 0, 255)
-        self.coins = 100
+        self.coins = 1000
         self.attributes_bought = {key: 0 if isinstance(value, int) else value for key, value in
                                   self.ATTRIBUTE_DEFAULTS.items()}
 
@@ -110,4 +110,4 @@ class Player(pygame.sprite.Sprite):
             self.view.update_shield()
 
     def is_point_in_warp_field(self, point):
-        return ((self.x - point[0])**2 + (self.y - point[1])**2)**0.5 < (WARP_FIELD_DIAMETER / 2)
+        return ((self.x - point[0]) ** 2 + (self.y - point[1]) ** 2) ** 0.5 < (WARP_FIELD_DIAMETER / 2)

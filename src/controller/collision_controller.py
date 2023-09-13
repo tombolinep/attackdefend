@@ -12,6 +12,7 @@ class CollisionController:
         self.coins = model.coins
         self.bullets = model.bullets
         self.rockets = model.rockets
+        self.lasers = model.lasers
         self.audio_manager = model.audio_manager
         self.screen = screen
         self.running = model.running
@@ -68,6 +69,59 @@ class CollisionController:
                         {'x': enemy.rect.centerx, 'y': enemy.rect.centery, 'diameter': enemy.rect.width}):
                     enemy.kill()
 
+    def handle_laser_collision(self, laser):
+        laser_start = laser.start_point
+        laser_end = laser.end_point
+
+        for enemy in self.enemies.copy():
+            enemy_rect = enemy.rect
+
+            # Get the four corners of the enemy rectangle
+            rect_points = [
+                (enemy_rect.topleft),
+                (enemy_rect.topright),
+                (enemy_rect.bottomright),
+                (enemy_rect.bottomleft),
+            ]
+
+            # Check each line segment of the rectangle for intersection with the laser line
+            for i in range(4):
+                segment_start, segment_end = rect_points[i], rect_points[(i + 1) % 4]
+                if self.line_intersection(laser_start, laser_end, segment_start, segment_end):
+                    enemy.kill()
+                    break  # Exit loop early if a collision is detected
+
+    def line_intersection(self, line1_start, line1_end, line2_start, line2_end):
+        """Check if two line segments intersect"""
+        # Convert lines to a general form Ax + By = C
+        A1, B1 = line1_end[1] - line1_start[1], line1_start[0] - line1_end[0]
+        C1 = A1 * line1_start[0] + B1 * line1_start[1]
+
+        A2, B2 = line2_end[1] - line2_start[1], line2_start[0] - line2_end[0]
+        C2 = A2 * line2_start[0] + B2 * line2_start[1]
+
+        # Find the determinant
+        det = A1 * B2 - A2 * B1
+        if det == 0:  # Lines are parallel
+            return False
+
+        # Find the intersection point
+        x = (B2 * C1 - B1 * C2) / det
+        y = (A1 * C2 - A2 * C1) / det
+
+        # Check if the intersection point is on both line segments
+        is_on_line1 = (
+                min(line1_start[0], line1_end[0]) <= x <= max(line1_start[0], line1_end[0])
+                and min(line1_start[1], line1_end[1]) <= y <= max(line1_start[1], line1_end[1])
+        )
+
+        is_on_line2 = (
+                min(line2_start[0], line2_end[0]) <= x <= max(line2_start[0], line2_end[0])
+                and min(line2_start[1], line2_end[1]) <= y <= max(line2_start[1], line2_end[1])
+        )
+
+        return is_on_line1 and is_on_line2
+
     def check_collisions(self):
         for enemy in self.enemies:
             if self.collision_circle_rectangle(self.player, enemy.rect):
@@ -88,6 +142,9 @@ class CollisionController:
 
         for rocket in self.rockets:
             self.handle_rocket_collision(rocket)
+
+        for laser in self.lasers:
+            self.handle_laser_collision(laser)
 
         colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for enemy_list in colliding_bullet_enemy.values():

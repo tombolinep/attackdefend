@@ -93,6 +93,11 @@ class GameModel:
         self.coins.add(coin)
         self.all_sprites.add(coin)
 
+    def spawn_coin_at_location(self, x, y):
+        new_coin = Coin(x, y)
+        self.coins.add(new_coin)
+        self.all_sprites.add(new_coin)
+
     def add_bullet(self, bullet):
         self.bullets.add(bullet)
         self.all_sprites.add(bullet)

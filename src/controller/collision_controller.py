@@ -1,6 +1,10 @@
 import math
+import random
+
 import pygame
 import pygame.gfxdraw
+
+from src.constants import ENEMY_COIN_CHANCE
 
 
 class CollisionController:
@@ -46,6 +50,8 @@ class CollisionController:
         if self.player.shield > 0:
             self.audio_manager.play_shield_hit_sound()
             self.player.update_attribute(attribute='shield', action='decrease', change_amount=1)
+            if random.random() < ENEMY_COIN_CHANCE:
+                self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
             enemy.kill()
             self.model.score += 50
         else:
@@ -69,6 +75,8 @@ class CollisionController:
                 if self.collision_circle_circle(
                         {'x': rocket.rect.centerx, 'y': rocket.rect.centery, 'diameter': 2 * rocket.explosion_radius},
                         {'x': enemy.rect.centerx, 'y': enemy.rect.centery, 'diameter': enemy.rect.width}):
+                    if random.random() < ENEMY_COIN_CHANCE:
+                        self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
                     enemy.kill()
                     self.model.score += 50
 
@@ -91,6 +99,8 @@ class CollisionController:
             for i in range(4):
                 segment_start, segment_end = rect_points[i], rect_points[(i + 1) % 4]
                 if self.line_intersection(laser_start, laser_end, segment_start, segment_end):
+                    if random.random() < ENEMY_COIN_CHANCE:
+                        self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
                     enemy.kill()
                     self.model.score += 50
                     break  # Exit loop early if a collision is detected
@@ -153,5 +163,7 @@ class CollisionController:
         colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for enemy_list in colliding_bullet_enemy.values():
             for enemy in enemy_list:
+                if random.random() < ENEMY_COIN_CHANCE:
+                    self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
                 enemy.kill()
                 self.model.score += 50

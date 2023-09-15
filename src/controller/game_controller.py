@@ -11,6 +11,7 @@ from src.controller.shop_controller import ShopController
 from src.model.pause import PauseModel
 from src.model.player import Player
 from src.model.shop import Shop
+from src.model.tractor_beam import TractorBeam
 from src.view.pause_view import PauseView
 from src.view.player_view import PlayerView
 from src.view.shop_view import ShopView
@@ -52,6 +53,8 @@ class GameController:
         self.view.set_player_view(player_view)
 
         self.player_controller = PlayerController(player, player_view)
+        tractor_beam = TractorBeam(self.model)
+        self.model.tractor_beams.add(tractor_beam)
         # self.model.audio_manager.play_bg_music()
 
     def handle_events(self):

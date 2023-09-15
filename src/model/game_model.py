@@ -56,7 +56,8 @@ class GameModel:
         self.bullets.empty()
         self.rockets.empty()
         self.lasers.empty()
-
+        self.tractor_beams.empty()
+        
         # Re-add player to all_sprites
         self.all_sprites.empty()
         self.all_sprites.add(self.player)
@@ -66,6 +67,7 @@ class GameModel:
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.running = True
         self.game_over = False
+        self.add_tractor_beam(TractorBeam(self))
 
     def set_player(self, player):
         self.player = player

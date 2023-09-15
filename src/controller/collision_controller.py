@@ -47,6 +47,7 @@ class CollisionController:
             self.audio_manager.play_shield_hit_sound()
             self.player.update_attribute(attribute='shield', action='decrease', change_amount=1)
             enemy.kill()
+            self.model.score += 50
         else:
             self.audio_manager.play_death_sound()
             self.model.set_game_over(True)
@@ -55,6 +56,7 @@ class CollisionController:
         self.audio_manager.play_powerup_sound()
         powerup.apply_powerup(self.enemies)
         powerup.kill()
+        self.model.score += 300
 
     def handle_coin_collision(self, coin):
         self.audio_manager.play_coin_sound()
@@ -68,6 +70,7 @@ class CollisionController:
                         {'x': rocket.rect.centerx, 'y': rocket.rect.centery, 'diameter': 2 * rocket.explosion_radius},
                         {'x': enemy.rect.centerx, 'y': enemy.rect.centery, 'diameter': enemy.rect.width}):
                     enemy.kill()
+                    self.model.score += 50
 
     def handle_laser_collision(self, laser):
         laser_start = laser.start_point
@@ -89,6 +92,7 @@ class CollisionController:
                 segment_start, segment_end = rect_points[i], rect_points[(i + 1) % 4]
                 if self.line_intersection(laser_start, laser_end, segment_start, segment_end):
                     enemy.kill()
+                    self.model.score += 50
                     break  # Exit loop early if a collision is detected
 
     def line_intersection(self, line1_start, line1_end, line2_start, line2_end):
@@ -150,3 +154,4 @@ class CollisionController:
         for enemy_list in colliding_bullet_enemy.values():
             for enemy in enemy_list:
                 enemy.kill()
+                self.model.score += 50

@@ -1,3 +1,5 @@
+from math import log
+
 import pygame
 import random
 from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
@@ -16,11 +18,10 @@ class Enemy(pygame.sprite.Sprite):
             self.surf.fill((255, 255, 255))
 
         self.base_speed = random.randint(1, 2)
-        self.adjusted_speed = self.base_speed + score // 440
+        self.adjusted_speed = max(self.base_speed, self.base_speed + score // 660)
         self.speed = min(self.adjusted_speed, 12)
         self.previous_speed = None
         self.initial_position()
-        self.speedup_timer = pygame.time.get_ticks()
         self.in_warp_field = False
 
     def initial_position(self):
@@ -43,12 +44,10 @@ class Enemy(pygame.sprite.Sprite):
 
         if self.type == "red":
             dx, dy = self.get_direction_towards_player()
+            self.move(dx, dy, slowdown_factor)
         else:
-            dx, dy = self.dx, self.dy
+            self.rect.move_ip(round(self.dx * slowdown_factor), round(self.dy * slowdown_factor))
 
-        self.move(dx, dy, slowdown_factor)
-
-        # Existing code to kill the enemy if it goes off screen
         if (self.rect.right < STATS_WIDTH or self.rect.left > SCREEN_WIDTH or
                 self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT):
             self.kill()
@@ -65,9 +64,7 @@ class Enemy(pygame.sprite.Sprite):
 
         return dx, dy
 
-
     def move(self, dx, dy, slowdown_factor):
         new_speed = self.speed * slowdown_factor
-
         self.rect.x += round(dx * new_speed)
         self.rect.y += round(dy * new_speed)

@@ -5,8 +5,9 @@ from src.model.player import Player
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, score, enemy_type="white"):
+    def __init__(self, score, player, enemy_type="white"):
         super().__init__()
+        self.player = player
         self.type = enemy_type
         self.surf = pygame.Surface((20, 10))
         if self.type == "red":
@@ -37,32 +38,36 @@ class Enemy(pygame.sprite.Sprite):
             self.rect = self.surf.get_rect(center=(STATS_WIDTH - 10, random.randint(0, SCREEN_HEIGHT)))
             self.dx, self.dy = self.speed, 0
 
-    def update_position(self, player_center=None):
+    def update_position(self):
         slowdown_factor = 0.8 if self.in_warp_field else 1.0
 
-        if player_center:
-            shield_space = len(Player.SHIELD_COLORS) * 5
-            adjusted_player_center = (player_center[0] + shield_space, player_center[1] + shield_space)
-
-            dx = adjusted_player_center[0] - self.rect.centerx
-            dy = adjusted_player_center[1] - self.rect.centery
-
-            distance = (dx ** 2 + dy ** 2) ** 0.5
-            if distance > 0:
-                dx /= distance
-                dy /= distance
-
-            if self.speed > 1:
-                new_speed = self.speed * slowdown_factor
-
-                if distance < new_speed:
-                    self.rect.center = adjusted_player_center
-                else:
-                    self.rect.x += round(dx * new_speed)
-                    self.rect.y += round(dy * new_speed)
+        if self.type == "red":
+            dx, dy = self.get_direction_towards_player()
         else:
-            self.rect.move_ip(round(self.dx * slowdown_factor), round(self.dy * slowdown_factor))
+            dx, dy = self.dx, self.dy
 
+        self.move(dx, dy, slowdown_factor)
+
+        # Existing code to kill the enemy if it goes off screen
         if (self.rect.right < STATS_WIDTH or self.rect.left > SCREEN_WIDTH or
                 self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT):
             self.kill()
+
+    def get_direction_towards_player(self):
+        player_center = self.player.center
+        dx = player_center[0] - self.rect.centerx
+        dy = player_center[1] - self.rect.centery
+
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+        if distance > 0:
+            dx /= distance
+            dy /= distance
+
+        return dx, dy
+
+
+    def move(self, dx, dy, slowdown_factor):
+        new_speed = self.speed * slowdown_factor
+
+        self.rect.x += round(dx * new_speed)
+        self.rect.y += round(dy * new_speed)

@@ -64,6 +64,8 @@ class GameController:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.model.running = False
+                if event.key == pygame.K_p:
+                    self.model.paused = not self.model.paused
                 elif event.key == pygame.K_m:
                     if not self.music_muted:
                         self.music_muted = True
@@ -108,9 +110,10 @@ class GameController:
             self.model.powerups.update()
             self.model.tractor_beams.update()
 
-    def update_and_render(self):
-        self.update_game()
-        self.render()
+    def update_and_render(self, paused=False):
+        if not paused:
+            self.update_game()
+        self.view.render(self.model)
 
     def render(self):
         if not self.model.paused:

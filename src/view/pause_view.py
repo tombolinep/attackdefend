@@ -15,7 +15,7 @@ class PauseView:
     def draw(self, screen):
         # Create a surface that will act as a semi-transparent overlay for the main game area (excluding stats screen)
         s = pygame.Surface((MAIN_GAME_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        s.fill((0, 0, 0, 128))  # (R, G, B, Alpha)
+        s.fill((0, 0, 0, 128))
 
         # Calculate the position for the parallel rectangles (Pause symbol)
         rect1_x = STATS_WIDTH + (MAIN_GAME_WIDTH // 2) - 20  # A bit to the left from the center

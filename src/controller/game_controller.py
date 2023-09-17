@@ -34,7 +34,6 @@ class GameController:
         self.event_dispatcher.add_listener("pause_game", self.toggle_pause)
         self.event_dispatcher.add_listener("open_shop", self.open_shop)
         self.pause_model = PauseModel()
-        self.pause_view = PauseView(self.pause_model, self)
         self.last_log_time = 0
         self.coin_start_time = None
         self.powerup_start_time = None
@@ -110,10 +109,10 @@ class GameController:
             self.model.powerups.update()
             self.model.tractor_beams.update()
 
-    def update_and_render(self, paused=False):
-        if not paused:
+    def update_and_render(self):
+        if not self.model.paused:
             self.update_game()
-        self.view.render(self.model)
+            self.view.render(self.model)  # Render the game view when not paused
 
     def render(self):
         if not self.model.paused:
@@ -132,9 +131,6 @@ class GameController:
 
     def toggle_pause(self, data=None):
         self.model.paused = not self.model.paused
-        if self.model.paused:
-            self.pause_view.draw(self.screen)
-        pygame.display.flip()
 
     def check_buttons(self, mouse_pos):
         for button in self.view.buttons:

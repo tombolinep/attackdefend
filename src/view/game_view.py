@@ -1,7 +1,7 @@
 import pygame
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, BULLET_INTERVAL
-from src.view.button_view import Button
-from src.utils import resource_path
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, BULLET_INTERVAL
+from view.button_view import Button
+from utils import resource_path
 
 
 class GameView:

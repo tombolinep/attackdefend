@@ -4,7 +4,7 @@ import random
 import pygame
 import pygame.gfxdraw
 
-from src.constants import ENEMY_COIN_CHANCE
+from constants import ENEMY_COIN_CHANCE
 
 
 class CollisionController:

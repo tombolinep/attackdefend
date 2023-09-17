@@ -2,8 +2,8 @@ import math
 from typing import Any
 
 import pygame
-from src.constants import PLAYER_DIAMETER, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT, WARP_FIELD_DIAMETER
-from src.model.bullet import Bullet
+from constants import PLAYER_DIAMETER, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT, WARP_FIELD_DIAMETER
+from model.bullet import Bullet
 
 
 class Player(pygame.sprite.Sprite):

@@ -3,16 +3,16 @@ import random
 from math import sqrt
 
 import pygame
-from src.constants import POWERUP_INTERVAL, SCREEN_HEIGHT, BULLET_INTERVAL, \
+from constants import POWERUP_INTERVAL, SCREEN_HEIGHT, BULLET_INTERVAL, \
     SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE, POWERUP_SIZE, ENEMY_RED_CHANCE
-from src.model.audio_manager import Audio
-from src.model.bullet import Bullet
-from src.model.coin import Coin
-from src.model.enemy import Enemy
-from src.model.laser import Laser
-from src.model.powerup import PowerUp
-from src.model.rocket import Rocket
-from src.model.tractor_beam import TractorBeam
+from model.audio_manager import Audio
+from model.bullet import Bullet
+from model.coin import Coin
+from model.enemy import Enemy
+from model.laser import Laser
+from model.powerup import PowerUp
+from model.rocket import Rocket
+from model.tractor_beam import TractorBeam
 
 
 class GameModel:

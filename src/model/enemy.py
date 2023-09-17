@@ -2,8 +2,8 @@ from math import log
 
 import pygame
 import random
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
-from src.model.player import Player
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
+from model.player import Player
 
 
 class Enemy(pygame.sprite.Sprite):

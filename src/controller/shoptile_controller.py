@@ -1,4 +1,4 @@
-from src.controller.shop_controller import ShopController
+from controller.shop_controller import ShopController
 
 
 class ShopTileController:

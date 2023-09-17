@@ -3,18 +3,18 @@ import logging
 import pygame
 from pygame import KEYDOWN, K_r, K_q, K_ESCAPE, QUIT
 
-from src.constants import COIN_INTERVAL, POWERUP_INTERVAL
-from src.controller.collision_controller import CollisionController
-from src.controller.enemy_controller import EnemyController
-from src.controller.player_controller import PlayerController
-from src.controller.shop_controller import ShopController
-from src.model.pause import PauseModel
-from src.model.player import Player
-from src.model.shop import Shop
-from src.model.tractor_beam import TractorBeam
-from src.view.pause_view import PauseView
-from src.view.player_view import PlayerView
-from src.view.shop_view import ShopView
+from constants import COIN_INTERVAL, POWERUP_INTERVAL
+from controller.collision_controller import CollisionController
+from controller.enemy_controller import EnemyController
+from controller.player_controller import PlayerController
+from controller.shop_controller import ShopController
+from model.pause import PauseModel
+from model.player import Player
+from model.shop import Shop
+from model.tractor_beam import TractorBeam
+from view.pause_view import PauseView
+from view.player_view import PlayerView
+from view.shop_view import ShopView
 
 logging.basicConfig(level=logging.DEBUG)
 

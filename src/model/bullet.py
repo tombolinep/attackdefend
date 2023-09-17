@@ -1,7 +1,7 @@
 import math
 import pygame
 
-from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, target_x, target_y):

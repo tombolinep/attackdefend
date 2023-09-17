@@ -1,10 +1,10 @@
 import pygame
 
-from src.constants import MAIN_GAME_WIDTH, STATS_WIDTH, SCREEN_HEIGHT
-from src.controller.shoptile_controller import ShopTileController
-from src.model.shoptile import ShopTile
-from src.view.button_view import Button
-from src.view.shoptile_view import ShopTileView
+from constants import MAIN_GAME_WIDTH, STATS_WIDTH, SCREEN_HEIGHT
+from controller.shoptile_controller import ShopTileController
+from model.shoptile import ShopTile
+from view.button_view import Button
+from view.shoptile_view import ShopTileView
 
 
 class ShopView:

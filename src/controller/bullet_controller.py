@@ -1,4 +1,4 @@
-from src.constants import SCREEN_HEIGHT
+from constants import SCREEN_HEIGHT
 
 
 class BulletController:

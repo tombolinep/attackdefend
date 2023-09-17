@@ -1,5 +1,5 @@
 import pygame
-from src.constants import STATS_WIDTH, SCREEN_HEIGHT, MAIN_GAME_WIDTH
+from constants import STATS_WIDTH, SCREEN_HEIGHT, MAIN_GAME_WIDTH
 
 
 class PlayerController:

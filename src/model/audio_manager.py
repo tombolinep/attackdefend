@@ -1,5 +1,5 @@
 from pygame import mixer
-from src.utils import resource_path
+from utils import resource_path
 
 
 class Audio:

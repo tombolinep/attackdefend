@@ -1,6 +1,6 @@
 import pygame
 
-from src.constants import POWERUP_SIZE
+from constants import POWERUP_SIZE
 
 
 class PowerUp(pygame.sprite.Sprite):

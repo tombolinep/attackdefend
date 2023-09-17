@@ -36,17 +36,8 @@ class GameModel:
         self.isPauseMenuVisible = False
         self.add_tractor_beam(TractorBeam(self))
 
-    def stop_game(self):
-        self.running = False
-
     def set_game_over(self, game_over):
         self.game_over = game_over
-
-    def toggle_pause(self):
-        self.paused = not self.paused
-
-    def set_pause(self, pause_state):
-        self.paused = pause_state
 
     def reset_game(self):
         # Clear sprite groups
@@ -57,7 +48,7 @@ class GameModel:
         self.rockets.empty()
         self.lasers.empty()
         self.tractor_beams.empty()
-        
+
         # Re-add player to all_sprites
         self.all_sprites.empty()
         self.all_sprites.add(self.player)
@@ -136,9 +127,6 @@ class GameModel:
         dx = closest_enemy.rect.x - self.player.x
         dy = closest_enemy.rect.y - self.player.y
 
-        if dy == 0:  # Add this check to avoid division by zero
-            dy = 1  # or some small value to prevent division by zero
-
         scale = SCREEN_HEIGHT / abs(dy)
 
         target_x = self.player.x + dx * scale
@@ -184,11 +172,6 @@ class GameModel:
                 self.add_laser(new_laser_beam)
 
     @staticmethod
-    def calculate_time_until_powerup(next_powerup_time):
-        current_time = pygame.time.get_ticks()
-        return max(0, (next_powerup_time - current_time) // 1000)
-
-    @staticmethod
     def calculate_average_enemy_speed(enemies):
         if len(enemies) > 0:
             total_enemy_speed = sum(enemy.speed for enemy in enemies)
@@ -200,8 +183,6 @@ class GameModel:
         all_enemies = [e for e in self.all_sprites if isinstance(e, Enemy)]
         if all_enemies:
             return random.choice(all_enemies)
-        else:
-            return None
 
     def calculate_highest_enemy_density_target(self):
         grid_size = 100  # Define the size of each grid cell

@@ -62,18 +62,15 @@ class ShopView:
         # Calculate common Y position for Balance, Shop, and Close Button
         common_y = self.y + 20
 
-        # Draw Balance
         balance_text = f"Balance: {player.coins}"
         balance_surface = title_font.render(balance_text, True, (255, 255, 255))
         screen.blit(balance_surface, (self.x + 20, common_y))
 
-        # Draw Shop Title
         title_text = "Shop"
         title_surface = title_font.render(title_text, True, (255, 255, 255))
         title_x = self.x + self.width // 2 - title_surface.get_width() // 2
         screen.blit(title_surface, (title_x, common_y))
 
-        # Update Close Button Y position to align with Balance and Shop Title
         self.close_button.rect.y = common_y - 10  # Adjust for button height
         self.close_button.draw(screen)
 
@@ -86,30 +83,3 @@ class ShopView:
             tile_view.rect.y = tile_y
             tile_view.rect.x = tile_x
             tile_view.draw(screen)
-
-        current_time = pygame.time.get_ticks()
-        new_messages = []
-        for message in self.messages:
-            if message["expire_time"] > current_time:
-                new_messages.append(message)
-                font = pygame.font.SysFont('Arial', 30)
-                text_surface = font.render(message["message"], True, message["color"])
-                screen.blit(text_surface, message["position"])
-
-        self.messages = new_messages
-
-    def create_shop_window(self, screen, shop_items):
-        pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.width * len(shop_items), self.height))
-
-    def create_shop_button(self, screen, item, index):
-        pygame.draw.rect(screen, (0, 0, 0), (self.x + index * 100, self.y, self.width, self.height))
-        text = pygame.font.SysFont('Arial', 20).render(item['title'], True, (0, 0, 0))
-        screen.blit(text, (self.x + index * 100 + 15, self.y + 25))
-
-    def display_purchase_message(self, screen, position, message, color=(255, 255, 255)):
-        font = pygame.font.SysFont(None, 15)  # Change the font size here
-        text_surface = font.render(message, True, color)
-        screen.blit(text_surface, position)
-
-        expire_time = pygame.time.get_ticks() + 2000  # 2000 milliseconds = 2 seconds
-        self.messages.append({"message": message, "expire_time": expire_time, "color": color, "position": position})

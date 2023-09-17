@@ -174,34 +174,3 @@ class ShopTileView:
         # Remove the status message if its time has expired
         elif self.status_message and current_time >= self.status_expires_at:
             self.status_message = None
-
-    def is_buy_button_clicked(self, pos):
-        x, y = pos
-        if self.buy_button.collidepoint(x, y):
-            return True
-        return False
-
-    def update_items_purchased(self, new_quantity, attribute_to_update):
-        self.model.attribute_to_update = attribute_to_update
-
-        if new_quantity > self.model.limit or new_quantity < -self.model.limit:  # Added check for negative values
-            return
-        if isinstance(new_quantity, bool):
-            self.items_purchased = new_quantity
-            item_type = "boolean"
-        elif isinstance(new_quantity, (int, float)):
-            self.items_purchased = new_quantity
-            item_type = "integer"
-        else:
-            return
-
-    def update_checkbox(self, attribute, count, player, screen):
-        # Get the current value of the attribute from attribute_modifiers
-        current_value = player.attributes_bought.get(attribute, None)
-
-        if current_value is None:
-            return
-
-        # Check if the current value matches the count; if not, redraw the checkboxes
-        if current_value != count:
-            self._draw_checkboxes(screen, player)

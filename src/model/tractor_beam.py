@@ -1,5 +1,6 @@
 import pygame
 
+
 class TractorBeam(pygame.sprite.Sprite):
     def __init__(self, game_model):
         super().__init__()
@@ -22,9 +23,6 @@ class TractorBeam(pygame.sprite.Sprite):
             y = start_point[1] + t * dy
             pygame.draw.circle(self.surf, color, (int(x), int(y)), radius)
 
-    def draw(self, screen):
-        screen.blit(self.surf, (0, 0))
-
     def update(self):
         if not self.game_model.player.attributes_bought.get('tractor_beam_enabled') == 1:
             return
@@ -34,7 +32,7 @@ class TractorBeam(pygame.sprite.Sprite):
         for coin in self.game_model.coins:
             distance_x = self.game_model.player.x - coin.rect.x
             distance_y = self.game_model.player.y - coin.rect.y
-            distance = (distance_x**2 + distance_y**2)**0.5
+            distance = (distance_x ** 2 + distance_y ** 2) ** 0.5
 
             if distance < self.range:
                 unit_vector_x = distance_x / distance

@@ -50,10 +50,6 @@ class Laser(pygame.sprite.Sprite):
         pygame.draw.circle(self.surf, LASER_COLOUR, self.start_point, laser_radius)
         pygame.draw.circle(self.surf, LASER_COLOUR, (int(self.end_point[0]), int(self.end_point[1])), laser_radius)
 
-    def draw(self, screen):
-        # Blit the surface onto the screen using the laser's rect
-        screen.blit(self.surf, self.rect.topleft)
-
     def update(self):
         self.start_point = (self.player.x, self.player.y)
 

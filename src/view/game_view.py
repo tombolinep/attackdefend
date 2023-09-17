@@ -30,8 +30,6 @@ class GameView:
         pygame.display.flip()
 
         self.background_x_pos -= 0.1
-        if self.background_x_pos <= -SCREEN_WIDTH:
-            self.background_x_pos = 0
 
     def clear_screen(self):
         self.screen.blit(self.background_image, (self.background_x_pos, 0))

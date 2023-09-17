@@ -12,7 +12,6 @@ from model.pause import PauseModel
 from model.player import Player
 from model.shop import Shop
 from model.tractor_beam import TractorBeam
-from view.pause_view import PauseView
 from view.player_view import PlayerView
 from view.shop_view import ShopView
 
@@ -112,12 +111,7 @@ class GameController:
     def update_and_render(self):
         if not self.model.paused:
             self.update_game()
-            self.view.render(self.model)  # Render the game view when not paused
-
-    def render(self):
-        if not self.model.paused:
             self.view.render(self.model)
-            pygame.display.update()
 
     def handle_game_over(self):
         for event in pygame.event.get():

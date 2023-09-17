@@ -15,7 +15,7 @@ class ShopTileView:
         "Quantum Thrusters": "speed",
         "Energy Shield": "shield",
         "Rapid Charge System": "reload_speed",
-        "Dimensional Compression": "diameter",
+        "Dimensional Compression": "size",
         "Tractor Beam": "tractor_beam_enabled",
         "Warp Field Generator": "warp_field_enabled",
         "Extra Blaster Mount": "num_of_guns",

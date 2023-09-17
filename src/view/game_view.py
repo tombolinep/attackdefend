@@ -1,6 +1,7 @@
 import pygame
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, BULLET_INTERVAL
 from view.button_view import Button
+
 from utils import resource_path
 
 
@@ -87,7 +88,7 @@ class GameView:
             ("Enemy speed:", model.calculate_average_enemy_speed(model.enemies)),
             ("", ""),
             ("Speed:", model.player.speed),
-            ("Size:", model.player.diameter),
+            ("Size:", model.player.size),
             ("Shield:", model.player.shield),
             ("Fire Rate:", round(time_per_shot_in_seconds, 2)),
             ("Number of Guns:", model.player.num_of_guns),

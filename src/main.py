@@ -6,7 +6,7 @@ from events.events import EventDispatcher
 from model.time_manager import TimeManager
 from view.game_view import GameView
 from view.pause_view import PauseView  # Ensure to import your PauseView class
-from view.game_over_view import GameOverView  # Ensure to import your GameOverView class
+from view.gameover_view import GameOverView  # Ensure to import your GameOverView class
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 

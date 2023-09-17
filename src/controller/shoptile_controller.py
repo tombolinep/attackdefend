@@ -1,3 +1,5 @@
+import pygame
+
 from controller.shop_controller import ShopController
 
 
@@ -6,7 +8,7 @@ class ShopTileController:
         "Quantum Thrusters": "speed",
         "Energy Shield": "shield",
         "Rapid Charge System": "reload_speed",
-        "Dimensional Compression": "diameter",
+        "Dimensional Compression": "size",
         "Tractor Beam": "tractor_beam_enabled",
         "Warp Field Generator": "warp_field_enabled",
         "Extra Blaster Mount": "num_of_guns",
@@ -61,8 +63,17 @@ class ShopTileController:
 
         new_value = base_value + (modifier * custom_modifier)
 
+        # Ensure the new value is correctly set on the player's attribute
         setattr(player, attribute_to_update, new_value)
+
+        if attribute_to_update == "size":
+            player.update_sprite_size()
+
         player.attributes_bought[attribute_to_update] = modifier
+
+        # Here, update the player's view after modifying the attributes
+        if hasattr(player, 'view') and player.view is not None:
+            player.view.update_shield_rings()
 
     def handle_buy(self, player, item_title, item_price, attribute_to_update):
         item_limit = self.model.limit

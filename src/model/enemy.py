@@ -2,8 +2,7 @@ from math import log
 
 import pygame
 import random
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
-from model.player import Player
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, ENEMY_SIZE
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -11,11 +10,13 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
         self.player = player
         self.type = enemy_type
-        self.surf = pygame.Surface((20, 10))
         if self.type == "red":
-            self.surf.fill((255, 0, 0))
+            self.image = pygame.image.load('assets/enemy2.png')
         else:
-            self.surf.fill((255, 255, 255))
+            self.image = pygame.image.load('assets/enemy1.png')
+        self.surf = pygame.transform.scale(self.image, (ENEMY_SIZE, ENEMY_SIZE))
+        self.rect = self.surf.get_rect()
+        self.mask = pygame.mask.from_surface(self.surf)  # Note the change here from self.image to self.surf
 
         self.base_speed = random.randint(1, 2)
         self.adjusted_speed = max(self.base_speed, self.base_speed + score // 660)
@@ -23,6 +24,7 @@ class Enemy(pygame.sprite.Sprite):
         self.previous_speed = None
         self.initial_position()
         self.in_warp_field = False
+        self.radius = self.rect.width / 2
 
     def initial_position(self):
         side = random.randint(0, 3)
@@ -53,7 +55,7 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
     def get_direction_towards_player(self):
-        player_center = self.player.center
+        player_center = self.player.rect.center
         dx = player_center[0] - self.rect.centerx
         dy = player_center[1] - self.rect.centery
 

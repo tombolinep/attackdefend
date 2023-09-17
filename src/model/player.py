@@ -2,7 +2,7 @@ import math
 from typing import Any
 
 import pygame
-from constants import PLAYER_DIAMETER, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT, WARP_FIELD_DIAMETER
+from constants import PLAYER_SIZE, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT, WARP_FIELD_DIAMETER
 
 
 class Player(pygame.sprite.Sprite):
@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
         'speed': 7,
         'shield': 0,
         'reload_speed': 1,
-        'diameter': PLAYER_DIAMETER,
+        'size': PLAYER_SIZE,
         'tractor_beam_enabled': False,
         'warp_field_enabled': False,
         'num_of_guns': 1,
@@ -31,8 +31,12 @@ class Player(pygame.sprite.Sprite):
 
         self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
         self.y = SCREEN_HEIGHT // 2
-        self.radius = self.diameter // 2
-        self.center = (self.x + self.radius, self.y + self.radius)
+        self.image = pygame.image.load('assets/player.png')
+        self.image = pygame.transform.scale(self.image, (PLAYER_SIZE, PLAYER_SIZE))
+        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self.mask = pygame.mask.from_surface(self.image)
+        self.radius = self.rect.width / 2
+        self.original_image = self.image
 
     def add_coin(self, amount=1):
         self.coins += amount
@@ -48,12 +52,14 @@ class Player(pygame.sprite.Sprite):
         self.attributes_bought[attribute] = new_value
         setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + new_value)
 
-    def can_sell_item(self, attribute, decrease_amount):
+        if attribute == 'size':
+            self.update_sprite_size()
 
+    def can_sell_item(self, attribute, decrease_amount):
         default_value = self.ATTRIBUTE_DEFAULTS.get(attribute)
         current_value = self.attributes_bought.get(attribute, default_value)
 
-        if attribute == "diameter" or attribute == "reload_speed" or "num_of_guns":
+        if attribute in {"size", "reload_speed", "num_of_guns"}:
             return current_value - decrease_amount >= 0
         if isinstance(default_value, (int, float)):
             return current_value - decrease_amount >= default_value
@@ -62,7 +68,28 @@ class Player(pygame.sprite.Sprite):
         return False
 
     def update(self):
-        self.center = (self.x + self.radius, self.y + self.radius)
+        self.rect.center = (self.x, self.y)
 
     def is_point_in_warp_field(self, point):
         return ((self.x - point[0]) ** 2 + (self.y - point[1]) ** 2) ** 0.5 < (WARP_FIELD_DIAMETER / 2)
+
+    def update_sprite_size(self):
+        new_value = self.size
+        scale_factor = new_value / self.ATTRIBUTE_DEFAULTS['size']
+        new_width = int(self.original_image.get_width() * scale_factor)
+        new_height = int(self.original_image.get_height() * scale_factor)
+
+        # Save the old center
+        old_center = self.rect.center
+
+        # Set the new image
+        self.image = pygame.transform.scale(self.original_image, (new_width, new_height))
+
+        # Set the new rect size
+        self.rect.size = self.image.get_size()
+
+        # Update the mask
+        self.mask = pygame.mask.from_surface(self.image)
+
+        # Set the rect center back to the old center
+        self.rect.center = old_center

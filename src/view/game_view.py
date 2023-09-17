@@ -9,7 +9,7 @@ class GameView:
     def __init__(self, screen):
         self.screen = screen
         self.font = pygame.font.Font(None, 36)
-        self.player_view = None  # Initialized to None
+        self.player_view = None
         self.initialize_buttons()
         self.background_image = pygame.image.load(resource_path('assets/space_background.jpg'))
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -22,7 +22,6 @@ class GameView:
         self.clear_screen()
         self.render_ui(model)
 
-        # Render player
         if self.player_view:
             self.player_view.render(self.screen)
 
@@ -30,13 +29,11 @@ class GameView:
         self.display_stats(model)
         pygame.display.flip()
 
-        # Update the x-coordinate for scrolling
         self.background_x_pos -= 0.1
         if self.background_x_pos <= -SCREEN_WIDTH:
             self.background_x_pos = 0
 
     def clear_screen(self):
-        # Blit the background image twice to create a scrolling effect
         self.screen.blit(self.background_image, (self.background_x_pos, 0))
         self.screen.blit(self.background_image, (self.background_x_pos + SCREEN_WIDTH, 0))
 
@@ -102,16 +99,16 @@ class GameView:
             ("Laser:", "True" if model.player.laser_enabled else "False"),
         ]
 
-        header_font = pygame.font.Font(None, 32)  # Adjust font size for headers
-        value_font = pygame.font.Font(None, 32)  # Adjust font size for values
+        header_font = pygame.font.Font(None, 32)
+        value_font = pygame.font.Font(None, 32)
 
         for i, (text, value) in enumerate(stats):
             if text:
                 font = header_font if ":" in text else value_font
-                color = (0, 0, 0) if ":" in text else (0, 0, 139)  # Dark blue for values
+                color = (0, 0, 0) if ":" in text else (0, 0, 139)
                 text_surface = font.render(text, True, color)
-                value_surface = font.render(f"{value}", True, (0, 0, 139))  # Dark blue for values
+                value_surface = font.render(f"{value}", True, (0, 0, 139))
                 self.screen.blit(text_surface, (10, 10 + i * 30))
-                self.screen.blit(value_surface, (220, 10 + i * 30))  # Adjust x-value for alignment
+                self.screen.blit(value_surface, (220, 10 + i * 30))
             else:
                 continue

@@ -14,9 +14,11 @@ class Enemy(pygame.sprite.Sprite):
             self.image = pygame.image.load('assets/enemy2.png')
         else:
             self.image = pygame.image.load('assets/enemy1.png')
+
         self.surf = pygame.transform.scale(self.image, (ENEMY_SIZE, ENEMY_SIZE))
         self.rect = self.surf.get_rect()
-        self.mask = pygame.mask.from_surface(self.surf)  # Note the change here from self.image to self.surf
+        self.mask = pygame.mask.from_surface(self.surf)
+        self.radius = self.rect.width / 2
 
         self.base_speed = random.randint(1, 2)
         self.adjusted_speed = max(self.base_speed, self.base_speed + score // 660)
@@ -24,7 +26,6 @@ class Enemy(pygame.sprite.Sprite):
         self.previous_speed = None
         self.initial_position()
         self.in_warp_field = False
-        self.radius = self.rect.width / 2
 
     def initial_position(self):
         side = random.randint(0, 3)

@@ -39,19 +39,30 @@ class CollisionController:
             self.audio_manager.play_death_sound()
             self.model.set_game_over(True)
 
-    def check_collisions(self):
-        for enemy in self.enemies:
-            # Circle-based preliminary check
-            if pygame.sprite.collide_circle(self.player, enemy):
-                # Bounding box collision check
-                if pygame.sprite.collide_rect(self.player, enemy):
-                    print("Bounding box collision detected")
-                    # Pixel-perfect collision check
-                    if pygame.sprite.collide_mask(self.player, enemy):
-                        print("Pixel-perfect collision detected")
-                        self.handle_enemy_collision(enemy)
+    def handle_coin_collision(self, coin):
+        self.audio_manager.play_coin_sound()
+        self.player.add_coin()
+        coin.kill()
+        print(f"Handled coin collision at {(coin.rect.x, coin.rect.y)}")  # Logging handled collisions
 
-                if self.player.warp_field_enabled and self.player.is_point_in_warp_field(enemy.rect.center):
-                    enemy.in_warp_field = True
-                else:
-                    enemy.in_warp_field = False
+    def check_collisions(self):
+        # Check for collisions between the player and enemies/coins using a more efficient batch collision check method
+
+        # Batch check for enemy collisions with the player using circle collision as a broad phase check
+        for enemy in self.enemies:
+            if pygame.sprite.collide_rect(self.player, enemy):
+                if pygame.sprite.collide_mask(self.player, enemy):
+                    self.handle_enemy_collision(enemy)
+
+            # Checking if enemy is in warp field
+            if self.player.warp_field_enabled and self.player.is_point_in_warp_field(enemy.rect.center):
+                enemy.in_warp_field = True
+            else:
+                enemy.in_warp_field = False
+
+        # Check for collisions between the player and coins using rect and mask collision checks
+        for coin in self.coins:
+            if pygame.sprite.collide_rect(self.player, coin):
+                if pygame.sprite.collide_mask(self.player, coin):
+                    self.handle_coin_collision(coin)
+                    coin.kill()

@@ -4,7 +4,7 @@ from math import sqrt
 
 import pygame
 from constants import POWERUP_INTERVAL, SCREEN_HEIGHT, BULLET_INTERVAL, \
-    SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE, POWERUP_SIZE, ENEMY_RED_CHANCE
+    SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE, POWERUP_SIZE, ENEMY_RED_CHANCE, RED_ENEMY_SPAWN_SCORE
 from model.audio_manager import Audio
 from model.bullet import Bullet
 from model.coin import Coin
@@ -65,7 +65,7 @@ class GameModel:
         self.all_sprites.add(player)
 
     def add_enemy(self):
-        enemy_type = "red" if random.random() < ENEMY_RED_CHANCE else "white"
+        enemy_type = "red" if random.random() < ENEMY_RED_CHANCE and self.score > RED_ENEMY_SPAWN_SCORE else "white"
         enemy = Enemy(self.score, self.player, enemy_type)
         self.enemies.add(enemy)
         self.all_sprites.add(enemy)

@@ -20,9 +20,10 @@ class Enemy(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.surf)
         self.radius = self.rect.width / 2
 
-        self.base_speed = random.randint(1, 2)
-        self.adjusted_speed = max(self.base_speed, self.base_speed + score // 660)
-        self.speed = min(self.adjusted_speed, 12)
+        # Adjusted the speed calculation to slow down the enemies
+        self.base_speed = random.uniform(0.1, 0.5)
+        self.adjusted_speed = self.base_speed + log(max(1, score), 10) * 0.1  # Slow increment based on score
+        self.speed = max(1, min(self.adjusted_speed, 12))
         self.previous_speed = None
         self.initial_position()
         self.in_warp_field = False
@@ -68,6 +69,16 @@ class Enemy(pygame.sprite.Sprite):
         return dx, dy
 
     def move(self, dx, dy, slowdown_factor):
-        new_speed = self.speed * slowdown_factor
-        self.rect.x += round(dx * new_speed)
-        self.rect.y += round(dy * new_speed)
+        new_speed = max(1, self.speed * slowdown_factor)  # Ensure minimum speed of 1
+
+        new_x = self.rect.x + round(dx * new_speed)
+        new_y = self.rect.y + round(dy * new_speed)
+
+        player_center = self.player.rect.center
+
+        proposed_dist_to_player = ((player_center[0] - new_x) ** 2 + (player_center[1] - new_y) ** 2) ** 0.5
+
+        if proposed_dist_to_player < (
+                (player_center[0] - self.rect.x) ** 2 + (player_center[1] - self.rect.y) ** 2) ** 0.5:
+            self.rect.x = new_x
+            self.rect.y = new_y

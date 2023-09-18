@@ -7,6 +7,12 @@ import pygame.gfxdraw
 from constants import ENEMY_COIN_CHANCE
 
 
+def apply_powerup(enemies_group):
+    white_enemies = [enemy for enemy in enemies_group if enemy.type == "white"]
+    for enemy in white_enemies:
+        enemy.kill()
+
+
 class CollisionController:
     def __init__(self, model, screen):
         self.model = model
@@ -43,26 +49,31 @@ class CollisionController:
         self.audio_manager.play_coin_sound()
         self.player.add_coin()
         coin.kill()
-        print(f"Handled coin collision at {(coin.rect.x, coin.rect.y)}")  # Logging handled collisions
+
+    def handle_powerup_collision(self, powerup):
+        self.audio_manager.play_powerup_sound()
+        apply_powerup(self.enemies)
+        powerup.kill()
+        self.model.score += 300
 
     def check_collisions(self):
-        # Check for collisions between the player and enemies/coins using a more efficient batch collision check method
-
-        # Batch check for enemy collisions with the player using circle collision as a broad phase check
         for enemy in self.enemies:
             if pygame.sprite.collide_rect(self.player, enemy):
                 if pygame.sprite.collide_mask(self.player, enemy):
                     self.handle_enemy_collision(enemy)
-
-            # Checking if enemy is in warp field
             if self.player.warp_field_enabled and self.player.is_point_in_warp_field(enemy.rect.center):
                 enemy.in_warp_field = True
             else:
                 enemy.in_warp_field = False
 
-        # Check for collisions between the player and coins using rect and mask collision checks
         for coin in self.coins:
             if pygame.sprite.collide_rect(self.player, coin):
                 if pygame.sprite.collide_mask(self.player, coin):
                     self.handle_coin_collision(coin)
                     coin.kill()
+
+        for powerup in self.powerups:
+            if pygame.sprite.collide_rect(self.player, powerup):
+                if pygame.sprite.collide_mask(self.player, powerup):
+                    self.handle_powerup_collision(powerup)
+                    powerup.kill()

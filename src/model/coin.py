@@ -13,7 +13,7 @@ class Coin(pygame.sprite.Sprite):
 
         self.image = pygame.image.load('assets/coin.png').convert_alpha()
         self.surf = pygame.transform.scale(self.image, (COIN_SIZE, COIN_SIZE))
-        self.rect = self.surf.get_rect(center=(self.x, self.y))  # Set the rect center to the x, y coordinates
+        self.rect = self.surf.get_rect(center=(self.x, self.y))
         self.mask = pygame.mask.from_surface(self.surf)
         self.radius = self.rect.width / 2
 

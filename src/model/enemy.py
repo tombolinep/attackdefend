@@ -4,30 +4,18 @@ import pygame
 import random
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, JUNK_WIDTH, JUNK_HEIGHT, ENEMY_WIDTH, ENEMY_HEIGHT
 
-ENEMY_IMAGES = [
-    pygame.image.load('assets/junk1.png'),
-    pygame.image.load('assets/junk2.png'),
-    pygame.image.load('assets/junk3.png'),
-]
-
-ENEMY_RED_IMAGE = pygame.image.load('assets/enemy_red.png')
-
-ENEMY_ROTATIONS = []
-for image in ENEMY_IMAGES:
-    ENEMY_ROTATIONS.extend([pygame.transform.rotate(image, i) for i in random.sample(range(0, 360), 5)])
-
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, score, player, enemy_type="white"):
+    def __init__(self, score, player, image_manager, enemy_type="white"):
         super().__init__()
         self.player = player
         self.type = enemy_type
         if self.type == "red":
-            self.image = ENEMY_RED_IMAGE
+            self.image = image_manager.get_image('enemy_red')
             self.surf = pygame.transform.scale(self.image, (ENEMY_WIDTH, ENEMY_HEIGHT))
 
         else:
-            self.image = random.choice(ENEMY_ROTATIONS)
+            self.image = image_manager.get_random_junk_image()
             self.surf = pygame.transform.scale(self.image, (JUNK_WIDTH, JUNK_HEIGHT))
 
         self.rect = self.surf.get_rect()
@@ -36,7 +24,6 @@ class Enemy(pygame.sprite.Sprite):
 
         max_speed = 12
         min_speed = 1
-        speed_range = max_speed - min_speed
 
         self.base_speed = random.uniform(0.1, 0.5)
         self.adjusted_speed = self.base_speed + log(max(1, score + 1)) * 0.15  # Slow increment based on score

@@ -4,7 +4,7 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, LASER_COLOUR, MA
 
 
 class Laser(pygame.sprite.Sprite):
-    def __init__(self, player, target, audio_manager):
+    def __init__(self, player, target, audio_manager, image_manager):
         super().__init__()
         self.player = player
         self.target = target

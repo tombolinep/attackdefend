@@ -9,6 +9,7 @@ from model.audio_manager import Audio
 from model.bullet import Bullet
 from model.coin import Coin
 from model.enemy import Enemy
+from model.image_manager import ImageManager
 from model.laser import Laser
 from model.powerup import PowerUp
 from model.rocket import Rocket
@@ -18,6 +19,8 @@ from model.tractor_beam import TractorBeam
 class GameModel:
     def __init__(self):
         self.audio_manager = Audio()
+        self.image_manager = ImageManager()
+        self.image_manager.load_images()
         self.running = True
         self.paused = False
         self.score = 0
@@ -34,7 +37,7 @@ class GameModel:
         self.next_bullet_time = pygame.time.get_ticks()
         self.game_over = False
         self.isPauseMenuVisible = False
-        self.add_tractor_beam(TractorBeam(self))
+        self.add_tractor_beam(TractorBeam(self, self.player, self.image_manager))
 
     def set_game_over(self, game_over):
         self.game_over = game_over
@@ -58,7 +61,7 @@ class GameModel:
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.running = True
         self.game_over = False
-        self.add_tractor_beam(TractorBeam(self))
+        self.add_tractor_beam(TractorBeam(self, self.player, self.image_manager))
 
     def set_player(self, player):
         self.player = player
@@ -66,26 +69,26 @@ class GameModel:
 
     def add_enemy(self):
         enemy_type = "red" if random.random() < ENEMY_RED_CHANCE and self.score > RED_ENEMY_SPAWN_SCORE else "white"
-        enemy = Enemy(self.score, self.player, enemy_type)
+        enemy = Enemy(self.score, self.player, self.image_manager, enemy_type)
         self.enemies.add(enemy)
         self.all_sprites.add(enemy)
 
     def add_powerup(self):
         x = random.randint(STATS_WIDTH, SCREEN_WIDTH - POWERUP_SIZE)
         y = random.randint(0, SCREEN_HEIGHT - POWERUP_SIZE)
-        powerup = PowerUp(x, y)
+        powerup = PowerUp(x, y, self.image_manager)
         self.powerups.add(powerup)
         self.all_sprites.add(powerup)
 
     def add_coin(self):
         x = random.randint(STATS_WIDTH, SCREEN_WIDTH - COIN_SIZE)
         y = random.randint(0, SCREEN_HEIGHT - COIN_SIZE)
-        coin = Coin(x, y)
+        coin = Coin(x, y, self.image_manager)
         self.coins.add(coin)
         self.all_sprites.add(coin)
 
     def spawn_coin_at_location(self, x, y):
-        new_coin = Coin(x, y)
+        new_coin = Coin(x, y, self.image_manager)
         self.coins.add(new_coin)
         self.all_sprites.add(new_coin)
 
@@ -151,7 +154,7 @@ class GameModel:
 
                     bullet = Bullet(self.player.x + (i * 20 - (10 * (num_of_guns - 1))),
                                     self.player.y + (i * 10 - (5 * (num_of_guns - 1))),
-                                    target_x, target_y)
+                                    target_x, target_y, self.image_manager)
                     bullet.adjust_trajectory(angle_offset)
                     self.add_bullet(bullet)
 
@@ -160,7 +163,8 @@ class GameModel:
     def rocket_shoot(self):
         if self.player.attributes_bought.get('rocket_launcher_enabled'):
             target_x, target_y = self.calculate_highest_enemy_density_target()
-            new_rocket = Rocket(self.player.x, self.player.y, target_x, target_y, self.audio_manager)
+            new_rocket = Rocket(self.player.x, self.player.y, target_x, target_y, self.audio_manager,
+                                self.image_manager)
             self.add_rocket(new_rocket)
             self.audio_manager.play_rocket_launch()
 
@@ -168,7 +172,7 @@ class GameModel:
         if self.player.attributes_bought.get('laser_enabled'):
             enemy = self.find_random_enemy()
             if enemy:
-                new_laser_beam = Laser(self.player, enemy.rect, self.audio_manager)
+                new_laser_beam = Laser(self.player, enemy.rect, self.audio_manager, self.image_manager)
                 self.add_laser(new_laser_beam)
 
     @staticmethod

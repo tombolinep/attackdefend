@@ -51,7 +51,7 @@ class GameController:
         self.view.set_player_view(player_view)
 
         self.player_controller = PlayerController(player, player_view)
-        tractor_beam = TractorBeam(self.model)
+        tractor_beam = TractorBeam(self.model, self.model.player, self.model.image_manager)
         self.model.tractor_beams.add(tractor_beam)
         # self.model.audio_manager.play_bg_music()
 
@@ -106,7 +106,7 @@ class GameController:
             self.model.lasers.update()
             self.model.coins.update()
             self.model.powerups.update()
-            self.model.tractor_beams.update()
+            self.model.tractor_beams.update(self.screen)
 
     def update_and_render(self):
         if not self.model.paused:

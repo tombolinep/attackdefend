@@ -4,14 +4,11 @@ import pygame
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, BULLET_SIZE
 from view.bullet_view import BulletView
 
-BULLET_IMAGE = pygame.image.load('assets/bullet.png')
-
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, target_x, target_y):
+    def __init__(self, x, y, target_x, target_y, image_manager):
         super().__init__()
-
-        self.image = BULLET_IMAGE.convert_alpha()
+        self.image = image_manager.get_image('bullet')
         self.surf = pygame.transform.scale(self.image, (BULLET_SIZE, BULLET_SIZE))
         self.rect = self.surf.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.surf)

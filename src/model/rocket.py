@@ -4,7 +4,7 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH
 
 
 class Rocket(pygame.sprite.Sprite):
-    def __init__(self, x, y, target_x, target_y, audio_manager):
+    def __init__(self, x, y, target_x, target_y, audio_manager, image_manager):
         super().__init__()
         self.audio_manager = audio_manager
         self.surf = pygame.Surface((20, 20))

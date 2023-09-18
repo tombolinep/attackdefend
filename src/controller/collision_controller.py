@@ -56,6 +56,12 @@ class CollisionController:
         powerup.kill()
         self.model.score += 300
 
+    def handle_bullet_collision(self, enemy):
+        if random.random() < ENEMY_COIN_CHANCE:
+            self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
+        enemy.kill()
+        self.model.score += 50
+
     def check_collisions(self):
         for enemy in self.enemies:
             if pygame.sprite.collide_rect(self.player, enemy):
@@ -77,3 +83,8 @@ class CollisionController:
                 if pygame.sprite.collide_mask(self.player, powerup):
                     self.handle_powerup_collision(powerup)
                     powerup.kill()
+
+        colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
+        for enemy_list in colliding_bullet_enemy.values():
+            for enemy in enemy_list:
+                self.handle_bullet_collision(enemy)

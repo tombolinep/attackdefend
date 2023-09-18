@@ -2,7 +2,19 @@ from math import log
 
 import pygame
 import random
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, ENEMY_SIZE
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, JUNK_WIDTH, JUNK_HEIGHT, ENEMY_WIDTH, ENEMY_HEIGHT
+
+ENEMY_IMAGES = [
+    pygame.image.load('assets/junk1.png'),
+    pygame.image.load('assets/junk2.png'),
+    pygame.image.load('assets/junk3.png'),
+]
+
+ENEMY_RED_IMAGE = pygame.image.load('assets/enemy_red.png')
+
+ENEMY_ROTATIONS = []
+for image in ENEMY_IMAGES:
+    ENEMY_ROTATIONS.extend([pygame.transform.rotate(image, i) for i in random.sample(range(0, 360), 5)])
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -11,19 +23,25 @@ class Enemy(pygame.sprite.Sprite):
         self.player = player
         self.type = enemy_type
         if self.type == "red":
-            self.image = pygame.image.load('assets/enemy2.png')
-        else:
-            self.image = pygame.image.load('assets/enemy1.png')
+            self.image = ENEMY_RED_IMAGE
+            self.surf = pygame.transform.scale(self.image, (ENEMY_WIDTH, ENEMY_HEIGHT))
 
-        self.surf = pygame.transform.scale(self.image, (ENEMY_SIZE, ENEMY_SIZE))
+        else:
+            self.image = random.choice(ENEMY_ROTATIONS)
+            self.surf = pygame.transform.scale(self.image, (JUNK_WIDTH, JUNK_HEIGHT))
+
         self.rect = self.surf.get_rect()
         self.mask = pygame.mask.from_surface(self.surf)
         self.radius = self.rect.width / 2
 
-        # Adjusted the speed calculation to slow down the enemies
+        max_speed = 12
+        min_speed = 1
+        speed_range = max_speed - min_speed
+
         self.base_speed = random.uniform(0.1, 0.5)
-        self.adjusted_speed = self.base_speed + log(max(1, score), 10) * 0.1  # Slow increment based on score
+        self.adjusted_speed = self.base_speed + log(max(1, score + 1)) * 0.15  # Slow increment based on score
         self.speed = max(1, min(self.adjusted_speed, 12))
+
         self.previous_speed = None
         self.initial_position()
         self.in_warp_field = False

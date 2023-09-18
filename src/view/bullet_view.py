@@ -3,4 +3,4 @@ class BulletView:
         self.model = model
 
     def draw(self, screen):
-        screen.blit(self.model.image, self.model.rect.topleft)
+        screen.blit(self.model.image, self.model.rect)

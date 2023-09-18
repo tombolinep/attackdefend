@@ -1,6 +1,5 @@
 import pygame
-from constants import POWERUP_INTERVAL, COIN_INTERVAL, BULLET_INTERVAL, ROCKET_INTERVAL, LASER_INTERVAL
-import logging
+from constants import POWERUP_INTERVAL, COIN_INTERVAL, BULLET_INTERVAL, ROCKET_INTERVAL, LASER_INTERVAL, ENEMY_INTERVAL
 
 
 class TimeManager:
@@ -11,7 +10,7 @@ class TimeManager:
 
     def initialize_events(self):
         self.ADDENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADDENEMY, 250)
+        pygame.time.set_timer(self.ADDENEMY, ENEMY_INTERVAL)
 
         self.SHOOT = pygame.USEREVENT + 2
         pygame.time.set_timer(self.SHOOT, BULLET_INTERVAL)

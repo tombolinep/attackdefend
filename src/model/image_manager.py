@@ -11,7 +11,7 @@ class ImageManager:
 
     def load_images(self):
         self.images['bullet'] = pygame.image.load('assets/bullet.png')
-        self.images['tractor_beam'] = pygame.image.load('assets/tractor_beam.png').convert_alpha()
+        self.images['tractor_beam'] = pygame.image.load('assets/tractor_beam.png')
         self.images['enemy_red'] = pygame.image.load('assets/enemy_red.png')
         self.images['coin'] = pygame.image.load('assets/coin.png')
         self.images['junks'] = [pygame.image.load('assets/junk1.png'),

@@ -106,7 +106,7 @@ class GameController:
             self.model.lasers.update()
             self.model.coins.update()
             self.model.powerups.update()
-            self.model.tractor_beams.update(self.screen)
+            self.model.tractor_beams.update()
 
     def update_and_render(self):
         if not self.model.paused:

@@ -7,7 +7,7 @@ class TractorBeamController:
         self.model = model
         self.view = view
 
-    def update(self, screen):
+    def update(self):
         if not self.model.game_model.player.attributes_bought.get('tractor_beam_enabled') == 1:
             return
 
@@ -23,4 +23,5 @@ class TractorBeamController:
                 coin.rect.centerx -= unit_vector.x * self.model.pull_strength
                 coin.rect.centery -= unit_vector.y * self.model.pull_strength
 
-                self.view.draw(screen, player_center, coin_center)
+                # We add this line to draw the beam between player and the coin in range
+                self.view.draw(self.model.screen, player_center, coin_center)

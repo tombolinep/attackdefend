@@ -12,7 +12,7 @@ class TractorBeam(pygame.sprite.Sprite):
         self.range = 300
         self.pull_strength = 1
         self.image = image_manager.get_image('tractor_beam')
-        self.surf = pygame.transform.scale(self.image, (100, 100))  # Adjust size as necessary
+        self.surf = pygame.Surface((self.range, 10), pygame.SRCALPHA)  # Create a beam rect
         self.rect = self.surf.get_rect()
         self.mask = pygame.mask.from_surface(self.surf)
 

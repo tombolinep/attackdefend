@@ -1,4 +1,5 @@
 import pygame
+import math
 
 
 class TractorBeamController:
@@ -10,7 +11,7 @@ class TractorBeamController:
         if not self.model.game_model.player.attributes_bought.get('tractor_beam_enabled') == 1:
             return
 
-        player_center = (self.model.player.rect.centerx, self.model.player.rect.centery)
+        player_center = (self.model.game_model.player.rect.centerx, self.model.game_model.player.rect.centery)
 
         for coin in self.model.game_model.coins:
             coin_center = (coin.rect.centerx, coin.rect.centery)

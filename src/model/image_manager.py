@@ -1,4 +1,4 @@
-import randomwd
+import random
 
 import pygame
 

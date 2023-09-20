@@ -1,6 +1,7 @@
 import math
 
 import pygame
+from constants import LASER_SIZE
 
 
 class LaserView:
@@ -10,7 +11,7 @@ class LaserView:
     def draw(self, screen):
         # Calculate the new position and dimensions of the laser
         rotated_image = pygame.transform.rotate(
-            pygame.transform.scale(self.model.image, (5, int(self.model.length))), -self.model.angle)
+            pygame.transform.scale(self.model.image, (LASER_SIZE, int(self.model.length))), -self.model.angle)
 
         # Create a new surface with dimensions matching the rotated image
         self.model.surf = pygame.Surface((rotated_image.get_width(), rotated_image.get_height()), pygame.SRCALPHA)

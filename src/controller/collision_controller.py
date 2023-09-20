@@ -38,7 +38,7 @@ class CollisionController:
             self.audio_manager.play_shield_hit_sound()
             self.player.update_attribute(attribute='shield', action='decrease', change_amount=1)
             if random.random() < ENEMY_COIN_CHANCE:
-                self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
+                self.model.spawn_coin_at_location(enemy.rect.center.x, enemy.rect.center.y)
             enemy.kill()
             self.model.score += 50
         else:
@@ -56,9 +56,15 @@ class CollisionController:
         powerup.kill()
         self.model.score += 300
 
+    def handle_laser_collision(self, enemy):
+        if random.random() < ENEMY_COIN_CHANCE:
+            self.model.spawn_coin_at_location(enemy.rect.center.x, enemy.rect.center.y)
+        enemy.kill()
+        self.model.score += 50
+
     def handle_bullet_collision(self, enemy):
         if random.random() < ENEMY_COIN_CHANCE:
-            self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
+            self.model.spawn_coin_at_location(enemy.rect.center.x, enemy.rect.center.y)
         enemy.kill()
         self.model.score += 50
 
@@ -83,6 +89,11 @@ class CollisionController:
                 if pygame.sprite.collide_mask(self.player, powerup):
                     self.handle_powerup_collision(powerup)
                     powerup.kill()
+
+        for laser in self.lasers:
+            collided_enemy = pygame.sprite.spritecollideany(laser, self.enemies)
+            if collided_enemy:
+                self.handle_laser_collision(collided_enemy)
 
         colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for enemy_list in colliding_bullet_enemy.values():

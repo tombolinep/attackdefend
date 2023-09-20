@@ -130,7 +130,7 @@ class GameModel:
         dx = closest_enemy.rect.x - self.player.x
         dy = closest_enemy.rect.y - self.player.y
 
-        scale = SCREEN_HEIGHT / abs(dy)
+        scale = SCREEN_HEIGHT / (abs(dy) + 1e-6)
 
         target_x = self.player.x + dx * scale
         target_y = self.player.y + dy * scale

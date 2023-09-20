@@ -19,7 +19,7 @@ class Laser(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.surf)
 
         self.start_point = (self.player.x, self.player.y)
-        self.end_point = (self.player.x, self.player.y)
+        self.end_point = (self.target.x, self.target.y)
         self.speed = 5000
         self.calculate_trajectory()
 
@@ -36,7 +36,7 @@ class Laser(pygame.sprite.Sprite):
         self.dy = self.target.y - self.start_point[1]
 
         self.angle = math.degrees(math.atan2(self.dy, self.dx)) - 90
-        self.length = min(100, math.hypot(self.dx, self.dy)) + 100
+        self.length = math.hypot(self.dx, self.dy)  # Calculate the full length
 
     def update(self):
         self.controller.update()

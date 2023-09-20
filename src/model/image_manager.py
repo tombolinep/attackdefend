@@ -24,6 +24,9 @@ class ImageManager:
         self.images['player'] = pygame.image.load('assets/player.png')
         self.images['powerup'] = pygame.image.load('assets/powerup.png')
         self.images['background'] = pygame.image.load('assets/space_background.jpg')
+        self.images['rocket'] = pygame.image.load('assets/rocket.png')
+        self.images['explosion'] = pygame.image.load('assets/explosion.png')
+        self.images['laser'] = pygame.image.load('assets/laser_beam.png')
 
         # Precompute junk variants
         for junk_image in self.images['junks']:

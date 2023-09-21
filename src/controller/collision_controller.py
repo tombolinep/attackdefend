@@ -38,7 +38,7 @@ class CollisionController:
             self.audio_manager.play_shield_hit_sound()
             self.player.update_attribute(attribute='shield', action='decrease', change_amount=1)
             if random.random() < ENEMY_COIN_CHANCE:
-                self.model.spawn_coin_at_location(enemy.rect.center.x, enemy.rect.center.y)
+                self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
             enemy.kill()
             self.model.score += 50
         else:
@@ -58,13 +58,13 @@ class CollisionController:
 
     def handle_laser_collision(self, enemy):
         if random.random() < ENEMY_COIN_CHANCE:
-            self.model.spawn_coin_at_location(enemy.rect.center.x, enemy.rect.center.y)
+            self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
         enemy.kill()
         self.model.score += 50
 
     def handle_bullet_collision(self, enemy):
         if random.random() < ENEMY_COIN_CHANCE:
-            self.model.spawn_coin_at_location(enemy.rect.center.x, enemy.rect.center.y)
+            self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
         enemy.kill()
         self.model.score += 50
 

@@ -1,7 +1,6 @@
 import pygame
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, BULLET_INTERVAL
 from view.button_view import Button
-
 from utils import resource_path
 
 
@@ -28,9 +27,13 @@ class GameView:
 
         self.draw_sprites(model.all_sprites)
         self.display_stats(model)
+
         pygame.display.flip()
 
+        # Update and loop the background
         self.background_x_pos -= 0.1
+        if self.background_x_pos <= -SCREEN_WIDTH:
+            self.background_x_pos = 0
 
     def clear_screen(self):
         self.screen.blit(self.background_image, (self.background_x_pos, 0))

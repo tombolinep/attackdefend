@@ -1,6 +1,6 @@
 import pygame
 import sys
-import cProfile  # Import cProfile module
+import cProfile
 from model.game_model import GameModel
 from controller.game_controller import GameController
 from events.events import EventDispatcher

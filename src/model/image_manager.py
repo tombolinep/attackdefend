@@ -28,6 +28,8 @@ class ImageManager:
         self.images['explosion'] = pygame.image.load('assets/explosion.png')
         self.images['laser'] = pygame.image.load('assets/laser_beam.png')
 
+        self.cache_rotated_rockets()
+
         # Precompute junk variants
         for junk_image in self.images['junks']:
             for _ in range(10):  # creating 10 variants for each junk image
@@ -50,3 +52,10 @@ class ImageManager:
     def get_rotated_image(self, image):
         angle = random.uniform(0, 360)
         return pygame.transform.rotate(image, angle)
+
+    def cache_rotated_rockets(self):
+        self.rotated_rockets = {}
+        original_rocket = self.images['rocket']
+        for angle in range(0, 360, 15):  # Creating cache for every 15 degrees
+            rotated_image = pygame.transform.rotate(original_rocket, -angle)
+            self.rotated_rockets[angle] = rotated_image

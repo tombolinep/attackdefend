@@ -1,5 +1,5 @@
 import math
-from typing import Any
+from typing import Any, Union
 
 import pygame
 from constants import PLAYER_SIZE, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT, WARP_FIELD_DIAMETER
@@ -41,16 +41,25 @@ class Player(pygame.sprite.Sprite):
     def add_coin(self, amount=1):
         self.coins += amount
 
-    def update_attribute(self, attribute, change_amount, action):
-        current_value: int | Any = self.attributes_bought.get(attribute, 0)
+    def update_attribute(self, attribute: str, change_amount: Union[int, bool], action: str):
+        default_value = self.ATTRIBUTE_DEFAULTS.get(attribute)
+        current_value = self.attributes_bought.get(attribute, default_value)
 
-        if action == "increase":
-            new_value = current_value + change_amount
-        elif action == "decrease":
-            new_value = current_value - change_amount
+        if isinstance(default_value, int):
+            if action == "increase":
+                new_value = current_value + change_amount
+            elif action == "decrease":
+                new_value = current_value - change_amount
+            else:
+                raise ValueError("Invalid action for integer attribute")
+        elif isinstance(default_value, bool):
+            new_value = not current_value
 
         self.attributes_bought[attribute] = new_value
-        setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + new_value)
+        setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + new_value) if isinstance(new_value,
+                                                                                               int) else setattr(self,
+                                                                                                                 attribute,
+                                                                                                                 new_value)
 
         if attribute == 'size':
             self.update_sprite_size()

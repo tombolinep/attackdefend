@@ -68,6 +68,26 @@ class CollisionController:
         enemy.kill()
         self.model.score += 50
 
+    def calculate_distance(self, point1, point2):
+        dx = point1[0] - point2[0]
+        dy = point1[1] - point2[1]
+        return math.sqrt(dx * dx + dy * dy)
+
+    def is_in_explosion_radius(self, rocket, enemy):
+        distance = self.calculate_distance(
+            (rocket.rect.centerx, rocket.rect.centery),
+            (enemy.rect.centerx, enemy.rect.centery)
+        )
+        return distance <= rocket.explosion_radius
+
+    def handle_rocket_collision(self, rocket, enemy):
+        if rocket.is_exploding:
+            if self.is_in_explosion_radius(rocket, enemy):
+                if random.random() < ENEMY_COIN_CHANCE:
+                    self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
+                enemy.kill()
+                self.model.score += 50
+
     def check_collisions(self):
         for enemy in self.enemies:
             if pygame.sprite.collide_rect(self.player, enemy):
@@ -94,6 +114,11 @@ class CollisionController:
             collided_enemy = pygame.sprite.spritecollideany(laser, self.enemies)
             if collided_enemy:
                 self.handle_laser_collision(collided_enemy)
+
+        for rocket in self.rockets:
+            collided_enemy = pygame.sprite.spritecollideany(rocket, self.enemies)
+            if collided_enemy:
+                self.handle_rocket_collision(rocket, collided_enemy)
 
         colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for enemy_list in colliding_bullet_enemy.values():

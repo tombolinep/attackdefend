@@ -1,18 +1,19 @@
 import pygame
 import sys
+import cProfile  # Import cProfile module
 from model.game_model import GameModel
 from controller.game_controller import GameController
 from events.events import EventDispatcher
 from model.time_manager import TimeManager
 from view.game_view import GameView
-from view.pause_view import PauseView  # Ensure to import your PauseView class
-from view.gameover_view import GameOverView  # Ensure to import your GameOverView class
+from view.pause_view import PauseView
+from view.gameover_view import GameOverView
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), vsync=1)
     pygame.display.set_caption('SpaceJungle')
     clock = pygame.time.Clock()
 
@@ -44,4 +45,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    cProfile.run('main()', 'profile_result.out')

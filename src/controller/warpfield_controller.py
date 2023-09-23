@@ -7,8 +7,8 @@ class WarpFieldController:
         self.view = view
 
     def update(self):
-        if not self.model.game_model.player.attributes_bought.get('warp_field_enabled') == 1:
-            return
-        self.model.x = self.model.player.rect.centerx
-        self.model.y = self.model.player.rect.centery
-        self.view.draw(self.model.screen)
+        if self.model.game_model.player.attributes_bought.get('warp_field_enabled') == 1:
+            self.model.x = self.model.player.rect.centerx
+            self.model.y = self.model.player.rect.centery
+            self.model.rect.center = (self.model.x, self.model.y)
+            self.view.draw(self.model.screen)

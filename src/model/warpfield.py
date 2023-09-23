@@ -16,14 +16,12 @@ class WarpField(pygame.sprite.Sprite):
 
         self.screen = pygame.display.get_surface()
         self.image = image_manager.get_image('warp_field')
-        self.image = pygame.transform.scale(self.image, (self.diameter, self.diameter))
-        self.rect = self.image.get_rect(center=(self.x, self.y))
-
+        self.surf = pygame.Surface((WARP_FIELD_DIAMETER, WARP_FIELD_DIAMETER), pygame.SRCALPHA)
+        self.rect = self.surf.get_rect()
 
         self.view = WarpFieldView(self)
         self.controller = WarpFieldController(self, self.view)
 
     def update(self):
-        if self.game_model.player.attributes_bought.get('warp_field_enabled') == 1:
-            self.rect.center = (self.player.rect.centerx, self.player.rect.centery)
-            self.controller.update()
+        self.surf.fill((0, 0, 0, 0))
+        self.controller.update()

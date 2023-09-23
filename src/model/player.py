@@ -69,7 +69,7 @@ class Player(pygame.sprite.Sprite):
         default_value = self.ATTRIBUTE_DEFAULTS.get(attribute)
         current_value = self.attributes_bought.get(attribute, default_value)
 
-        if attribute in {"size", "reload_speed", "num_of_guns"}:
+        if attribute in {"speed", "size", "reload_speed", "num_of_guns"}:
             return current_value - decrease_amount >= 0
         if isinstance(default_value, (int, float)):
             return current_value - decrease_amount >= default_value

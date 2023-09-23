@@ -8,25 +8,30 @@ from view.shoptile_view import ShopTileView
 
 class ShopView:
     def __init__(self, model, game_controller, event_dispatcher, settings):
-        self.settings = settings
+        self.update_settings(settings)
         self.model = model
         self.game_controller = game_controller
         self.event_dispatcher = event_dispatcher
 
+        self.tiles = []
+        self.populate_tiles()
+
+        self.close_button = None
+        self.update_close_button_position()
+
+    def update_settings(self, settings):
+        self.settings = settings
         self.width = int(self.settings.MAIN_GAME_WIDTH * 0.7)
         self.height = int(self.settings.SCREEN_HEIGHT * 0.85)
-
         self.x = (self.settings.MAIN_GAME_WIDTH - self.width) // 2 + self.settings.STATS_WIDTH
         self.y = (self.settings.SCREEN_HEIGHT - self.height) // 4
 
-        self.tile_width = self.width // 3
-        self.tile_height = self.height // 3
+        self.tile_width = (self.width - 20) // 3
+        self.tile_height = (self.height - 20) // 3
         self.buffer = 10
 
-        self.tile_width = (self.width - self.buffer * 2) // 3
-        self.tile_height = (self.height - self.buffer * 2) // 3
-
-        self.tiles = []
+    def populate_tiles(self):
+        self.tiles.clear()
         for index, item in enumerate(self.model.shop_items):
             tile_x = self.x + (index % 3) * self.tile_width
             tile_y = self.y + (index // 3) * self.tile_height
@@ -36,19 +41,21 @@ class ShopView:
                                                  self.model.audio_manager)
             self.tiles.append((tile_model, tile_view, tile_controller))
 
+    def update_close_button_position(self):
         close_button_width = 130
         close_button_height = 40
-
         close_button_x = self.x + self.width - close_button_width - 20
         close_button_y = self.y + 20
-
         button_color = (50, 50, 50)
         button_hover_color = (75, 75, 75)
-
         self.close_button = Button(close_button_x, close_button_y, close_button_width, close_button_height, "[Close]",
                                    button_color, button_hover_color)
 
-        self.messages = []
+    def update_view(self, settings):
+        # Update settings and re-populate tiles and buttons
+        self.update_settings(settings)
+        self.populate_tiles()
+        self.update_close_button_position()
 
     def draw(self, screen, player):
         num_rows = -(-len(self.tiles) // 3)

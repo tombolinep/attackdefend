@@ -155,3 +155,4 @@ class GameController:
 
         self.view.update_button_positions()
         self.view.resize_background(new_width, new_height)
+        self.shop_view.update_view(self.settings)

@@ -23,9 +23,12 @@ class CollisionController:
         self.bullets = model.bullets
         self.rockets = model.rockets
         self.lasers = model.lasers
+        self.warp_fields = model.warp_fields
         self.audio_manager = model.audio_manager
         self.screen = screen
         self.running = model.running
+
+        self.enemies_in_warp_field = set()
 
     def is_circle_collision(obj1, obj2):
         dx = obj1.rect.centerx - obj2.rect.centerx
@@ -88,15 +91,26 @@ class CollisionController:
                 enemy.kill()
                 self.model.score += 50
 
+    def handle_warp_field_collision(self):
+        current_collided_enemies = set()
+        for warp_field in self.warp_fields:
+            collided_enemies = [enemy for enemy in self.enemies if pygame.sprite.collide_mask(warp_field, enemy)]
+            for enemy in collided_enemies:
+                current_collided_enemies.add(enemy)
+                if enemy not in self.enemies_in_warp_field:
+                    enemy.in_warp_field = True  # Enemy just entered the warp field
+
+        for enemy in self.enemies_in_warp_field:
+            if enemy not in current_collided_enemies:
+                enemy.in_warp_field = False  # Enemy just left the warp field
+
+        self.enemies_in_warp_field = current_collided_enemies
+
     def check_collisions(self):
         for enemy in self.enemies:
             if pygame.sprite.collide_rect(self.player, enemy):
                 if pygame.sprite.collide_mask(self.player, enemy):
                     self.handle_enemy_collision(enemy)
-            # if self.player.warp_field_enabled and self.player.is_point_in_warp_field(enemy.rect.center):
-            #     enemy.in_warp_field = True
-            # else:
-            #     enemy.in_warp_field = False
 
         for coin in self.coins:
             if pygame.sprite.collide_rect(self.player, coin):
@@ -119,6 +133,9 @@ class CollisionController:
             collided_enemy = pygame.sprite.spritecollideany(rocket, self.enemies)
             if collided_enemy:
                 self.handle_rocket_collision(rocket, collided_enemy)
+
+        if self.model.player.attributes_bought.get('warp_field_enabled') == 1:
+            self.handle_warp_field_collision()
 
         colliding_bullet_enemy = pygame.sprite.groupcollide(self.bullets, self.enemies, True, True)
         for enemy_list in colliding_bullet_enemy.values():

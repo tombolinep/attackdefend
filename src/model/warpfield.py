@@ -19,8 +19,11 @@ class WarpField(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (self.diameter, self.diameter))
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
+
         self.view = WarpFieldView(self)
         self.controller = WarpFieldController(self, self.view)
 
     def update(self):
-        self.controller.update()
+        if self.game_model.player.attributes_bought.get('warp_field_enabled') == 1:
+            self.rect.center = (self.player.rect.centerx, self.player.rect.centery)
+            self.controller.update()

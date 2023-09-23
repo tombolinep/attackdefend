@@ -9,29 +9,29 @@ class ImageManager:
         self.coin_variants = []
 
     def load_images(self):
-        self.images['bullet'] = pygame.image.load('assets/bullet.png')
-        self.images['tractor_beam'] = pygame.image.load('assets/tractor_beam.png')
-        self.images['enemy_red'] = pygame.image.load('assets/enemy_red.png')
-        self.images['coins'] = [pygame.image.load('assets/coin_cyan.png'),
-                                pygame.image.load('assets/coin_green.png'),
-                                pygame.image.load('assets/coin_grey.png'),
-                                pygame.image.load('assets/coin_peach.png'),
-                                pygame.image.load('assets/coin_purple.png'),
-                                pygame.image.load('assets/coin_red.png')]
-        self.images['junks'] = [pygame.image.load('assets/junk1.png'),
-                                pygame.image.load('assets/junk2.png'),
-                                pygame.image.load('assets/junk3.png')]
-        self.images['player'] = pygame.image.load('assets/player.png')
-        self.images['powerup'] = pygame.image.load('assets/powerup.png')
-        self.images['background'] = pygame.image.load('assets/space_background.jpg')
-        self.images['rocket'] = pygame.image.load('assets/rocket.png')
-        self.images['explosion'] = pygame.image.load('assets/explosion.png')
-        self.images['laser'] = pygame.image.load('assets/laser_beam.png')
-        self.images['warp_field'] = pygame.image.load('assets/warp_field.png')
-        self.images['shields'] = [pygame.image.load('assets/shield1.png'),
-                                  pygame.image.load('assets/shield2.png'),
-                                  pygame.image.load('assets/shield3.png'),
-                                  pygame.image.load('assets/shield4.png')]
+        self.images['bullet'] = pygame.image.load('assets/images/bullet.png')
+        self.images['tractor_beam'] = pygame.image.load('assets/images/tractor_beam.png')
+        self.images['enemy_red'] = pygame.image.load('assets/images/enemy_red.png')
+        self.images['coins'] = [pygame.image.load('assets/images/coin_cyan.png'),
+                                pygame.image.load('assets/images/coin_green.png'),
+                                pygame.image.load('assets/images/coin_grey.png'),
+                                pygame.image.load('assets/images/coin_peach.png'),
+                                pygame.image.load('assets/images/coin_purple.png'),
+                                pygame.image.load('assets/images/coin_red.png')]
+        self.images['junks'] = [pygame.image.load('assets/images/junk1.png'),
+                                pygame.image.load('assets/images/junk2.png'),
+                                pygame.image.load('assets/images/junk3.png')]
+        self.images['player'] = pygame.image.load('assets/images/player.png')
+        self.images['powerup'] = pygame.image.load('assets/images/powerup.png')
+        self.images['background'] = pygame.image.load('assets/images/space_background.jpg')
+        self.images['rocket'] = pygame.image.load('assets/images/rocket.png')
+        self.images['explosion'] = pygame.image.load('assets/images/explosion.png')
+        self.images['laser'] = pygame.image.load('assets/images/laser_beam.png')
+        self.images['warp_field'] = pygame.image.load('assets/images/warp_field.png')
+        self.images['shields'] = [pygame.image.load('assets/images/shield1.png'),
+                                  pygame.image.load('assets/images/shield2.png'),
+                                  pygame.image.load('assets/images/shield3.png'),
+                                  pygame.image.load('assets/images/shield4.png')]
 
         self.cache_rotated_rockets()
 

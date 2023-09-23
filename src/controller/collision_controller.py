@@ -93,10 +93,10 @@ class CollisionController:
             if pygame.sprite.collide_rect(self.player, enemy):
                 if pygame.sprite.collide_mask(self.player, enemy):
                     self.handle_enemy_collision(enemy)
-            if self.player.warp_field_enabled and self.player.is_point_in_warp_field(enemy.rect.center):
-                enemy.in_warp_field = True
-            else:
-                enemy.in_warp_field = False
+            # if self.player.warp_field_enabled and self.player.is_point_in_warp_field(enemy.rect.center):
+            #     enemy.in_warp_field = True
+            # else:
+            #     enemy.in_warp_field = False
 
         for coin in self.coins:
             if pygame.sprite.collide_rect(self.player, coin):

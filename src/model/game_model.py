@@ -11,9 +11,11 @@ from model.coin import Coin
 from model.enemy import Enemy
 from model.image_manager import ImageManager
 from model.laser import Laser
+from model.player import Player
 from model.powerup import PowerUp
 from model.rocket import Rocket
 from model.tractor_beam import TractorBeam
+from model.warpfield import WarpField
 
 
 class GameModel:
@@ -24,7 +26,6 @@ class GameModel:
         self.running = True
         self.paused = False
         self.score = 0
-        self.player = None
         self.enemies = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
         self.coins = pygame.sprite.Group()
@@ -32,12 +33,16 @@ class GameModel:
         self.rockets = pygame.sprite.Group()
         self.lasers = pygame.sprite.Group()
         self.tractor_beams = pygame.sprite.Group()
+        self.warp_fields = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
         self.game_over = False
         self.isPauseMenuVisible = False
+        self.player = Player(self.image_manager)
+        self.set_player(self.player)
         self.add_tractor_beam(TractorBeam(self, self.player, self.image_manager))
+        self.add_warp_field(WarpField(self, self.player, self.image_manager))
 
     def set_game_over(self, game_over):
         self.game_over = game_over
@@ -51,6 +56,7 @@ class GameModel:
         self.rockets.empty()
         self.lasers.empty()
         self.tractor_beams.empty()
+        self.warp_fields.empty()
 
         # Re-add player to all_sprites
         self.all_sprites.empty()
@@ -62,6 +68,7 @@ class GameModel:
         self.running = True
         self.game_over = False
         self.add_tractor_beam(TractorBeam(self, self.player, self.image_manager))
+        self.add_warp_field(WarpField(self, self.player, self.image_manager))
 
     def set_player(self, player):
         self.player = player
@@ -107,6 +114,10 @@ class GameModel:
     def add_tractor_beam(self, tractor_beam):
         self.tractor_beams.add(tractor_beam)
         self.all_sprites.add(tractor_beam)
+
+    def add_warp_field(self, warp_field):
+        self.warp_fields.add(warp_field)
+        self.all_sprites.add(warp_field)
 
     def increment_score(self):
         self.score += 1

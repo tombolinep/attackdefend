@@ -12,6 +12,7 @@ from model.pause import PauseModel
 from model.player import Player
 from model.shop import Shop
 from model.tractor_beam import TractorBeam
+from model.warpfield import WarpField
 from view.player_view import PlayerView
 from view.shop_view import ShopView
 
@@ -44,15 +45,11 @@ class GameController:
         self.music_muted = False
 
     def initialize_game(self):
-        player = Player()
+        player = self.model.player
         player_view = PlayerView(player)
-
-        self.model.set_player(player)
         self.view.set_player_view(player_view)
-
         self.player_controller = PlayerController(player, player_view)
-        tractor_beam = TractorBeam(self.model, self.model.player, self.model.image_manager)
-        self.model.tractor_beams.add(tractor_beam)
+
         # self.model.audio_manager.play_bg_music()
 
     def handle_events(self):
@@ -107,6 +104,7 @@ class GameController:
             self.model.coins.update()
             self.model.powerups.update()
             self.model.tractor_beams.update()
+            self.model.warp_fields.update()
 
     def update_and_render(self):
         if not self.model.paused:

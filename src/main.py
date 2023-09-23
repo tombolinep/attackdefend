@@ -13,7 +13,8 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), vsync=1)
+    flags = pygame.HWSURFACE | pygame.DOUBLEBUF
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
     pygame.display.set_caption('SpaceJungle')
     clock = pygame.time.Clock()
 

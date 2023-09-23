@@ -2,7 +2,7 @@ import math
 from typing import Any, Union
 
 import pygame
-from constants import PLAYER_SIZE, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT, WARP_FIELD_DIAMETER
+from constants import PLAYER_SIZE, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT
 
 
 class Player(pygame.sprite.Sprite):
@@ -18,8 +18,9 @@ class Player(pygame.sprite.Sprite):
         'laser_enabled': False
     }
 
-    def __init__(self, view=None):
+    def __init__(self, image_manager, view=None):
         super().__init__()
+        self.image_manager = image_manager
         self.view = view
         self.color = (0, 0, 255)
         self.coins = 1000
@@ -31,7 +32,7 @@ class Player(pygame.sprite.Sprite):
 
         self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
         self.y = SCREEN_HEIGHT // 2
-        self.image = pygame.image.load('assets/player.png')
+        self.image = image_manager.get_image('player')
         self.image = pygame.transform.scale(self.image, (PLAYER_SIZE, PLAYER_SIZE))
         self.rect = self.image.get_rect(center=(self.x, self.y))
         self.mask = pygame.mask.from_surface(self.image)
@@ -78,9 +79,6 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.center = (self.x, self.y)
-
-    def is_point_in_warp_field(self, point):
-        return ((self.x - point[0]) ** 2 + (self.y - point[1]) ** 2) ** 0.5 < (WARP_FIELD_DIAMETER / 2)
 
     def update_sprite_size(self):
         new_value = self.size

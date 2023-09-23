@@ -27,6 +27,7 @@ class ImageManager:
         self.images['rocket'] = pygame.image.load('assets/rocket.png')
         self.images['explosion'] = pygame.image.load('assets/explosion.png')
         self.images['laser'] = pygame.image.load('assets/laser_beam.png')
+        self.images['warp_field'] = pygame.image.load('assets/warp_field.png')
 
         self.cache_rotated_rockets()
 

@@ -56,7 +56,7 @@ class ImageManager:
 
     def get_specific_shield_image(self, index):
         if (index > 0):
-            return self.images['shields'][index-1]
+            return self.images['shields'][index - 1]
 
     def get_rotated_image(self, image):
         angle = random.uniform(0, 360)

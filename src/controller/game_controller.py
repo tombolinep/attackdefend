@@ -3,7 +3,8 @@ import logging
 import pygame
 from pygame import KEYDOWN, K_r, K_q, K_ESCAPE, QUIT
 
-from constants import COIN_INTERVAL, POWERUP_INTERVAL
+from constants import COIN_INTERVAL, POWERUP_INTERVAL, MIN_SCREEN_WIDTH, MAX_SCREEN_WIDTH, MAX_SCREEN_HEIGHT, \
+    MIN_SCREEN_HEIGHT
 from controller.collision_controller import CollisionController
 from controller.enemy_controller import EnemyController
 from controller.player_controller import PlayerController
@@ -70,6 +71,8 @@ class GameController:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 self.check_buttons(mouse_pos)
+            elif event.type == pygame.VIDEORESIZE:
+                self.handle_resize_event(event)
             elif not self.model.paused:
                 if event.type == self.time_manager.ADDENEMY:
                     self.model.add_enemy()
@@ -134,3 +137,21 @@ class GameController:
 
     def open_shop(self, data=None):
         powerup_type = self.shop_controller.open_shop(self.model.player)
+
+    def handle_resize_event(self, event):
+        new_size = event.size
+        new_width = max(MIN_SCREEN_WIDTH, min(new_size[0], MAX_SCREEN_WIDTH))
+        new_height = max(MIN_SCREEN_HEIGHT, min(new_size[1], MAX_SCREEN_HEIGHT))
+
+        aspect_ratio = self.settings.SCREEN_WIDTH / self.settings.SCREEN_HEIGHT
+        calculated_height = int(new_width / aspect_ratio)
+        new_height = max(MIN_SCREEN_HEIGHT, min(calculated_height, MAX_SCREEN_HEIGHT))
+
+        if new_height != calculated_height:
+            new_width = int(new_height * aspect_ratio)
+
+        self.settings.update_screen_dimensions(new_width, new_height)
+        self.screen = pygame.display.set_mode((new_width, new_height), self.settings.flags)
+
+        self.view.update_button_positions()
+        self.view.resize_background(new_width, new_height)

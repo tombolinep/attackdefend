@@ -12,9 +12,7 @@ class GameView:
         self.player_view = None
         self.settings = settings
         self.initialize_buttons()
-        self.background_image = pygame.image.load(resource_path('assets/space_background.jpg'))
-        self.background_image = pygame.transform.scale(self.background_image, (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
-        self.background_x_pos = 0
+        self.load_background_image()
 
     def set_player_view(self, player_view):
         self.player_view = player_view
@@ -124,3 +122,19 @@ class GameView:
         self.shop_button.x = self.settings.SCREEN_WIDTH - 150
         self.shop_button.y = 60
         self.shop_button.rect.topleft = (self.shop_button.x, self.shop_button.y)
+
+    def load_background_image(self):
+        self.background_image = pygame.image.load(resource_path('assets/space_background.jpg'))
+        self.background_image = pygame.transform.scale(self.background_image,
+                                                       (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT))
+        self.background_x_pos = 0
+
+    def clear_screen(self):
+        self.screen.blit(self.background_image, (self.background_x_pos, 0))
+        self.screen.blit(self.background_image, (self.background_x_pos + self.settings.SCREEN_WIDTH, 0))
+
+    def resize_background(self, new_width, new_height):
+        self.settings.SCREEN_WIDTH = new_width
+        self.settings.SCREEN_HEIGHT = new_height
+        self.load_background_image()
+        self.update_button_positions()

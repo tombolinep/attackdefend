@@ -37,16 +37,21 @@ class Enemy(pygame.sprite.Sprite):
     def initial_position(self):
         side = random.randint(0, 3)
         if side == 0:  # top
-            self.rect = self.surf.get_rect(center=(random.randint(self.settings.STATS_WIDTH, self.settings.SCREEN_WIDTH), -10))
+            self.rect = self.surf.get_rect(
+                center=(random.randint(self.settings.STATS_WIDTH, self.settings.SCREEN_WIDTH), -10))
             self.dx, self.dy = 0, self.speed
         elif side == 1:  # right
-            self.rect = self.surf.get_rect(center=(self.settings.SCREEN_WIDTH + 10, random.randint(0, self.settings.SCREEN_HEIGHT)))
+            self.rect = self.surf.get_rect(
+                center=(self.settings.SCREEN_WIDTH + 10, random.randint(0, self.settings.SCREEN_HEIGHT)))
             self.dx, self.dy = -self.speed, 0
         elif side == 2:  # bottom
-            self.rect = self.surf.get_rect(center=(random.randint(self.settings.STATS_WIDTH, self.settings.SCREEN_WIDTH), self.settings.SCREEN_HEIGHT + 10))
+            self.rect = self.surf.get_rect(center=(
+                random.randint(self.settings.STATS_WIDTH, self.settings.SCREEN_WIDTH),
+                self.settings.SCREEN_HEIGHT + 10))
             self.dx, self.dy = 0, -self.speed
         else:  # left
-            self.rect = self.surf.get_rect(center=(self.settings.STATS_WIDTH - 10, random.randint(0, self.settings.SCREEN_HEIGHT)))
+            self.rect = self.surf.get_rect(
+                center=(self.settings.STATS_WIDTH - 10, random.randint(0, self.settings.SCREEN_HEIGHT)))
             self.dx, self.dy = self.speed, 0
 
     def update_position(self):
@@ -58,8 +63,7 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.rect.move_ip(round(self.dx * slowdown_factor), round(self.dy * slowdown_factor))
 
-        if (self.rect.right < self.settings.STATS_WIDTH or self.rect.left > self.settings.SCREEN_WIDTH or
-                self.rect.bottom < 0 or self.rect.top > self.settings.SCREEN_HEIGHT):
+        if self.rect.right < self.settings.STATS_WIDTH:
             self.kill()
 
     def get_direction_towards_player(self):

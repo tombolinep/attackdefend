@@ -59,8 +59,10 @@ class GameController:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.model.running = False
-                if event.key == pygame.K_p:
+                if event.key == pygame.K_SPACE:
                     self.model.paused = not self.model.paused
+                if event.key == pygame.K_p:
+                    self.open_shop()
                 elif event.key == pygame.K_m:
                     if not self.music_muted:
                         self.music_muted = True
@@ -136,7 +138,7 @@ class GameController:
                     self.event_dispatcher.dispatch_event("open_shop", {})
 
     def open_shop(self, data=None):
-        powerup_type = self.shop_controller.open_shop(self.model.player)
+        self.shop_controller.open_shop(self.model.player)
 
     def handle_resize_event(self, event):
         new_size = event.size

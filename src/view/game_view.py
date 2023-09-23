@@ -98,6 +98,14 @@ class GameView:
             ("Warp Field:", "True" if model.player.warp_field_enabled else "False"),
             ("Rocket Launcher:", "True" if model.player.rocket_launcher_enabled else "False"),
             ("Laser:", "True" if model.player.laser_enabled else "False"),
+            ("", ""),
+            ("", ""),
+            ("Controls:", ""),
+            ("Exit:", "ESC"),
+            ("Move:", "WASD"),
+            ("Mute:", "M"),
+            ("Pause:", "SPACE"),
+            ("Shop:", "P")
         ]
 
         header_font = pygame.font.Font(None, 32)

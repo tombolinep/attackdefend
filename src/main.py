@@ -9,17 +9,13 @@ from model.time_manager import TimeManager
 from view.game_view import GameView
 from view.pause_view import PauseView
 from view.gameover_view import GameOverView
-from constants import MIN_SCREEN_WIDTH, MIN_SCREEN_HEIGHT, MAX_SCREEN_WIDTH, \
-    MAX_SCREEN_HEIGHT
 
 
 def main():
     pygame.init()
     game_settings = GameSettings()
-
     screen = pygame.display.set_mode((game_settings.SCREEN_WIDTH, game_settings.SCREEN_HEIGHT), game_settings.flags)
     pygame.display.set_caption('SpaceJungle')
-
     clock = pygame.time.Clock()
 
     model = GameModel(game_settings)
@@ -31,13 +27,13 @@ def main():
     controller = GameController(model, view, screen, event_dispatcher, time_manager, game_settings)
 
     while model.running:
-        controller.handle_events()
-
         if model.game_over:
             controller.handle_game_over()
             game_over_view.draw(screen, model)
             pygame.display.flip()
         else:
+            controller.handle_events()
+
             if model.paused:
                 pause_view.draw(screen, game_settings)
                 pygame.display.flip()

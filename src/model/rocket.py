@@ -6,8 +6,9 @@ from view.rocket_view import RocketView
 
 
 class Rocket(pygame.sprite.Sprite):
-    def __init__(self, x, y, target_x, target_y, audio_manager, image_manager):
+    def __init__(self, x, y, target_x, target_y, audio_manager, image_manager, settings):
         super().__init__()
+        self.settings = settings
         self.audio_manager = audio_manager
         self.image_manager = image_manager
         self.rocket_image = self.image_manager.get_image('rocket')
@@ -27,7 +28,7 @@ class Rocket(pygame.sprite.Sprite):
         self.explosion_duration = 1000
         self.screen = pygame.display.get_surface()
         self.view = RocketView(self)
-        self.controller = RocketController(self, self.view)
+        self.controller = RocketController(self, self.view, self.settings)
         self.just_exploded = False  # The flag for the initial explosion frame
         self.angle_index = 0
         self.angle = 0  # Initialize angle to zero

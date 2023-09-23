@@ -1,14 +1,11 @@
-import math
-
 import pygame
-from pygame.time import get_ticks
 
-from constants import STATS_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT
 from pygame.time import get_ticks
 
 
 class RocketController:
-    def __init__(self, model, view):
+    def __init__(self, model, view, settings):
+        self.settings = settings
         self.model = model
         self.view = view
 
@@ -43,5 +40,5 @@ class RocketController:
                 self.model.kill()
 
     def is_out_of_bounds(self):
-        return (self.model.rect.x < STATS_WIDTH or self.model.rect.y < 0 or
-                self.model.rect.x > SCREEN_WIDTH or self.model.rect.y > SCREEN_HEIGHT)
+        return (self.model.rect.x < self.settings.STATS_WIDTH or self.model.rect.y < 0 or
+                self.model.rect.x > self.settings.SCREEN_WIDTH or self.model.rect.y > self.settings.SCREEN_HEIGHT)

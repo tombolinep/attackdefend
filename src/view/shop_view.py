@@ -1,6 +1,5 @@
 import pygame
 
-from constants import MAIN_GAME_WIDTH, STATS_WIDTH, SCREEN_HEIGHT
 from controller.shoptile_controller import ShopTileController
 from model.shoptile import ShopTile
 from view.button_view import Button
@@ -8,16 +7,17 @@ from view.shoptile_view import ShopTileView
 
 
 class ShopView:
-    def __init__(self, model, game_controller, event_dispatcher):
+    def __init__(self, model, game_controller, event_dispatcher, settings):
+        self.settings = settings
         self.model = model
         self.game_controller = game_controller
         self.event_dispatcher = event_dispatcher
 
-        self.width = int(MAIN_GAME_WIDTH * 0.7)
-        self.height = int(SCREEN_HEIGHT * 0.85)
+        self.width = int(self.settings.MAIN_GAME_WIDTH * 0.7)
+        self.height = int(self.settings.SCREEN_HEIGHT * 0.85)
 
-        self.x = (MAIN_GAME_WIDTH - self.width) // 2 + STATS_WIDTH
-        self.y = (SCREEN_HEIGHT - self.height) // 4
+        self.x = (self.settings.MAIN_GAME_WIDTH - self.width) // 2 + self.settings.STATS_WIDTH
+        self.y = (self.settings.SCREEN_HEIGHT - self.height) // 4
 
         self.tile_width = self.width // 3
         self.tile_height = self.height // 3

@@ -1,18 +1,19 @@
 import pygame
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, MAIN_GAME_WIDTH, BULLET_INTERVAL
+from constants import BULLET_INTERVAL
 from view.button_view import Button
 from utils import resource_path
 
 
 class GameView:
 
-    def __init__(self, screen):
+    def __init__(self, screen, settings):
         self.screen = screen
         self.font = pygame.font.Font(None, 36)
         self.player_view = None
+        self.settings = settings
         self.initialize_buttons()
         self.background_image = pygame.image.load(resource_path('assets/space_background.jpg'))
-        self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.background_image = pygame.transform.scale(self.background_image, (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
         self.background_x_pos = 0
 
     def set_player_view(self, player_view):
@@ -32,15 +33,15 @@ class GameView:
 
         # Update and loop the background
         self.background_x_pos -= 0.1
-        if self.background_x_pos <= -SCREEN_WIDTH:
+        if self.background_x_pos <= -self.settings.SCREEN_WIDTH:
             self.background_x_pos = 0
 
     def clear_screen(self):
         self.screen.blit(self.background_image, (self.background_x_pos, 0))
-        self.screen.blit(self.background_image, (self.background_x_pos + SCREEN_WIDTH, 0))
+        self.screen.blit(self.background_image, (self.background_x_pos + self.settings.SCREEN_WIDTH, 0))
 
     def render_ui(self, model):
-        pygame.draw.rect(self.screen, (200, 200, 200), (0, 0, STATS_WIDTH, SCREEN_HEIGHT))
+        pygame.draw.rect(self.screen, (200, 200, 200), (0, 0, self.settings.STATS_WIDTH, self.settings.SCREEN_HEIGHT))
         self.update_button_texts(model)
         for button in self.buttons:
             self.draw_button(button)
@@ -72,9 +73,9 @@ class GameView:
         common_button_color = (150, 150, 150)
         common_button_hover_color = (200, 200, 200)
 
-        self.pause_button = Button(SCREEN_WIDTH - 150, 10, 130, 40, "Pause", common_button_color,
+        self.pause_button = Button(self.settings.SCREEN_WIDTH - 150, 10, 130, 40, "Pause", common_button_color,
                                    common_button_hover_color)
-        self.shop_button = Button(SCREEN_WIDTH - 150, 60, 130, 40, "Shop", common_button_color,
+        self.shop_button = Button(self.settings.SCREEN_WIDTH - 150, 60, 130, 40, "Shop", common_button_color,
                                   common_button_hover_color)
         self.buttons = [self.pause_button, self.shop_button]
 
@@ -114,3 +115,12 @@ class GameView:
                 self.screen.blit(value_surface, (220, 10 + i * 30))
             else:
                 continue
+
+    def update_button_positions(self):
+        self.pause_button.x = self.settings.SCREEN_WIDTH - 150
+        self.pause_button.y = 10
+        self.pause_button.rect.topleft = (self.pause_button.x, self.pause_button.y)
+
+        self.shop_button.x = self.settings.SCREEN_WIDTH - 150
+        self.shop_button.y = 60
+        self.shop_button.rect.topleft = (self.shop_button.x, self.shop_button.y)

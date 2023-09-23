@@ -11,8 +11,6 @@ from controller.shop_controller import ShopController
 from model.pause import PauseModel
 from model.player import Player
 from model.shop import Shop
-from model.tractor_beam import TractorBeam
-from model.warpfield import WarpField
 from view.player_view import PlayerView
 from view.shop_view import ShopView
 
@@ -20,7 +18,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 class GameController:
-    def __init__(self, model, view, screen, event_dispatcher, time_manager):
+    def __init__(self, model, view, screen, event_dispatcher, time_manager, settings):
+        self.settings = settings
         self.player_controller = None
         self.model = model
         self.view = view
@@ -40,7 +39,7 @@ class GameController:
         self.coin_interval = COIN_INTERVAL
         self.powerup_interval = POWERUP_INTERVAL
         self.shop_model = Shop(self.model.player, model.audio_manager)
-        self.shop_view = ShopView(self.shop_model, self, self.event_dispatcher)
+        self.shop_view = ShopView(self.shop_model, self, self.event_dispatcher, self.settings)
         self.shop_controller = ShopController(self.shop_model, self.shop_view, self.screen, self.event_dispatcher)
         self.music_muted = False
 
@@ -48,7 +47,7 @@ class GameController:
         player = self.model.player
         player_view = PlayerView(player)
         self.view.set_player_view(player_view)
-        self.player_controller = PlayerController(player, player_view)
+        self.player_controller = PlayerController(player, player_view, self.settings)
 
         # self.model.audio_manager.play_bg_music()
 

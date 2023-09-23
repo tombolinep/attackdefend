@@ -1,13 +1,14 @@
 import math
 import pygame
 
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, STATS_WIDTH, BULLET_SIZE
+from constants import BULLET_SIZE
 from view.bullet_view import BulletView
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, target_x, target_y, image_manager):
+    def __init__(self, x, y, target_x, target_y, image_manager, settings):
         super().__init__()
+        self.settings = settings
         self.image = image_manager.get_image('bullet')
         self.surf = pygame.transform.scale(self.image, (BULLET_SIZE, BULLET_SIZE))
         self.rect = self.surf.get_rect(center=(x, y))
@@ -32,8 +33,8 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
     def is_out_of_bounds(self):
-        return (self.rect.x < STATS_WIDTH or self.rect.y < 0 or
-                self.rect.x > SCREEN_WIDTH or self.rect.y > SCREEN_HEIGHT)
+        return (self.rect.x < self.settings.STATS_WIDTH or self.rect.y < 0 or
+                self.rect.x > self.settings.SCREEN_WIDTH or self.rect.y > self.settings.SCREEN_HEIGHT)
 
     def adjust_trajectory(self, angle_offset):
         angle = math.atan2(self.dy, self.dx)

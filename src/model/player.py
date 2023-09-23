@@ -2,7 +2,7 @@ import math
 from typing import Any, Union
 
 import pygame
-from constants import PLAYER_SIZE, STATS_WIDTH, MAIN_GAME_WIDTH, SCREEN_HEIGHT
+from constants import PLAYER_SIZE
 
 
 class Player(pygame.sprite.Sprite):
@@ -18,8 +18,9 @@ class Player(pygame.sprite.Sprite):
         'laser_enabled': False
     }
 
-    def __init__(self, image_manager, view=None):
+    def __init__(self, image_manager, settings, view=None):
         super().__init__()
+        self.settings = settings
         self.image_manager = image_manager
         self.view = view
         self.color = (0, 0, 255)
@@ -30,8 +31,8 @@ class Player(pygame.sprite.Sprite):
         for attribute in self.ATTRIBUTE_DEFAULTS:
             setattr(self, attribute, self.ATTRIBUTE_DEFAULTS[attribute] + self.attributes_bought[attribute])
 
-        self.x = STATS_WIDTH + MAIN_GAME_WIDTH // 2
-        self.y = SCREEN_HEIGHT // 2
+        self.x = self.settings.STATS_WIDTH + self.settings.MAIN_GAME_WIDTH // 2
+        self.y = self.settings.SCREEN_HEIGHT // 2
         self.image = image_manager.get_image('player')
         self.image = pygame.transform.scale(self.image, (PLAYER_SIZE, PLAYER_SIZE))
         self.rect = self.image.get_rect(center=(self.x, self.y))

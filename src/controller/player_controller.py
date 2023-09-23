@@ -1,9 +1,9 @@
 import pygame
-from constants import STATS_WIDTH, SCREEN_HEIGHT, MAIN_GAME_WIDTH
 
 
 class PlayerController:
-    def __init__(self, model, view):
+    def __init__(self, model, view, settings):
+        self.settings = settings
         self.model = model
         self.view = view
 
@@ -30,7 +30,7 @@ class PlayerController:
         half_width = self.model.rect.width / 2
         half_height = self.model.rect.height / 2
 
-        self.model.x = max(self.model.x, STATS_WIDTH + half_width)
-        self.model.x = min(self.model.x, STATS_WIDTH + MAIN_GAME_WIDTH - half_width)
+        self.model.x = max(self.model.x, self.settings.STATS_WIDTH + half_width)
+        self.model.x = min(self.model.x, self.settings.STATS_WIDTH + self.settings.MAIN_GAME_WIDTH - half_width)
         self.model.y = max(self.model.y, half_height)
-        self.model.y = min(self.model.y, SCREEN_HEIGHT - half_height)
+        self.model.y = min(self.model.y, self.settings.SCREEN_HEIGHT - half_height)

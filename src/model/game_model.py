@@ -3,8 +3,8 @@ import random
 from math import sqrt
 
 import pygame
-from constants import POWERUP_INTERVAL, SCREEN_HEIGHT, BULLET_INTERVAL, \
-    SCREEN_WIDTH, STATS_WIDTH, COIN_SIZE, POWERUP_SIZE, ENEMY_RED_CHANCE, RED_ENEMY_SPAWN_SCORE
+from constants import POWERUP_INTERVAL, BULLET_INTERVAL, \
+    COIN_SIZE, POWERUP_SIZE, ENEMY_RED_CHANCE, RED_ENEMY_SPAWN_SCORE
 from model.audio_manager import Audio
 from model.bullet import Bullet
 from model.coin import Coin
@@ -20,7 +20,8 @@ from model.warpfield import WarpField
 
 
 class GameModel:
-    def __init__(self):
+    def __init__(self, settings):
+        self.settings = settings
         self.audio_manager = Audio()
         self.image_manager = ImageManager()
         self.image_manager.load_images()
@@ -41,7 +42,7 @@ class GameModel:
         self.next_bullet_time = pygame.time.get_ticks()
         self.game_over = False
         self.isPauseMenuVisible = False
-        self.player = Player(self.image_manager)
+        self.player = Player(self.image_manager, self.settings)
         self.set_player(self.player)
         self.add_tractor_beam(TractorBeam(self, self.player, self.image_manager))
         self.add_warp_field(WarpField(self, self.player, self.image_manager))
@@ -80,20 +81,20 @@ class GameModel:
 
     def add_enemy(self):
         enemy_type = "red" if random.random() < ENEMY_RED_CHANCE and self.score > RED_ENEMY_SPAWN_SCORE else "white"
-        enemy = Enemy(self.score, self.player, self.image_manager, enemy_type)
+        enemy = Enemy(self.score, self.player, self.image_manager, self.settings, enemy_type)
         self.enemies.add(enemy)
         self.all_sprites.add(enemy)
 
     def add_powerup(self):
-        x = random.randint(STATS_WIDTH, SCREEN_WIDTH - POWERUP_SIZE)
-        y = random.randint(0, SCREEN_HEIGHT - POWERUP_SIZE)
+        x = random.randint(self.settings.STATS_WIDTH, self.settings.SCREEN_WIDTH - POWERUP_SIZE)
+        y = random.randint(0, self.settings.SCREEN_HEIGHT - POWERUP_SIZE)
         powerup = PowerUp(x, y, self.image_manager)
         self.powerups.add(powerup)
         self.all_sprites.add(powerup)
 
     def add_coin(self):
-        x = random.randint(STATS_WIDTH, SCREEN_WIDTH - COIN_SIZE)
-        y = random.randint(0, SCREEN_HEIGHT - COIN_SIZE)
+        x = random.randint(self.settings.STATS_WIDTH, self.settings.SCREEN_WIDTH - COIN_SIZE)
+        y = random.randint(0, self.settings.SCREEN_HEIGHT - COIN_SIZE)
         coin = Coin(x, y, self.image_manager)
         self.coins.add(coin)
         self.all_sprites.add(coin)
@@ -149,7 +150,7 @@ class GameModel:
         dx = closest_enemy.rect.x - self.player.x
         dy = closest_enemy.rect.y - self.player.y
 
-        scale = SCREEN_HEIGHT / (abs(dy) + 1e-6)
+        scale = self.settings.SCREEN_HEIGHT / (abs(dy) + 1e-6)
 
         target_x = self.player.x + dx * scale
         target_y = self.player.y + dy * scale
@@ -173,7 +174,7 @@ class GameModel:
 
                     bullet = Bullet(self.player.x + (i * 20 - (10 * (num_of_guns - 1))),
                                     self.player.y + (i * 10 - (5 * (num_of_guns - 1))),
-                                    target_x, target_y, self.image_manager)
+                                    target_x, target_y, self.image_manager, self.settings)
                     bullet.adjust_trajectory(angle_offset)
                     self.add_bullet(bullet)
 
@@ -183,7 +184,7 @@ class GameModel:
         if self.player.attributes_bought.get('rocket_launcher_enabled'):
             target_x, target_y = self.calculate_highest_enemy_density_target()
             new_rocket = Rocket(self.player.x, self.player.y, target_x, target_y, self.audio_manager,
-                                self.image_manager)
+                                self.image_manager, self.settings)
             self.add_rocket(new_rocket)
             self.audio_manager.play_rocket_launch()
 
@@ -209,15 +210,15 @@ class GameModel:
 
     def calculate_highest_enemy_density_target(self):
         grid_size = 100  # Define the size of each grid cell
-        cols = (SCREEN_WIDTH - STATS_WIDTH) // grid_size
-        rows = SCREEN_HEIGHT // grid_size
+        cols = (self.settings.SCREEN_WIDTH - self.settings.STATS_WIDTH) // grid_size
+        rows = self.settings.SCREEN_HEIGHT // grid_size
 
         # Create a 2D list to hold the number of enemies in each cell
         grid = [[0 for _ in range(cols)] for _ in range(rows)]
 
         # Iterate over each enemy and increment the count in the corresponding cell
         for enemy in self.enemies:
-            col = (enemy.rect.x - STATS_WIDTH) // grid_size
+            col = (enemy.rect.x - self.settings.STATS_WIDTH) // grid_size
             row = enemy.rect.y // grid_size
             col = max(0, min(col, cols - 1))
             row = max(0, min(row, rows - 1))
@@ -229,7 +230,7 @@ class GameModel:
             (r, c) for r, row in enumerate(grid) for c, val in enumerate(row) if val == max_density)
 
         # Calculate the target coordinates as the center of this cell
-        target_x = STATS_WIDTH + target_col * grid_size + grid_size // 2
+        target_x = self.settings.STATS_WIDTH + target_col * grid_size + grid_size // 2
         target_y = target_row * grid_size + grid_size // 2
 
         return target_x, target_y

@@ -91,6 +91,7 @@ class ShopTileController:
             self.update_player_attribute(player, attribute_to_update, increment=True)
             self.view.set_status_message("Bought!", (0, 255, 0), "buy")
             self.audio_manager.play_purchase_success_sound()
+            print(player.attributes_bought)
             return True
         else:
             self.view.set_status_message("Cannot afford", (255, 0, 0), "buy")

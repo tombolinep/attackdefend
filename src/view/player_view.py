@@ -15,13 +15,6 @@ class PlayerView:
         self.update_player_image()
         self.player_rect.center = (self.model.x, self.model.y)
         screen.blit(self.player_image, self.player_rect.topleft)
-        self._draw_shield_rings(screen)
-
-    def _draw_shield_rings(self, screen):
-        for level in range(self.model.shield):
-            ring_color = self.SHIELD_COLORS[level % len(self.SHIELD_COLORS)]
-            ring_radius = self.model.rect.width // 2 + (level + 1) * 5
-            pygame.draw.circle(screen, ring_color, self.player_rect.center, ring_radius, 3)
 
     def update_player_image(self):
         self.player_image = pygame.transform.scale(self.model.image, (self.model.rect.width, self.model.rect.height))

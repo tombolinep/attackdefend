@@ -14,6 +14,7 @@ from model.laser import Laser
 from model.player import Player
 from model.powerup import PowerUp
 from model.rocket import Rocket
+from model.shield import Shield
 from model.tractor_beam import TractorBeam
 from model.warpfield import WarpField
 
@@ -34,6 +35,7 @@ class GameModel:
         self.lasers = pygame.sprite.Group()
         self.tractor_beams = pygame.sprite.Group()
         self.warp_fields = pygame.sprite.Group()
+        self.shields = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
@@ -43,6 +45,7 @@ class GameModel:
         self.set_player(self.player)
         self.add_tractor_beam(TractorBeam(self, self.player, self.image_manager))
         self.add_warp_field(WarpField(self, self.player, self.image_manager))
+        self.add_shield(Shield(self, self.player, self.image_manager))
 
     def set_game_over(self, game_over):
         self.game_over = game_over
@@ -69,6 +72,7 @@ class GameModel:
         self.game_over = False
         self.add_tractor_beam(TractorBeam(self, self.player, self.image_manager))
         self.add_warp_field(WarpField(self, self.player, self.image_manager))
+        self.add_shield(Shield(self, self.player, self.image_manager))
 
     def set_player(self, player):
         self.player = player
@@ -118,6 +122,10 @@ class GameModel:
     def add_warp_field(self, warp_field):
         self.warp_fields.add(warp_field)
         self.all_sprites.add(warp_field)
+
+    def add_shield(self, shield):
+        self.shields.add(shield)
+        self.all_sprites.add(shield)
 
     def increment_score(self):
         self.score += 1

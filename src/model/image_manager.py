@@ -28,6 +28,10 @@ class ImageManager:
         self.images['explosion'] = pygame.image.load('assets/explosion.png')
         self.images['laser'] = pygame.image.load('assets/laser_beam.png')
         self.images['warp_field'] = pygame.image.load('assets/warp_field.png')
+        self.images['shields'] = [pygame.image.load('assets/shield1.png'),
+                                  pygame.image.load('assets/shield2.png'),
+                                  pygame.image.load('assets/shield3.png'),
+                                  pygame.image.load('assets/shield4.png')]
 
         self.cache_rotated_rockets()
 
@@ -49,6 +53,10 @@ class ImageManager:
 
     def get_random_coin_image(self):
         return random.choice(self.coin_variants)
+
+    def get_specific_shield_image(self, index):
+        if (index > 0):
+            return self.images['shields'][index-1]
 
     def get_rotated_image(self, image):
         angle = random.uniform(0, 360)

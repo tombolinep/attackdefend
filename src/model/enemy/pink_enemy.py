@@ -12,9 +12,9 @@ class PinkEnemy(EnemyBase):
         self.zigzag = True  # To decide zigzag direction
         self.last_sprint_time = time.time()
         self.sprint_duration = 1  # Sprint for 2 seconds
-        self.sprint_interval = 3  # 5 seconds between each sprint
-        self.sprint_speed_factor = 2.0  # Speed multiplier during sprint
-        self.zigzag_factor = 1  # Bigger values will result in more pronounced zigzagging
+        self.sprint_interval = 4  # 5 seconds between each sprint
+        self.sprint_speed_factor = 1.5  # Speed multiplier during sprint
+        self.zigzag_factor = 5  # Bigger values will result in more pronounced zigzagging
 
     def set_image(self, image_manager):
         raw_surf = image_manager.get_image('enemy_pink')

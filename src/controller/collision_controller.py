@@ -38,7 +38,7 @@ class CollisionController:
     def handle_enemy_kill(self, enemy):
         if enemy.type == "white":
             self.audio_manager.play_junk_explosion()
-        elif enemy.type == "red":
+        else:
             self.audio_manager.play_enemy_explosion()
 
         if random.random() < ENEMY_COIN_CHANCE:

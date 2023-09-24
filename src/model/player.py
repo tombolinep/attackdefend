@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.image_manager = image_manager
         self.view = view
         self.color = (0, 0, 255)
-        self.coins = 1000
+        self.coins = 0
         self.attributes_bought = {key: 0 if isinstance(value, int) else value for key, value in
                                   self.ATTRIBUTE_DEFAULTS.items()}
 

@@ -1,4 +1,4 @@
-import cProfile
+import os
 import sys
 import pygame
 from model.game_settings import GameSettings
@@ -9,6 +9,9 @@ from model.time_manager import TimeManager
 from view.game_view import GameView
 from view.pause_view import PauseView
 from view.gameover_view import GameOverView
+
+current_directory = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_directory)
 
 
 def main():
@@ -46,4 +49,4 @@ def main():
 
 
 if __name__ == '__main__':
-    cProfile.run('main()', 'profile_result.out')
+    main()

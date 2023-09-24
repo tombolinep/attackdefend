@@ -2,7 +2,6 @@ import math
 import random
 
 import pygame
-import pygame.gfxdraw
 
 from constants import ENEMY_COIN_CHANCE
 
@@ -11,6 +10,7 @@ def apply_powerup(enemies_group):
     white_enemies = [enemy for enemy in enemies_group if enemy.type == "white"]
     for enemy in white_enemies:
         enemy.kill()
+
 
 class CollisionController:
     def __init__(self, model, screen):

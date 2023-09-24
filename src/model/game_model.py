@@ -1,5 +1,7 @@
 import math
 import random
+import threading
+import time
 from math import sqrt
 
 import pygame
@@ -157,6 +159,10 @@ class GameModel:
 
         return target_x, target_y
 
+    def delayed_sound(self, delay):
+        threading.Event().wait(delay)
+        self.audio_manager.play_bullet_sound()
+
     def automatic_shoot(self):
         current_time = pygame.time.get_ticks()
         rapid_charge_system_count = self.player.attributes_bought.get('reload_speed', 0)
@@ -178,7 +184,9 @@ class GameModel:
                     bullet.adjust_trajectory(angle_offset)
                     self.add_bullet(bullet)
 
-            self.next_bullet_time = current_time + adjusted_bullet_interval
+                    threading.Thread(target=self.delayed_sound, args=(i * 0.05,)).start()
+
+                self.next_bullet_time = current_time + adjusted_bullet_interval
 
     def rocket_shoot(self):
         if self.player.attributes_bought.get('rocket_launcher_enabled'):
@@ -193,6 +201,7 @@ class GameModel:
             enemy = self.find_random_enemy()
             if enemy:
                 new_laser_beam = Laser(self.player, enemy.rect, self.audio_manager, self.image_manager)
+                self.audio_manager.play_laser_sound()
                 self.add_laser(new_laser_beam)
 
     @staticmethod

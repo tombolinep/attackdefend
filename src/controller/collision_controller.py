@@ -12,7 +12,6 @@ def apply_powerup(enemies_group):
     for enemy in white_enemies:
         enemy.kill()
 
-
 class CollisionController:
     def __init__(self, model, screen):
         self.model = model
@@ -36,14 +35,23 @@ class CollisionController:
         distance = math.sqrt(dx * dx + dy * dy)
         return distance < (obj1.radius + obj2.radius)
 
+    def handle_enemy_kill(self, enemy):
+        if enemy.type == "white":
+            self.audio_manager.play_junk_explosion()
+        elif enemy.type == "red":
+            self.audio_manager.play_enemy_explosion()
+
+        if random.random() < ENEMY_COIN_CHANCE:
+            self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
+
+        enemy.kill()
+        self.model.score += 50
+
     def handle_enemy_collision(self, enemy):
         if self.player.shield > 0:
             self.audio_manager.play_shield_hit_sound()
             self.player.update_attribute(attribute='shield', action='decrease', change_amount=1)
-            if random.random() < ENEMY_COIN_CHANCE:
-                self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
-            enemy.kill()
-            self.model.score += 50
+            self.handle_enemy_kill(enemy)
         else:
             self.audio_manager.play_death_sound()
             self.model.set_game_over(True)
@@ -60,16 +68,15 @@ class CollisionController:
         self.model.score += 300
 
     def handle_laser_collision(self, enemy):
-        if random.random() < ENEMY_COIN_CHANCE:
-            self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
-        enemy.kill()
-        self.model.score += 50
+        self.handle_enemy_kill(enemy)
 
     def handle_bullet_collision(self, enemy):
-        if random.random() < ENEMY_COIN_CHANCE:
-            self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
-        enemy.kill()
-        self.model.score += 50
+        self.handle_enemy_kill(enemy)
+
+    def handle_rocket_collision(self, rocket, enemy):
+        if rocket.is_exploding:
+            if self.is_in_explosion_radius(rocket, enemy):
+                self.handle_enemy_kill(enemy)
 
     def calculate_distance(self, point1, point2):
         dx = point1[0] - point2[0]
@@ -82,14 +89,6 @@ class CollisionController:
             (enemy.rect.centerx, enemy.rect.centery)
         )
         return distance <= rocket.explosion_radius
-
-    def handle_rocket_collision(self, rocket, enemy):
-        if rocket.is_exploding:
-            if self.is_in_explosion_radius(rocket, enemy):
-                if random.random() < ENEMY_COIN_CHANCE:
-                    self.model.spawn_coin_at_location(enemy.rect.x, enemy.rect.y)
-                enemy.kill()
-                self.model.score += 50
 
     def handle_warp_field_collision(self):
         current_collided_enemies = set()

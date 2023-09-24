@@ -5,7 +5,8 @@ from math import sqrt
 
 import pygame
 from constants import POWERUP_INTERVAL, BULLET_INTERVAL, \
-    COIN_SIZE, POWERUP_SIZE, ENEMY_RED_CHANCE, ENEMY_RED_SPAWN_SCORE, ENEMY_PINK_CHANCE, ENEMY_ORANGE_CHANCE
+    COIN_SIZE, POWERUP_SIZE, ENEMY_RED_CHANCE, ENEMY_RED_SPAWN_SCORE, ENEMY_PINK_CHANCE, ENEMY_ORANGE_CHANCE, \
+    ENEMY_PINK_SPAWN_SCORE, ENEMY_ORANGE_SPAWN_SCORE
 from model.audio_manager import Audio
 from model.bullet import Bullet
 from model.coin import Coin
@@ -88,12 +89,12 @@ class GameModel:
         # Generate a random float to decide the type of enemy
         random_chance = random.random()
 
-        # Determine the type of enemy to spawn based on probabilities
+        # Determine the type of enemy to spawn based on probabilities and score
         if random_chance < ENEMY_RED_CHANCE and self.score > ENEMY_RED_SPAWN_SCORE:
             enemy_type = "red"
-        elif random_chance < ENEMY_RED_CHANCE + ENEMY_PINK_CHANCE and self.score > ENEMY_PINK_CHANCE:
+        elif random_chance < ENEMY_RED_CHANCE + ENEMY_PINK_CHANCE and self.score > ENEMY_PINK_SPAWN_SCORE:
             enemy_type = "pink"
-        elif random_chance < ENEMY_RED_CHANCE + ENEMY_PINK_CHANCE + ENEMY_ORANGE_CHANCE and self.score > ENEMY_ORANGE_CHANCE:
+        elif random_chance < ENEMY_RED_CHANCE + ENEMY_PINK_CHANCE + ENEMY_ORANGE_CHANCE and self.score > ENEMY_ORANGE_SPAWN_SCORE:
             enemy_type = "orange"
         else:
             enemy_type = "white"

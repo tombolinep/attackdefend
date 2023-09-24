@@ -23,7 +23,7 @@ class ImageManager:
                                 pygame.image.load(resource_path('assets/images/junk3.png'))]
         self.images['player'] = pygame.image.load(resource_path('assets/images/player.png'))
         self.images['powerup'] = pygame.image.load(resource_path('assets/images/powerup.png'))
-        self.images['background'] = pygame.image.load(resource_path('assets/images/space_background.jpg'))
+        self.images['background'] = pygame.image.load(resource_path('assets/images/space_background.png'))
         self.images['rocket'] = pygame.image.load(resource_path('assets/images/rocket.png'))
         self.images['explosion'] = pygame.image.load(resource_path('assets/images/explosion.png'))
         self.images['laser'] = pygame.image.load(resource_path('assets/images/laser_beam.png'))

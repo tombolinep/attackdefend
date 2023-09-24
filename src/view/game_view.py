@@ -132,7 +132,7 @@ class GameView:
         self.shop_button.rect.topleft = (self.shop_button.x, self.shop_button.y)
 
     def load_background_image(self):
-        self.background_image = pygame.image.load(resource_path('assets/images/space_background.jpg'))
+        self.background_image = pygame.image.load(resource_path('assets/images/space_background.png'))
         self.background_image = pygame.transform.scale(self.background_image,
                                                        (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT))
         self.background_x_pos = 0

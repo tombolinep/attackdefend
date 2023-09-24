@@ -2,6 +2,7 @@ import random
 import pygame
 from utils import resource_path
 
+
 class ImageManager:
     def __init__(self):
         self.images = {}
@@ -12,6 +13,8 @@ class ImageManager:
         self.images['bullet'] = pygame.image.load(resource_path('assets/images/bullet.png'))
         self.images['tractor_beam'] = pygame.image.load(resource_path('assets/images/tractor_beam.png'))
         self.images['enemy_red'] = pygame.image.load(resource_path('assets/images/enemy_red.png'))
+        self.images['enemy_pink'] = pygame.image.load(resource_path('assets/images/enemy_pink.png'))
+        self.images['enemy_orange'] = pygame.image.load(resource_path('assets/images/enemy_orange.png'))
         self.images['coins'] = [pygame.image.load(resource_path('assets/images/coin_cyan.png')),
                                 pygame.image.load(resource_path('assets/images/coin_green.png')),
                                 pygame.image.load(resource_path('assets/images/coin_grey.png')),

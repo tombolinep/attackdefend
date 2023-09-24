@@ -1,7 +1,6 @@
 import math
 import random
 import threading
-import time
 from math import sqrt
 
 import pygame
@@ -10,7 +9,9 @@ from constants import POWERUP_INTERVAL, BULLET_INTERVAL, \
 from model.audio_manager import Audio
 from model.bullet import Bullet
 from model.coin import Coin
-from model.enemy import Enemy
+from model.enemy.enemy import EnemyBase
+from model.enemy.junk_enemy import WhiteEnemy
+from model.enemy.red_enemy import RedEnemy
 from model.image_manager import ImageManager
 from model.laser import Laser
 from model.player import Player
@@ -83,7 +84,12 @@ class GameModel:
 
     def add_enemy(self):
         enemy_type = "red" if random.random() < ENEMY_RED_CHANCE and self.score > RED_ENEMY_SPAWN_SCORE else "white"
-        enemy = Enemy(self.score, self.player, self.image_manager, self.settings, enemy_type)
+        if enemy_type == "red":
+            enemy = RedEnemy(self.score, self.player, self.image_manager, self.settings)
+        else:
+            enemy = WhiteEnemy(self.score, self.player, self.image_manager, self.settings)
+
+        # Make sure self.enemies and self.all_sprites are initialized as pygame.sprite.Group()
         self.enemies.add(enemy)
         self.all_sprites.add(enemy)
 
@@ -213,7 +219,7 @@ class GameModel:
             return 0
 
     def find_random_enemy(self):
-        all_enemies = [e for e in self.all_sprites if isinstance(e, Enemy)]
+        all_enemies = [e for e in self.all_sprites if isinstance(e, EnemyBase)]
         if all_enemies:
             return random.choice(all_enemies)
 

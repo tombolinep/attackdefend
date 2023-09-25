@@ -43,6 +43,7 @@ class GameModel:
         self.tractor_beams = pygame.sprite.Group()
         self.warp_fields = pygame.sprite.Group()
         self.shields = pygame.sprite.Group()
+        self.health_bars = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.next_powerup_time = pygame.time.get_ticks() + POWERUP_INTERVAL
         self.next_bullet_time = pygame.time.get_ticks()
@@ -60,6 +61,7 @@ class GameModel:
     def reset_game(self):
         # Clear sprite groups
         self.enemies.empty()
+        self.health_bars.empty()
         self.powerups.empty()
         self.coins.empty()
         self.bullets.empty()
@@ -111,7 +113,9 @@ class GameModel:
 
         # Add the new enemy to the relevant sprite groups
         self.enemies.add(enemy)
+        self.health_bars.add(enemy.health_model)
         self.all_sprites.add(enemy)
+        self.all_sprites.add(enemy.health_model)
 
     def add_powerup(self):
         x = random.randint(self.settings.STATS_WIDTH, self.settings.SCREEN_WIDTH - POWERUP_SIZE)

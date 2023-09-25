@@ -44,6 +44,7 @@ class CollisionController:
         if random.random() < ENEMY_COIN_CHANCE:
             self.model.spawn_coin_at_location(enemy.rect.center[0], enemy.rect.center[1])
 
+        enemy.health_model.kill()
         enemy.kill()
         self.model.score += 50
 

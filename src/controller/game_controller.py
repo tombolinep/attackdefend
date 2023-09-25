@@ -110,6 +110,7 @@ class GameController:
             self.model.tractor_beams.update()
             self.model.warp_fields.update()
             self.model.shields.update()
+            self.model.health_bars.update()
 
     def update_and_render(self):
         if not self.model.paused:

@@ -2,6 +2,9 @@ from math import log
 import pygame
 import random
 
+from model.healthbar import HealthBarModel
+
+
 class EnemyBase(pygame.sprite.Sprite):
     def __init__(self, score, player, image_manager, settings):
         super().__init__()
@@ -18,7 +21,11 @@ class EnemyBase(pygame.sprite.Sprite):
         self.speed = max(1, min(self.adjusted_speed, 12))
 
         self.set_image(image_manager)
-        self.initial_position()  # Now `self.speed` is already initialized
+        self.initial_position()
+
+        self.max_health = 100
+        self.health = 100
+        self.health_model = HealthBarModel(self)
 
     def set_image(self, image_manager):
         pass  # Implement in subclasses
@@ -75,3 +82,8 @@ class EnemyBase(pygame.sprite.Sprite):
             dy /= distance
 
         return dx, dy
+
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            self.kill()
